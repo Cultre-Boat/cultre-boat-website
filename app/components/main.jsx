@@ -609,7 +609,7 @@ gsap.to(textRef.current, {
   isHoverActive.current = false;
   hoveredWordIndex.current = -1;
 
-  ctx.revert(); // This already resets all GSAP animations and styles
+  // ctx.revert(); // This already resets all GSAP animations and styles
 };
 
     }, containerRef);
