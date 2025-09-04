@@ -1,0 +1,324 @@
+@import "tailwindcss";
+
+:root {
+  /* Ensure --background is always black or a very dark shade */
+  --background: #000000; /* Use #000000 for pure black */
+  --foreground: #f0f0f0; /* Set a light color for default text */
+}
+
+/* Remove or modify the dark mode override if you always want black */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #000000; /* Force black even in dark mode */
+    --foreground: #ededed; /* Keep light text for readability */
+  }
+}
+
+body {
+  background: var(--background); /* This will now always be black */
+  background-attachment: fixed; /* Ensures the background stays in place */
+  background-size: cover; /* Ensures the background covers the entire viewport */
+  color: var(--foreground); /* Use the foreground variable for body text color */
+  font-family: 'BellotaText-Light', sans-serif; /* Consolidate font-family */
+}
+
+/* Remove the duplicate body font-family declaration */
+/*
+body {
+  font-family: Arial, Helvetica, sans-serif;
+}
+*/
+
+/* Keep your existing @keyframes, .animate-marquee-left, .animate-marquee-right */
+@keyframes marquee-left {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); } /* Moves half the duplicated list */
+}
+
+@keyframes marquee-right {
+  from { transform: translateX(-50%); }
+  to { transform: translateX(0); }
+}
+
+.animate-marquee-left {
+  animation: marquee-left 19s linear infinite;
+  display: flex;
+  min-width: max-content;
+}
+
+.animate-marquee-right {
+  animation: marquee-right 20s linear infinite;
+  display: flex;
+  min-width: max-content;
+}
+
+@font-face {
+  font-family: 'BellotaText-Light';
+  src: url('/fonts/BellotaText-Light.ttf') format('truetype');
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Ensure these are after the @font-face if you want BellotaText-Light to be default */
+html, body {
+  cursor: none !important; /* Hide default cursor */
+  scroll-behavior: smooth;
+}
+
+.smoke-particle {
+  transition: opacity 0.2s ease-out, transform 0.2s ease-out;
+  filter: blur(2px);
+  z-index: 9999;
+  position: absolute;
+}
+
+canvas {
+  mix-blend-mode: overlay; /* This blends the canvas with the background */
+  opacity: 0.7; /* Controls the intensity of the canvas effect */
+}
+
+.reverse-start-layout div,
+.reverse-start-layout img,
+.reverse-start-layout h1 {
+  transform: translate(
+      var(--distort-x, 0),
+      var(--distort-y, 0)
+    ) rotate(var(--distort-rotate, 0));
+  will-change: transform;
+  /* Removed redundant transform declaration here, keep the one below for transition */
+}
+
+/* Add this to your global CSS file */
+/* This block defines the transition for the distort variables */
+.reverse-start-layout div,
+.reverse-start-layout img,
+.reverse-start-layout h1 {
+  transform: translate(var(--distort-x, 0px), var(--distort-y, 0px)) rotate(var(--distort-rotate, 0deg));
+  transition: all 0.1s ease-out; /* Apply a smooth transition for distortion effects */
+}
+
+/* Enhanced water effect for text elements */
+.reverse-start-layout h1 {
+  text-shadow:
+    0 0 10px rgba(255, 255, 255, 0.1),
+    0 0 20px rgba(255, 255, 255, 0.05),
+    0 0 30px rgba(255, 255, 255, 0.02);
+  backdrop-filter: blur(0.5px);
+}
+
+/* Smooth transitions for all elements */
+.reverse-start-layout * {
+  will-change: transform, filter; /* Optimizes for smooth animations */
+}
+
+/* Optional: Add ripple effect on hover for text */
+.reverse-start-layout h1:hover {
+  animation: ripple 0.6s ease-out;
+}
+
+@keyframes ripple {
+  0% {
+    transform: scale(1) translate(var(--distort-x, 0px), var(--distort-y, 0px)) rotate(var(--distort-rotate, 0deg));
+  }
+  50% {
+    transform: scale(1.02) translate(var(--distort-x, 0px), var(--distort-y, 0px)) rotate(var(--distort-rotate, 0deg));
+  }
+  100% {
+    transform: scale(1) translate(var(--distort-x, 0px), var(--distort-y, 0px)) rotate(var(--distort-rotate, 0deg));
+  }
+}
+
+/* Enhanced Water Distortion CSS */
+
+/* Base styles for all distortable elements */
+.water-distort,
+.water-distort * {
+  transform: translate(var(--distort-x, 0px), var(--distort-y, 0px))
+             rotate(var(--distort-rotate, 0deg))
+             scale(var(--distort-scale, 1));
+  filter: blur(var(--distort-blur, 0px));
+  will-change: transform, filter;
+  transition: all 0.08s ease-out;
+}
+
+/* Underwater effect for images */
+.water-distort img {
+  filter: blur(var(--distort-blur, 0px))
+           brightness(0.95)
+           contrast(1.1)
+           saturate(1.2)
+           hue-rotate(5deg);
+  backface-visibility: hidden;
+  transform-origin: center center;
+}
+
+/* Enhanced text effects */
+.water-distort h1,
+.water-distort h2,
+.water-distort h3,
+.water-distort p,
+.water-distort span,
+.water-distort a {
+  text-shadow:
+    0 0 10px rgba(255, 255, 255, 0.1),
+    0 0 20px rgba(255, 255, 255, 0.05),
+    0 2px 4px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(var(--distort-blur, 0px));
+  transform-origin: center center;
+}
+
+/* Specific styles for different element types */
+.water-distort .image-container {
+  overflow: hidden;
+  border-radius: 8px;
+  box-shadow:
+    0 4px 20px rgba(0, 0, 0, 0.1),
+    0 0 40px rgba(255, 255, 255, 0.05);
+}
+
+.water-distort .text-element {
+  position: relative;
+}
+
+.water-distort .text-element::before {
+  content: '';
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  right: -2px;
+  bottom: -2px;
+  background: linear-gradient(45deg,
+    transparent 30%,
+    rgba(255, 255, 255, 0.02) 50%,
+    transparent 70%);
+  border-radius: inherit;
+  pointer-events: none;
+  opacity: var(--distort-scale, 1);
+  transform: translate(calc(var(--distort-x, 0px) * 0.5), calc(var(--distort-y, 0px) * 0.5));
+}
+
+/* Ripple effect on interaction */
+.water-distort:hover {
+  animation: water-ripple 0.6s ease-out;
+}
+
+@keyframes water-ripple {
+  0% {
+    transform: translate(var(--distort-x, 0px), var(--distort-y, 0px))
+                rotate(var(--distort-rotate, 0deg))
+                scale(var(--distort-scale, 1));
+  }
+  50% {
+    transform: translate(var(--distort-x, 0px), var(--distort-y, 0px))
+                rotate(var(--distort-rotate, 0deg))
+                scale(calc(var(--distort-scale, 1) * 1.02));
+  }
+  100% {
+    transform: translate(var(--distort-x, 0px), var(--distort-y, 0px))
+                rotate(var(--distort-rotate, 0deg))
+                scale(var(--distort-scale, 1));
+  }
+}
+
+/* Smooth performance optimizations */
+.water-distort {
+  backface-visibility: hidden;
+  perspective: 1000px;
+  transform-style: preserve-3d;
+}
+
+/* Mobile optimizations */
+@media (max-width: 768px) {
+  .water-distort,
+  .water-distort * {
+    transition: all 0.12s ease-out;
+  }
+}
+
+/* High contrast mode */
+@media (prefers-contrast: high) {
+  .water-distort {
+    filter: contrast(1.2) !important;
+  }
+}
+
+/* In your global CSS file, e.g., styles/globals.css */
+@keyframes moveBackground {
+  0% { background-position: 0% 0%; }
+  100% { background-position: 100% 100%; }
+}
+
+/* Fog Effect Styles */
+.container-fog {
+  position: relative;
+  height: 100vh;
+  width: 100vw;
+  /* background: #fff;  This background will be overridden by your WebGL effect */
+  overflow: hidden; /* Ensure content outside is clipped */
+}
+
+.scenery-fog {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  background: url('https://www.dropbox.com/s/pgur0qj799hhv1j/5318.jpg?raw=1'); /* This will be the background *behind* the fog layers */
+  background-position: 50%;
+  background-repeat: no-repeat;
+  background-size: cover;
+  overflow: hidden;
+}
+
+.fog {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  z-index: 1; /* Ensure fog is above the scenery, but below your main content if needed */
+}
+
+.fog__layer {
+  position: absolute;
+  height: 100vh;
+  width: 300vw; /* Wider than viewport to allow for horizontal scrolling animation */
+  z-index: 2; /* Ensure layers are on top of each other */
+}
+
+.fog__layer--1 {
+  background: url('https://www.dropbox.com/s/dfdz7cqlpwsp1l9/fog-1.png?raw=1');
+  background-repeat: repeat-x; /* Repeat horizontally */
+  background-size: contain;
+  background-position: center;
+  animation: marquee 60s linear infinite;
+  -webkit-animation: marquee 60s linear infinite;
+}
+
+.fog__layer--2 {
+  background: url('https://www.dropbox.com/s/4smivk3tas34moq/fog-2.png?raw=1');
+  background-repeat: repeat-x;
+  background-size: contain;
+  background-position: center;
+  animation: marquee 30s linear infinite; /* Faster animation for second layer */
+  -webkit-animation: marquee 30s linear infinite;
+}
+
+@keyframes marquee {
+  0% {
+    transform: translate3d(0, 0, 0);
+  }
+  100% {
+    transform: translate3d(-200vw, 0, 0); /* Moves the background 200vw to the left */
+  }
+}
+
+@-webkit-keyframes marquee {
+  0% {
+    -webkit-transform: translate3d(0, 0, 0);
+  }
+  100% {
+    -webkit-transform: translate3d(-200vw, 0, 0);
+  }
+}
+
