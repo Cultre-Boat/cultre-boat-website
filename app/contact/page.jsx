@@ -3,6 +3,14 @@
 import { useState } from 'react';
 import WaterEffect from "../components/WaterEffect";
 
+import { createClient } from "@supabase/supabase-js";
+
+// Initialize Supabase
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+const supabase = createClient(supabaseUrl, supabaseAnonKey);
+
+
 export default function ContactForm() {
   const [formData, setFormData] = useState({
     email: '',
@@ -26,32 +34,28 @@ export default function ContactForm() {
     e.preventDefault();
 
     try {
-      const res = await fetch("http://localhost:5000/contact", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
-      });
+      const { data, error } = await supabase.from("contacts").insert([formData]);
 
-      const result = await res.json();
-      if (result.success) {
-        alert("Message sent successfully!");
+
+       if (error) {
+        console.error(error);
+        alert("Failed to submit form.");
       } else {
-        alert("Failed to send message.");
+        alert("Message sent successfully!");
+        setFormData({
+          email: "",
+          name: "",
+          companyName: "",
+          contactNumber: "",
+          designation: "",
+          budget: "",
+          projectDescription: "",
+        });
       }
-    } catch (error) {
-      console.error(error);
+    } catch (err) {
+      console.error(err);
       alert("Error submitting form.");
     }
-
-    setFormData({
-      email: "",
-      name: "",
-      companyName: "",
-      contactNumber: "",
-      designation: "",
-      budget: "",
-      projectDescription: "",
-    });
   };
 
   return (

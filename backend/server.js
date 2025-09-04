@@ -23,17 +23,15 @@ app.post("/contact", async (req, res) => {
 
   try {
     // 1️⃣ Save to Supabase
-    const { data, error } = await supabase.from("contacts").insert([
-  {
-    email,
-    name,
-    companyname: companyName,
-    contactnumber: contactNumber,
-    designation,
-    budget,
-    projectdescription: projectDescription,
-  },
-]);
+    const { data, error } = await supabase.from('contacts').insert([{
+  name: formData.name,
+  email: formData.email,
+  companyName: formData.companyName,
+  contactNumber: formData.contactNumber,
+  designation: formData.designation,
+  budget: formData.budget,
+  projectDescription: formData.projectDescription,
+}]);
 
 
     if (error) {
