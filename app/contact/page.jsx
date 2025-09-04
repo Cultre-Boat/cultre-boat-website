@@ -22,43 +22,47 @@ export default function ContactForm() {
     }));
   };
 
- const handleSubmit = async (e) => {
-  e.preventDefault();
+  const handleSubmit = async (e) => {
+    e.preventDefault();
 
-  try {
-    const res = await fetch("http://localhost:5000/contact", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(formData),
-    });
+    try {
+      const res = await fetch("http://localhost:5000/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
 
-    const result = await res.json();
-    if (result.success) {
-      alert("Message sent successfully!");
-    } else {
-      alert("Failed to send message.");
+      const result = await res.json();
+      if (result.success) {
+        alert("Message sent successfully!");
+      } else {
+        alert("Failed to send message.");
+      }
+    } catch (error) {
+      console.error(error);
+      alert("Error submitting form.");
     }
-  } catch (error) {
-    console.error(error);
-    alert("Error submitting form.");
-  }
 
-  setFormData({
-    email: "",
-    name: "",
-    companyName: "",
-    contactNumber: "",
-    designation: "",
-    budget: "",
-    projectDescription: "",
-  });
-};
-
+    setFormData({
+      email: "",
+      name: "",
+      companyName: "",
+      contactNumber: "",
+      designation: "",
+      budget: "",
+      projectDescription: "",
+    });
+  };
 
   return (
-    <div className="mt-30 z-30 md:mt-40 text-white rounded-lg w-full px-4 md:px-0 md:max-w-3xl mx-auto tracking-widest mb-20 md:mb-40">
-            {/* WaterEffect as a background */}
+    // The main container is now 'relative' to position children against it, and 'overflow-hidden' to clip the effect
+    <div className="relative mt-30 z-30 md:mt-40 text-white rounded-lg w-full px-4 md:px-0 md:max-w-3xl mx-auto tracking-widest mb-20 md:mb-40 overflow-hidden">
+      
+      {/* This div positions the WaterEffect component as a background */}
+      <div className="absolute inset-0 z-[-1]">
         <WaterEffect />
+      </div>
+      
       <h2 className="text-3xl md:text-6xl mb-8 md:mb-14 leading-tight md:leading-normal">
         Tell us about your project<br />
         and find out how we can<br />
@@ -81,7 +85,6 @@ export default function ContactForm() {
           />
         </div>
         
-        {/* Repeat the same pattern for all other fields */}
         <div>
           <label htmlFor="name" className="block text-xs md:text-sm font-medium text-white">NAME</label>
           <input
@@ -135,7 +138,7 @@ export default function ContactForm() {
         </div>
         
         <div>
-          <label htmlFor="budget" className="block text-xs md:text-sm font-medium text-white">BUDGET YOU INTEND TO COMMIT TO THE PROJECT *</label>
+          <label htmlFor="budget" className="block text-xs md:text-sm font-medium text-white">BUDGET YOU INTEND TO COMMIT TO THE PROJECT</label>
           <input
             type="text"
             id="budget"

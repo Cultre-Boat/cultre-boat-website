@@ -373,21 +373,27 @@ export default function EnhancedReverseStartLayout() {
       // Text horizontal scroll animation with letter scaling integration
       gsap.set(textRef.current, { x: "150vw" });
 
-      gsap.to(textRef.current, {
-        x: "-50vw", // This value determines how far the entire text block scrolls
-        ease: "none",
-        scrollTrigger: {
-          trigger: containerRef.current,
-          start: "top top",
-          end: `+=${maxScrollDistance}`,
-          scrub: 1,
-          onUpdate: () => {
-            if (isLetterSystemInitialized.current) {
-              requestAnimationFrame(updateLetterTransformations);
-            }
-          },
-        },
-      });
+      let ticking = false;
+gsap.to(textRef.current, {
+  x: "-50vw",
+  ease: "none",
+  scrollTrigger: {
+    trigger: containerRef.current,
+    start: "top top",
+    end: `+=${maxScrollDistance}`,
+    scrub: 1,
+    onUpdate: () => {
+      if (!ticking && isLetterSystemInitialized.current) {
+        ticking = true;
+        requestAnimationFrame(() => {
+          updateLetterTransformations();
+          ticking = false;
+        });
+      }
+    },
+  },
+});
+
 
       // --- CENTRALIZED RESET FUNCTION FOR IMAGE EFFECTS ---
       const resetImageFilters = () => {
@@ -574,30 +580,38 @@ export default function EnhancedReverseStartLayout() {
       window.addEventListener("resize", handleResize);
 
       return () => {
-        clearInterval(checkRefsInterval);
-        clearInterval(textEffectsInterval);
-        window.removeEventListener("resize", handleResize);
-        words.current.forEach((word) => {
-          if (word.splitTextInstance) {
-            word.splitTextInstance.revert();
-          }
-          if (word.linkElement) {
-            word.linkElement.style.filter = "none";
-            gsap.set(word.linkElement, { scale: 1, rotationY: 0, opacity: 1 }); // Reset opacity too
-          }
-        });
-        imageRefs.current.forEach((imageWrapper) => {
-          const imageElement = imageWrapper.querySelector("img");
-          if (imageElement) {
-            imageElement.style.filter = "none";
-            gsap.set(imageElement, { scale: 1 });
-          }
-        });
-        isLetterSystemInitialized.current = false;
-        isHoverActive.current = false;
-        hoveredWordIndex.current = -1;
-        ctx.revert();
-      };
+  clearInterval(checkRefsInterval);
+  clearInterval(textEffectsInterval);
+  window.removeEventListener("resize", handleResize);
+
+  // Remove hover events
+  words.current.forEach((word) => {
+    if (word.splitTextInstance) {
+      word.splitTextInstance.revert();
+    }
+    if (word.linkElement) {
+      word.linkElement.onmouseenter = null;
+      word.linkElement.onmouseleave = null;
+      // ⚠️ Do NOT call gsap.set here
+    }
+  });
+
+  imageRefs.current.forEach((imageWrapper) => {
+    const img = imageWrapper.querySelector("img");
+    if (img) {
+      img.onmouseenter = null;
+      img.onmouseleave = null;
+      // ⚠️ Do NOT call gsap.set here
+    }
+  });
+
+  isLetterSystemInitialized.current = false;
+  isHoverActive.current = false;
+  hoveredWordIndex.current = -1;
+
+  ctx.revert(); // This already resets all GSAP animations and styles
+};
+
     }, containerRef);
 
     return () => ctx.revert();
