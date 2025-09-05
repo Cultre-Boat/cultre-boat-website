@@ -174,19 +174,23 @@ export default function EnhancedReverseStartLayout() {
 
       
 
-      gsap.set(textRef.current, { x: "150vw" });
+      // gsap.set(textRef.current, { x: "150vw" });
 
       let ticking = false;
-gsap.to(textRef.current, {
-  x: "-50vw",
-  ease: "none",
-  scrollTrigger: {
-    trigger: containerRef.current,
-    start: "top top",
-    end: `+=${maxScrollDistance}`,
-    scrub: 1,
- },
-});
+gsap.fromTo(textRef.current,
+  { x: "30vw" },
+  {
+    x: "-150vw",
+    ease: "none",
+    scrollTrigger: {
+      trigger: containerRef.current,
+      start: "top top",
+      end: `+=${maxScrollDistance}`,
+      scrub: 1,
+    },
+  }
+);
+
 
 
       // --- CENTRALIZED RESET FUNCTION FOR IMAGE EFFECTS ---
@@ -405,8 +409,19 @@ gsap.to(textRef.current, {
 
     }, containerRef);
 
-    return () => ctx.revert();
+    return () => {
+  ctx.revert();
+  ScrollTrigger.kill(); // ⚡ saare ScrollTriggers reset
+  gsap.killTweensOf("*"); // saare tweens kill
+};
+
   }, []);
+  useEffect(() => {
+  setTimeout(() => {
+    ScrollTrigger.refresh();
+  }, 200);
+}, []);
+
 
   return (
     <>
