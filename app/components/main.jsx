@@ -36,11 +36,8 @@ export default function EnhancedReverseStartLayout() {
   const wordsData = useRef([]);
   const totalMovementDistance = useRef(0);
   const animationScrollBuffer = useRef(0);
-  const wordSpacing = 220; // This controls initial spacing between *entire words*.
-  // We will primarily control "gap" via letter-spacing.
+  const wordSpacing = 220; 
   const avgCharWidth = 80;
-
-  // Opacity system variables
   const isHoverActive = useRef(false);
   const hoveredWordIndex = useRef(-1);
 
@@ -74,72 +71,6 @@ export default function EnhancedReverseStartLayout() {
     }
   };
 
-  const initializeLetterSystem = () => {
-    if (isLetterSystemInitialized.current) return;
-    if (
-      !socialTextRef.current ||
-      !prTextRef.current ||
-      !designTextRef.current
-    ) {
-      console.warn("Letter system refs not ready yet for SplitText.");
-      return;
-    }
-
-    const wordElements = [
-      designTextRef.current,
-      prTextRef.current,
-      socialTextRef.current,
-    ];
-    const wordTexts = ["DESIGN", "PR", "SOCIAL"];
-
-    words.current = [];
-    wordsData.current = [];
-
-    wordElements.forEach((wordElement, index) => {
-      const linkElement = wordElement.querySelector("a");
-
-      if (!linkElement) {
-        console.warn(`Link element not found for word:`, wordElement);
-        return;
-      }
-
-      const splitText = new SplitText(linkElement, {
-        type: "chars",
-        charsClass: "letter-transform",
-      });
-
-      splitText.chars.forEach((letter) => {
-        gsap.set(letter, {
-          scale: 1,
-          transformOrigin: "center center",
-          letterSpacing: "0px", // Start with 0 or a very small value, will be dynamic
-        });
-      });
-
-      words.current.push({
-        element: wordElement,
-        linkElement: linkElement,
-        splitTextInstance: splitText,
-        letters: splitText.chars,
-        originalText: linkElement.textContent,
-        index: index,
-      });
-
-      const wordWidth =
-        linkElement.clientWidth || wordTexts[index].length * avgCharWidth;
-      wordsData.current.push({
-        element: linkElement,
-        letters: splitText.chars,
-        text: wordTexts[index],
-        initialX: 0,
-        width: wordWidth,
-      });
-    });
-
-    isLetterSystemInitialized.current = true;
-    console.log("Letter system initialized with SplitText:", words.current);
-  };
-
   const calculatePositionsAndScrollRange = () => {
     if (wordsData.current.length === 0) return;
 
@@ -166,134 +97,6 @@ export default function EnhancedReverseStartLayout() {
     animationScrollBuffer.current = window.innerHeight * 1;
   };
 
-  // NEW: Dynamic opacity system
-  const updateOpacitySystem = () => {
-    if (!words.current.length || !isLetterSystemInitialized.current) return;
-
-    const screenWidth = window.innerWidth;
-    const centerX = screenWidth / 2;
-
-    if (isHoverActive.current && hoveredWordIndex.current !== -1) {
-      // Hover state: hovered word gets full opacity, others get reduced
-      words.current.forEach((word, index) => {
-        const targetOpacity = index === hoveredWordIndex.current ? 1 : 0.3;
-        gsap.to(word.element, {
-          opacity: targetOpacity,
-          duration: 0.3,
-          ease: "power2.out",
-        });
-      });
-    } else {
-      // Normal state: word closest to center gets full opacity
-      let closestWordIndex = 0;
-      let closestDistance = Infinity;
-
-      words.current.forEach((word, index) => {
-        const rect = word.element.getBoundingClientRect();
-        const wordCenterX = rect.left + rect.width / 2;
-        const distanceFromCenter = Math.abs(wordCenterX - centerX);
-
-        if (distanceFromCenter < closestDistance) {
-          closestDistance = distanceFromCenter;
-          closestWordIndex = index;
-        }
-      });
-
-      // Apply opacity based on proximity to center
-      words.current.forEach((word, index) => {
-        const rect = word.element.getBoundingClientRect();
-        const wordCenterX = rect.left + rect.width / 2;
-        const distanceFromCenter = Math.abs(wordCenterX - centerX);
-
-        // Create a smooth opacity falloff
-        const maxDistance = screenWidth * 0.4; // Distance at which opacity becomes minimal
-        let opacity;
-
-        if (index === closestWordIndex) {
-          opacity = 1; // Closest word gets full opacity
-        } else {
-          // Other words get opacity based on distance from center
-          const normalizedDistance = Math.min(
-            distanceFromCenter / maxDistance,
-            1
-          );
-          opacity = Math.max(0.4, 1 - normalizedDistance * 0.6); // Min opacity of 0.4
-        }
-
-        gsap.to(word.element, {
-          opacity: opacity,
-          duration: 0.4,
-          ease: "power2.out",
-        });
-      });
-    }
-  };
-
-  const updateLetterTransformations = () => {
-    if (!words.current.length || !isLetterSystemInitialized.current) return;
-
-    const screenWidth = window.innerWidth;
-
-    const centerZoneStart = screenWidth * 0.4;
-    const centerZoneEnd = screenWidth * 0.6;
-
-    const maxScale = 1.0;
-    const baseScale = 0.8;
-
-    const maxRotationDeg = 30;
-    const minLetterSpacingPx = -20;
-    const maxLetterSpacingPx = -10;
-
-    words.current.forEach((word) => {
-      word.letters.forEach((letter) => {
-        const rect = letter.getBoundingClientRect();
-        const letterCenterX = rect.left + rect.width / 2;
-
-        let scale = baseScale;
-        let rotationY = 0;
-
-        if (letterCenterX < centerZoneStart) {
-          const progress = Math.min(
-            1,
-            Math.max(0, (centerZoneStart - letterCenterX) / centerZoneStart)
-          );
-          scale = baseScale + (maxScale - baseScale) * progress;
-          rotationY = (maxRotationDeg * progress) / 2;
-        } else if (letterCenterX > centerZoneEnd) {
-          const progress = Math.min(
-            1,
-            Math.max(
-              0,
-              (letterCenterX - centerZoneEnd) / (screenWidth - centerZoneEnd)
-            )
-          );
-          scale = baseScale + (maxScale - baseScale) * progress;
-          rotationY = maxRotationDeg * progress;
-        }
-
-        const scaleRange = maxScale - baseScale;
-        const currentScaleProgress = (scale - baseScale) / scaleRange;
-
-        const adjustedLetterSpacing =
-          scaleRange === 0
-            ? minLetterSpacingPx
-            : minLetterSpacingPx +
-              (maxLetterSpacingPx - minLetterSpacingPx) * currentScaleProgress;
-
-        gsap.set(letter, {
-          scale,
-          rotationY,
-          transformOrigin: "center center",
-          letterSpacing: `${adjustedLetterSpacing}px`,
-        });
-      });
-    });
-
-    // Update opacity system alongside letter transformations
-    updateOpacitySystem();
-  };
-
-  // NEW: Setup hover events for opacity system
   const setupOpacityHoverEvents = () => {
     words.current.forEach((word, index) => {
       const linkElement = word.linkElement;
@@ -301,13 +104,13 @@ export default function EnhancedReverseStartLayout() {
       linkElement.addEventListener("mouseenter", () => {
         isHoverActive.current = true;
         hoveredWordIndex.current = index;
-        updateOpacitySystem();
+        // updateOpacitySystem();
       });
 
       linkElement.addEventListener("mouseleave", () => {
         isHoverActive.current = false;
         hoveredWordIndex.current = -1;
-        updateOpacitySystem();
+        // updateOpacitySystem();
       });
     });
   };
@@ -353,9 +156,7 @@ export default function EnhancedReverseStartLayout() {
       });
 
       const initializeAndSetup = () => {
-        initializeLetterSystem();
         calculatePositionsAndScrollRange();
-        updateLetterTransformations();
         setupOpacityHoverEvents(); // NEW: Setup hover events
       };
 
@@ -370,7 +171,6 @@ export default function EnhancedReverseStartLayout() {
         }
       }, 50);
 
-      // Text horizontal scroll animation with letter scaling integration
       gsap.set(textRef.current, { x: "150vw" });
 
       let ticking = false;
@@ -382,16 +182,7 @@ gsap.to(textRef.current, {
     start: "top top",
     end: `+=${maxScrollDistance}`,
     scrub: 1,
-    onUpdate: () => {
-      if (!ticking && isLetterSystemInitialized.current) {
-        ticking = true;
-        requestAnimationFrame(() => {
-          updateLetterTransformations();
-          ticking = false;
-        });
-      }
-    },
-  },
+ },
 });
 
 
@@ -431,9 +222,6 @@ gsap.to(textRef.current, {
           repeat: -1, 
           yoyo: true 
         });
-
-        // 2. INCREASE scale for a stronger, more visible displacement
-        // Experiment with these values, starting around 40-60:
         gsap.to(imageDisplacementMap, { 
           attr: { scale: 13 }, // Increased from 15 (previous suggestion) or 35 (original)
           duration: 0.9, 
@@ -573,7 +361,7 @@ gsap.to(textRef.current, {
         ScrollTrigger.refresh();
         if (isLetterSystemInitialized.current) {
           calculatePositionsAndScrollRange();
-          requestAnimationFrame(updateLetterTransformations);
+          // requestAnimationFrame(updateLetterTransformations);
         }
       };
 
