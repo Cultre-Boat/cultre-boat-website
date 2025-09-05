@@ -115,11 +115,8 @@ export default function EnhancedReverseStartLayout() {
     });
   };
 
-useEffect(() => {
-  const ctx = gsap.context(() => {
-    gsap.registerPlugin(ScrollTrigger);
-
-    const initAnimations = () => {
+  useEffect(() => {
+    const ctx = gsap.context(() => {
       const isMobile = window.innerWidth < 768;
       const windowHeight = window.innerHeight;
       const maxScrollDistance = isMobile ? 1800 : 4000;
@@ -128,6 +125,7 @@ useEffect(() => {
         height: maxScrollDistance + windowHeight,
       });
 
+      
       const initialLeftOffset = windowHeight * (isMobile ? 0.2 : 0.4);
       const initialRightOffset = windowHeight * (isMobile ? 0.1 : 0.2);
 
@@ -158,18 +156,38 @@ useEffect(() => {
         },
       });
 
-      // ✅ Center text
+      const initializeAndSetup = () => {
+        calculatePositionsAndScrollRange();
+        setupOpacityHoverEvents(); // NEW: Setup hover events
+      };
+
+      const checkRefsInterval = setInterval(() => {
+        if (
+          socialTextRef.current &&
+          prTextRef.current &&
+          designTextRef.current
+        ) {
+          clearInterval(checkRefsInterval);
+          initializeAndSetup();
+        }
+      }, 50);
+
+      
+
       gsap.set(textRef.current, { x: "150vw" });
-      gsap.to(textRef.current, {
-        x: "-50vw",
-        ease: "none",
-        scrollTrigger: {
-          trigger: containerRef.current,
-          start: "top top",
-          end: `+=${maxScrollDistance}`,
-          scrub: 1,
-        },
-      });
+
+      let ticking = false;
+gsap.to(textRef.current, {
+  x: "-50vw",
+  ease: "none",
+  scrollTrigger: {
+    trigger: containerRef.current,
+    start: "top top",
+    end: `+=${maxScrollDistance}`,
+    scrub: 1,
+ },
+});
+
 
       // --- CENTRALIZED RESET FUNCTION FOR IMAGE EFFECTS ---
       const resetImageFilters = () => {
@@ -190,7 +208,6 @@ useEffect(() => {
           gsap.set(imageDisplacementMap, { attr: { scale: 0 } });
         }
       };
-
       imageRefs.current.forEach((imageWrapper) => {
         const imageElement = imageWrapper.querySelector("img");
         if (imageElement) {
@@ -200,36 +217,30 @@ useEffect(() => {
             const imageDisplacementMap = document.querySelector("#waterFilter feDisplacementMap");
             if (imageTurbulence && imageDisplacementMap) {
               imageElement.style.filter = "url(#waterFilter)";
-              gsap.to(imageTurbulence, {
-                attr: { baseFrequency: "0.03 0.05" },
-                duration: 15.0,
-                ease: "none",
-                repeat: -1,
-                yoyo: true,
-              });
-              gsap.to(imageDisplacementMap, {
-                attr: { scale: 13 },
-                duration: 0.9,
-                ease: "power1.out",
-              });
-              gsap.to(imageElement, { scale: 1.03, duration: 0.2, ease: "power1.out" });
-            }
-          });
-          imageWrapper.addEventListener("mouseleave", () => {
+             // Modified for a gentler wave
+   gsap.to(imageTurbulence, { 
+          attr: { baseFrequency: "0.03 0.05" }, // Significantly increased from "0.008 0.01"
+          duration: 15.0, 
+          ease: "none", 
+          repeat: -1, 
+          yoyo: true 
+        });
+        gsap.to(imageDisplacementMap, { 
+          attr: { scale: 13 }, // Increased from 15 (previous suggestion) or 35 (original)
+          duration: 0.9, 
+          ease: "power1.out" 
+        });
+
+        gsap.to(imageElement, { scale: 1.03, duration: 0.2, ease: "power1.out" });
+      }
+    });          imageWrapper.addEventListener("mouseleave", () => {
             const imageTurbulence = document.querySelector("#waterFilter feTurbulence");
             const imageDisplacementMap = document.querySelector("#waterFilter feDisplacementMap");
             gsap.killTweensOf(imageTurbulence);
             gsap.killTweensOf(imageDisplacementMap);
             gsap.killTweensOf(imageElement);
             gsap.to(imageTurbulence, { attr: { baseFrequency: "0.003 0.006" }, duration: 0.5, ease: "power2.out" });
-            gsap.to(imageDisplacementMap, {
-              attr: { scale: 0 },
-              duration: 0.5,
-              ease: "power2.out",
-              onComplete: () => {
-                imageElement.style.filter = "none";
-              },
-            });
+            gsap.to(imageDisplacementMap, { attr: { scale: 0 }, duration: 0.5, ease: "power2.out", onComplete: () => { imageElement.style.filter = "none"; } });
             gsap.to(imageElement, { scale: 1, duration: 0.5, ease: "power1.out" });
           });
         }
@@ -241,11 +252,15 @@ useEffect(() => {
           if (word.linkElement) {
             gsap.killTweensOf(word.linkElement);
             word.linkElement.style.filter = "none";
-            gsap.set(word.linkElement, { scale: 1 });
+            gsap.set(word.linkElement, { scale: 1 }); // Ensure scale is reset
           }
         });
-        const textTurbulence = document.querySelector("#textWaterFilter feTurbulence");
-        const textDisplacementMap = document.querySelector("#textWaterFilter feDisplacementMap");
+        const textTurbulence = document.querySelector(
+          "#textWaterFilter feTurbulence"
+        );
+        const textDisplacementMap = document.querySelector(
+          "#textWaterFilter feDisplacementMap"
+        );
         if (textTurbulence && textDisplacementMap) {
           gsap.killTweensOf(textTurbulence);
           gsap.killTweensOf(textDisplacementMap);
@@ -254,39 +269,67 @@ useEffect(() => {
         }
       };
 
+      // Text water effects
       const animateTextWaterEffect = (textElement) => {
         if (!textElement) return;
+
         const linkElement = textElement.querySelector("a");
         if (!linkElement) return;
 
         linkElement.addEventListener("mouseenter", () => {
+          // Reset all text filters before applying a new one
           resetTextFilters();
-          const textTurbulence = document.querySelector("#textWaterFilter feTurbulence");
-          const textDisplacementMap = document.querySelector("#textWaterFilter feDisplacementMap");
+
+          const textTurbulence = document.querySelector(
+            "#textWaterFilter feTurbulence"
+          );
+          const textDisplacementMap = document.querySelector(
+            "#textWaterFilter feDisplacementMap"
+          );
 
           if (textTurbulence && textDisplacementMap) {
             linkElement.style.filter = "url(#textWaterFilter)";
+
             gsap.to(textTurbulence, {
               attr: { baseFrequency: "0.01 0.05" },
               duration: 3.0,
               ease: "sine.inOut",
-              repeat: -1,
-              yoyo: true,
+              repeat: -1, // Make it repeat indefinitely
+              yoyo: true, // Go back and forth for a smoother loop
             });
-            gsap.to(textDisplacementMap, { attr: { scale: 50 }, duration: 0.3, ease: "power2.out" });
-            gsap.to(linkElement, { scale: 1.05, duration: 0.2, ease: "power1.out" });
+
+            gsap.to(textDisplacementMap, {
+              attr: { scale: 50 },
+              duration: 0.3,
+              ease: "power2.out",
+            });
+
+            gsap.to(linkElement, {
+              scale: 1.05,
+              duration: 0.2,
+              ease: "power1.out",
+            });
           }
         });
 
         linkElement.addEventListener("mouseleave", () => {
-          const textTurbulence = document.querySelector("#textWaterFilter feTurbulence");
-          const textDisplacementMap = document.querySelector("#textWaterFilter feDisplacementMap");
+          const textTurbulence = document.querySelector(
+            "#textWaterFilter feTurbulence"
+          );
+          const textDisplacementMap = document.querySelector(
+            "#textWaterFilter feDisplacementMap"
+          );
 
-          gsap.killTweensOf(textTurbulence);
+          gsap.killTweensOf(textTurbulence); // Kill repeating turbulence
           gsap.killTweensOf(textDisplacementMap);
-          gsap.killTweensOf(linkElement);
+          gsap.killTweensOf(linkElement); // Kill any ongoing scale animation
 
-          gsap.to(textTurbulence, { attr: { baseFrequency: "0.01 0.01" }, duration: 0.5, ease: "power2.out" });
+          gsap.to(textTurbulence, {
+            attr: { baseFrequency: "0.01 0.01" },
+            duration: 0.5,
+            ease: "power2.out",
+          });
+
           gsap.to(textDisplacementMap, {
             attr: { scale: 0 },
             duration: 0.5,
@@ -295,12 +338,21 @@ useEffect(() => {
               linkElement.style.filter = "none";
             },
           });
-          gsap.to(linkElement, { scale: 1, duration: 0.3, ease: "power1.out" });
+
+          gsap.to(linkElement, {
+            scale: 1,
+            duration: 0.3,
+            ease: "power1.out",
+          });
         });
       };
 
       const textEffectsInterval = setInterval(() => {
-        if (designTextRef.current && prTextRef.current && socialTextRef.current) {
+        if (
+          designTextRef.current &&
+          prTextRef.current &&
+          socialTextRef.current
+        ) {
           clearInterval(textEffectsInterval);
           animateTextWaterEffect(designTextRef.current);
           animateTextWaterEffect(prTextRef.current);
@@ -310,29 +362,51 @@ useEffect(() => {
 
       const handleResize = () => {
         ScrollTrigger.refresh();
+        if (isLetterSystemInitialized.current) {
+          calculatePositionsAndScrollRange();
+          // requestAnimationFrame(updateLetterTransformations);
+        }
       };
 
       window.addEventListener("resize", handleResize);
 
       return () => {
-        clearInterval(textEffectsInterval);
-        window.removeEventListener("resize", handleResize);
-      };
-    };
+  clearInterval(checkRefsInterval);
+  clearInterval(textEffectsInterval);
+  window.removeEventListener("resize", handleResize);
 
-    // ✅ Ensure fonts + layout are ready before running animations
-    Promise.all([
-      document.fonts ? document.fonts.ready : Promise.resolve(),
-      new Promise((resolve) => requestAnimationFrame(resolve)),
-    ]).then(() => {
-      initAnimations();
-      ScrollTrigger.refresh();
-    });
-  }, containerRef);
+  // Remove hover events
+  words.current.forEach((word) => {
+    if (word.splitTextInstance) {
+      word.splitTextInstance.revert();
+    }
+    if (word.linkElement) {
+      word.linkElement.onmouseenter = null;
+      word.linkElement.onmouseleave = null;
+      // ⚠️ Do NOT call gsap.set here
+    }
+  });
 
-  return () => ctx.revert();
-}, []);
+  imageRefs.current.forEach((imageWrapper) => {
+    const img = imageWrapper.querySelector("img");
+    if (img) {
+      img.onmouseenter = null;
+      img.onmouseleave = null;
+      // ⚠️ Do NOT call gsap.set here
+    }
+  });
 
+  isLetterSystemInitialized.current = false;
+  isHoverActive.current = false;
+  hoveredWordIndex.current = -1;
+
+  // ctx.revert(); // This already resets all GSAP animations and styles
+};
+
+    }, containerRef);
+
+    return () => ctx.revert();
+  }, []);
 
   return (
     <>
