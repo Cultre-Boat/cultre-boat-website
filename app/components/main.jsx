@@ -411,7 +411,7 @@ gsap.fromTo(textRef.current,
 
     return () => {
   ctx.revert();
-  ScrollTrigger.kill(); // ⚡ saare ScrollTriggers reset
+  ScrollTrigger.killAll(); // ⚡ saare ScrollTriggers reset
   gsap.killTweensOf("*"); // saare tweens kill
 };
 
