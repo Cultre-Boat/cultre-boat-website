@@ -377,6 +377,7 @@ export default function EnhancedReverseStartLayout() {
                 className="object-cover"
                 quality={80}
                 sizes="(max-width: 768px) 50vw, 40vw"
+                 unoptimized
               />
             </div>
           ))}
@@ -405,6 +406,7 @@ export default function EnhancedReverseStartLayout() {
                 className="object-cover mb-20 mt-20"
                 quality={80}
                 sizes="(max-width: 768px) 50vw, 40vw"
+                 unoptimized
               />
             </div>
           ))}
