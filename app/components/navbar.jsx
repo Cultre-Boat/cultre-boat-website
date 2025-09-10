@@ -147,9 +147,9 @@ export default function Navbar() {
                         <li><Link href="/social-scroll" onClick={closemenu} className="text-white text-3xl md:text-7xl font-light tracking-widest hover:text-blue-500 transition-all">SOCIAL</Link></li>
                     </ul>
                     <ul className="mt-12 md:mt-0 space-y-4">
-                        <li><Link href="/about-us" onClick={closemenu} className="text-white text-xl md:text-7xl font-light tracking-widest">About</Link></li>
-                        <li><Link href="/contact" onClick={closemenu} className="text-white text-xl md:text-7xl font-light tracking-widest">Contact</Link></li>
-                        <li><Link href="/social-scroll" onClick={closemenu} className="text-white text-xl md:text-7xl font-light tracking-widest">Stories</Link></li>
+                        <li><Link href="/about-us" onClick={closemenu} className="text-white text-xl md:text-7xl font-light hover:text-blue-500 tracking-widest">About</Link></li>
+                        <li><Link href="/contact" onClick={closemenu} className="text-white text-xl md:text-7xl font-light hover:text-blue-500 tracking-widest">Contact</Link></li>
+                        <li><Link href="/social-scroll" onClick={closemenu} className="text-white text-xl md:text-7xl font-light hover:text-blue-500 tracking-widest">Stories</Link></li>
                     </ul>
                 </div>
                 <div className="absolute bottom-12 flex flex-col gap-2 text-center">

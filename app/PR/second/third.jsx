@@ -45,7 +45,7 @@ export default function CreativeConsultancy() {
       </div>
 
       {/* Portfolio Section */}
-      <div className="bg-white">
+      <div className="bg-white mt-10">
         <div className="max-w-8xl w-dvw mx-auto flex flex-col md:flex-row justify-start md:justify-around items-center overflow-auto gap-4 md:gap-20 px-4 md:px-0">
           {portfolioItems.map((item) => (
             <div key={item.id} className="relative flex flex-col items-center min-w-[45%] md:min-w-0">
@@ -61,7 +61,6 @@ export default function CreativeConsultancy() {
       </div>
 
       {/* Footer Section */}
-      <div className="py-6 md:py-12"></div>
     </div>
   );
 }

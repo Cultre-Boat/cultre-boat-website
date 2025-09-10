@@ -19,7 +19,6 @@ export default function PR2() {
           <div className="w-full md:w-2/3 pl-0 md:pl-6 flex flex-col">
             {/* Top text */}
             <div className="text-center md:text-left text-white text-xs sm:text-sm mb-4">
-              <p>BREAKING BRIDAL STEREOTYPES WITH @ILEANA_OFFICIAL FOR @PERNIASPOPUPSHOP</p>
               <p>CONCEPT & DIRECTION</p>
             </div>
 

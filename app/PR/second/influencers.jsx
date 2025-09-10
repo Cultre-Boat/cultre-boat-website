@@ -12,7 +12,7 @@ export default function MyPage() {
 
     return (
         <>
-            <div className="text-white py-4 text-center mb-5">
+            <div className="text-white py-4 text-center mb-13 mt-13">
                 <h1 className="text-2xl md:text-3xl ">INFLUENCERS</h1>
                 {/* <p className="text-lg md:text-xl italic font-light mt-1">Impactful PR Approach</p> */}
             </div>
@@ -22,9 +22,9 @@ export default function MyPage() {
                         {[...productImages, ...productImages].map((img, index) => (
                             <div
                                 key={index}
-                                className="mx-6 flex-shrink-0" // Adjusted spacing
+                                className="mx-2 flex-shrink-0" // Adjusted spacing
                             >
-                                <div className="relative w-[300px] h-[400px]"> {/* Taller container */}
+                                <div className="relative w-[250px] h-[350px]"> {/* Taller container */}
                                     <Image
                                         src={img.src}
                                         alt={img.alt}

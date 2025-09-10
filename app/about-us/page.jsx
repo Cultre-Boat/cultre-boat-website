@@ -3,28 +3,35 @@ import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import WaterEffect from "../components/WaterEffect"; 
-
+import MovingFog from '../components/MovingFog';
 
 const StudioAbout = () => {
   return (
     <div className="w-full bg-transparent text-white min-h-screen p-6 md:p-16 overflow-x-hidden mt-20">
       {/* <div className="absolute inset-0 z-0"> */}
-        <WaterEffect />
+        <MovingFog />
       {/* </div> */}
       {/* WHO ARE WE heading */}
-      <h5 className="text-xs md:text-sm uppercase tracking-wider mb-6 md:mb-8 pl-0 md:pl-32 font-bold">WHO ARE WE</h5>
+      <h5 className="text-xs md:text-sm uppercase tracking-wider mb-6 md:mb-8 pl-0 md:pl-10 font-bold">WHO ARE WE</h5>
 
       {/* Main content section */}
-      <div className="flex flex-col md:flex-row mb-12 md:mb-16 relative pl-0 md:pl-44">
+      <div className="flex flex-col md:flex-row mb-12 md:mb-16 relative pl-0 md:pl-20">
         {/* Text content */}
         <div className="md:w-1/2">
-          <h1 className="text-3xl md:text-5xl lg:text-6xl font-light mb-6 md:mb-8 leading-tight md:leading-snug">
-            Everybody loves a good <br className="hidden md:block"/>story and we love to <br className="hidden md:block"/>build them.
+          <h1 className="text-3xl md:text-4xl lg:text-5xl font-light mb-6 md:mb-8 leading-tight md:leading-snug">
+            Everybody loves a <br className="hidden md:block"/>good story and we  <br className="hidden md:block"/>love to build them.
           </h1>
+           <div className="relative left-0 md:left-30 p-4 space-y-2 text-base md:text-lg text-gray-400">
+            <Link href="https://www.facebook.com/CultreBoat/" className=" hover:text-white transition hidden md:block">Facebook</Link>
+            <Link href="https://www.instagram.com/cultreboat/" className=" hover:text-white transition hidden md:block">Instagram</Link>
+            <Link href="https://www.linkedin.com/company/cultre-boat" className=" hover:text-white transition hidden md:block">LinkedIn</Link>
+          </div>
+         
         </div>
+        
 
         {/* Image with decorative corners */}
-        <div className="md:w-1/2 md:absolute md:-right-3/10 h-48 md:h-64 lg:h-80 mt-8 md:mt-0 md:pl-44 relative">
+        <div className="md:w-1/2 md:absolute md:-right-1/10 h-48 md:h-64 lg:h-80 mt-8 md:mt-0 md:pl-20 relative">
           <Image
             src="/About-main.jpeg"
             alt="Creative studio atmosphere"
@@ -45,17 +52,12 @@ const StudioAbout = () => {
           </div>
 
           {/* Social links - position adjusted for mobile */}
-          <div className="relative left-0 md:left-20 top-48 md:top-64 transform md:-translate-x-full p-4 space-y-2 text-base md:text-lg text-gray-400">
-            <Link href="#" className=" hover:text-white transition hidden md:block">Facebook</Link>
-            <Link href="#" className=" hover:text-white transition hidden md:block">Instagram</Link>
-            <Link href="#" className=" hover:text-white transition hidden md:block">LinkedIn</Link>
-          </div>
+         
         </div>
       </div>
 
       {/* First paragraph section */}
-      <div className="mt-20 md:mt-40 mb-12 md:mb-16 max-w-full md:max-w-6xl pl-0 md:pl-44">
-        <div className="relative -left-4 md:-left-10 w-12 md:w-16 h-0.5 md:h-1 bg-white mb-8 md:mb-16 hidden md:block"></div>
+      <div className="mt-10 md:mt-10 mb-12 md:mb-10 max-w-full md:max-w-6xl pl-0 md:pl-44">
         <p className="text-xl md:text-3xl text-gray-300 tracking-wider text-justify">
           We're a creative studio that specializes in brand strategy and<br className="hidden md:block"/>
           digital creation, who enjoy a close working relationship with<br className="hidden md:block"/>
@@ -66,7 +68,7 @@ const StudioAbout = () => {
 
       {/* Second paragraph section */}
       <div className="flex justify-center">
-        <p className="text-xl md:text-3xl text-gray-300 mt-12 md:mt-16 max-w-full md:max-w-5xl text-center md:text-right tracking-wider mb-20 md:mb-40">
+        <p className="text-xl md:text-3xl text-gray-300 mt-12 md:mt-16 max-w-full md:max-w-5xl text-center md:text-right tracking-wider ">
           We're marketers, copywriters, thinkers, social media enthusiasts,
           visual designers and <span className="font-medium">most importantly, communicators.</span>
         </p>

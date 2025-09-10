@@ -1,12 +1,14 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { SplitText } from "gsap/SplitText";
 import Image from "next/image";
 import { Montserrat } from "next/font/google"; // Import Montserrat
-import WaveCanvas from "./WaveCanvas"; // Import the WaveCanvas component
+import MovingFog from "./MovingFog"; // Import the WaveCanvas component
+import UnderwaterEffect from "./UnderwaterEffect"; // Import the WaveCanvas component
+import ScrollingText from "./ScrollingText";
 
 // Initialize Montserrat font
 const montserratLight = Montserrat({
@@ -22,47 +24,45 @@ export default function EnhancedReverseStartLayout() {
   const leftColRef = useRef(null);
   const rightColRef = useRef(null);
   const textRef = useRef(null);
-
   const imageRefs = useRef([]);
-
   const designTextRef = useRef(null);
   const prTextRef = useRef(null);
   const socialTextRef = useRef(null);
-
   const words = useRef([]);
   const isLetterSystemInitialized = useRef(false);
-
-  // Letter scaling system refs and variables
   const wordsData = useRef([]);
   const totalMovementDistance = useRef(0);
   const animationScrollBuffer = useRef(0);
-  const wordSpacing = 220; 
+  const wordSpacing = 220;
   const avgCharWidth = 80;
   const isHoverActive = useRef(false);
   const hoveredWordIndex = useRef(-1);
+  const [maxScroll, setMaxScroll] = useState(0);
 
   const leftImages = {
-    1: "/image1.jpg",
-    2: "/image2.jpg",
-    3: "/image3.jpg",
-    4: "/image4.jpg",
-    5: "/image1.jpg",
-    6: "/image2.jpg",
-    7: "/image3.jpg",
-    8: "/image4.jpg",
-    9: "/image1.jpg",
+    1: "/image/img1.jpeg",
+    2: "/image/img2.jpeg",
+    3: "/image/img3.jpeg",
+    4: "/image/img4.jpeg",
+    5: "/image/img5.jpeg",
+    6: "/image/img6.jpg",
+    7: "/image/img7.jpg",
+    8: "/image/img8.jpg",
+    9: "/image/img9.jpg",
+    10: "/image/img10.jpg",
   };
 
   const rightImages = {
-    1: "/image4.jpg",
-    2: "/image2.jpg",
-    3: "/image2.jpg",
-    4: "/image4.jpg",
-    5: "/image4.jpg",
-    6: "/image2.jpg",
-    7: "/image3.jpg",
-    8: "/image4.jpg",
-    9: "/image2.jpg",
+    1: "/image/img10.jpg",
+    2: "/image/img9.jpg",
+    3: "/image/img8.jpg",
+    4: "/image/img7.jpg",
+    5: "/image/img6.jpg",
+    6: "/image/img5.jpeg",
+    7: "/image/img4.jpeg",
+    8: "/image/img3.jpeg",
+    9: "/image/img2.jpeg",
+    10: "/image/img1.jpeg",
   };
 
   const addImageRef = (el) => {
@@ -104,30 +104,34 @@ export default function EnhancedReverseStartLayout() {
       linkElement.addEventListener("mouseenter", () => {
         isHoverActive.current = true;
         hoveredWordIndex.current = index;
-        // updateOpacitySystem();
       });
 
       linkElement.addEventListener("mouseleave", () => {
         isHoverActive.current = false;
         hoveredWordIndex.current = -1;
-        // updateOpacitySystem();
       });
     });
   };
 
   useEffect(() => {
     const ctx = gsap.context(() => {
-      const isMobile = window.innerWidth < 768;
+      if (
+        !containerRef.current ||
+        !leftColRef.current ||
+        !rightColRef.current
+      ) {
+        return;
+      }
       const windowHeight = window.innerHeight;
-      const maxScrollDistance = isMobile ? 1800 : 4000;
-
+      const columnHeight = leftColRef.current.scrollHeight;
+      const maxScrollDistance = columnHeight - windowHeight + 100;
+      setMaxScroll(maxScrollDistance);
       gsap.set(containerRef.current, {
         height: maxScrollDistance + windowHeight,
       });
 
-      
-      const initialLeftOffset = windowHeight * (isMobile ? 0.2 : 0.4);
-      const initialRightOffset = windowHeight * (isMobile ? 0.1 : 0.2);
+      const initialLeftOffset = 0;
+      const initialRightOffset = 0;
 
       gsap.set(leftColRef.current, { y: initialLeftOffset });
       gsap.set(rightColRef.current, {
@@ -141,7 +145,7 @@ export default function EnhancedReverseStartLayout() {
           trigger: containerRef.current,
           start: "top top",
           end: `+=${maxScrollDistance}`,
-          scrub: 1,
+          scrub: true,
         },
       });
 
@@ -152,13 +156,23 @@ export default function EnhancedReverseStartLayout() {
           trigger: containerRef.current,
           start: "top top",
           end: `+=${maxScrollDistance}`,
-          scrub: 1,
+          scrub: true,
         },
       });
 
       const initializeAndSetup = () => {
+        words.current = [
+          { linkElement: designTextRef.current?.querySelector("a") },
+          { linkElement: prTextRef.current?.querySelector("a") },
+          { linkElement: socialTextRef.current?.querySelector("a") },
+        ].filter((word) => word.linkElement); // Filter out nulls if any
+
+        wordsData.current = words.current.map((word) => ({
+          width: word.linkElement?.parentElement?.offsetWidth || 0,
+        }));
+
         calculatePositionsAndScrollRange();
-        setupOpacityHoverEvents(); // NEW: Setup hover events
+        setupOpacityHoverEvents();
       };
 
       const checkRefsInterval = setInterval(() => {
@@ -172,266 +186,139 @@ export default function EnhancedReverseStartLayout() {
         }
       }, 50);
 
-      
-
-      // gsap.set(textRef.current, { x: "150vw" });
-
       let ticking = false;
-gsap.fromTo(textRef.current,
-  { x: "30vw" },
-  {
-    x: "-150vw",
-    ease: "none",
-    scrollTrigger: {
-      trigger: containerRef.current,
-      start: "top top",
-      end: `+=${maxScrollDistance}`,
-      scrub: 1,
-    },
-  }
-);
+      gsap.fromTo(
+        textRef.current,
+        { x: "30vw" },
+        {
+          x: "-150vw",
+          ease: "none",
+          scrollTrigger: {
+            trigger: containerRef.current,
+            start: "top top",
+            end: `+=${maxScrollDistance}`,
+            scrub: true,
+          },
+        }
+      );
 
+      // --- CONTINUOUS WATER EFFECT FOR IMAGES ---
+      const imageTurbulence = document.querySelector(
+        "#waterFilter feTurbulence"
+      );
+      const imageDisplacementMap = document.querySelector(
+        "#waterFilter feDisplacementMap"
+      );
 
-
-      // --- CENTRALIZED RESET FUNCTION FOR IMAGE EFFECTS ---
-      const resetImageFilters = () => {
+      if (imageTurbulence && imageDisplacementMap) {
+        // Apply the filter to all image elements
         imageRefs.current.forEach((imageWrapper) => {
           const imageElement = imageWrapper.querySelector("img");
           if (imageElement) {
-            gsap.killTweensOf(imageElement);
-            imageElement.style.filter = "none";
-            gsap.set(imageElement, { scale: 1 });
+            imageElement.style.filter = "url(#waterFilter)";
           }
         });
-        const imageTurbulence = document.querySelector("#waterFilter feTurbulence");
-        const imageDisplacementMap = document.querySelector("#waterFilter feDisplacementMap");
-        if (imageTurbulence && imageDisplacementMap) {
-          gsap.killTweensOf(imageTurbulence);
-          gsap.killTweensOf(imageDisplacementMap);
-          gsap.set(imageTurbulence, { attr: { baseFrequency: "0.005 0.008" } });
-          gsap.set(imageDisplacementMap, { attr: { scale: 0 } });
-        }
-      };
-      imageRefs.current.forEach((imageWrapper) => {
-        const imageElement = imageWrapper.querySelector("img");
-        if (imageElement) {
-          imageWrapper.addEventListener("mouseenter", () => {
-            resetImageFilters();
-            const imageTurbulence = document.querySelector("#waterFilter feTurbulence");
-            const imageDisplacementMap = document.querySelector("#waterFilter feDisplacementMap");
-            if (imageTurbulence && imageDisplacementMap) {
-              imageElement.style.filter = "url(#waterFilter)";
-             // Modified for a gentler wave
-   gsap.to(imageTurbulence, { 
-          attr: { baseFrequency: "0.03 0.05" }, // Significantly increased from "0.008 0.01"
-          duration: 15.0, 
-          ease: "none", 
-          repeat: -1, 
-          yoyo: true 
-        });
-        gsap.to(imageDisplacementMap, { 
-          attr: { scale: 13 }, // Increased from 15 (previous suggestion) or 35 (original)
-          duration: 0.9, 
-          ease: "power1.out" 
-        });
 
-        gsap.to(imageElement, { scale: 1.03, duration: 0.2, ease: "power1.out" });
+        // Set a constant, visible displacement scale for the effect
+        gsap.set(imageDisplacementMap, { attr: { scale: 25 } });
+
+        // Create a smooth, infinite animation for the turbulence
+        gsap.to(imageTurbulence, {
+          attr: { baseFrequency: "0.015 0.03" }, // Target frequency for the ripple
+          duration: 10, // How long one cycle of the animation takes
+          ease: "none",
+          repeat: -1, // Loop forever
+          yoyo: true, // Animate back and forth smoothly
+        });
       }
-    });          imageWrapper.addEventListener("mouseleave", () => {
-            const imageTurbulence = document.querySelector("#waterFilter feTurbulence");
-            const imageDisplacementMap = document.querySelector("#waterFilter feDisplacementMap");
-            gsap.killTweensOf(imageTurbulence);
-            gsap.killTweensOf(imageDisplacementMap);
-            gsap.killTweensOf(imageElement);
-            gsap.to(imageTurbulence, { attr: { baseFrequency: "0.003 0.006" }, duration: 0.5, ease: "power2.out" });
-            gsap.to(imageDisplacementMap, { attr: { scale: 0 }, duration: 0.5, ease: "power2.out", onComplete: () => { imageElement.style.filter = "none"; } });
-            gsap.to(imageElement, { scale: 1, duration: 0.5, ease: "power1.out" });
-          });
-        }
-      });
 
-      // --- CENTRALIZED RESET FUNCTION FOR TEXT EFFECTS ---
-      const resetTextFilters = () => {
-        words.current.forEach((word) => {
-          if (word.linkElement) {
-            gsap.killTweensOf(word.linkElement);
-            word.linkElement.style.filter = "none";
-            gsap.set(word.linkElement, { scale: 1 }); // Ensure scale is reset
-          }
-        });
-        const textTurbulence = document.querySelector(
-          "#textWaterFilter feTurbulence"
-        );
-        const textDisplacementMap = document.querySelector(
-          "#textWaterFilter feDisplacementMap"
-        );
-        if (textTurbulence && textDisplacementMap) {
-          gsap.killTweensOf(textTurbulence);
-          gsap.killTweensOf(textDisplacementMap);
-          gsap.set(textTurbulence, { attr: { baseFrequency: "0.01 0.01" } });
-          gsap.set(textDisplacementMap, { attr: { scale: 0 } });
-        }
-      };
+      // --- CONTINUOUS WATER EFFECT FOR TEXT ---
+      const textTurbulence = document.querySelector(
+        "#textWaterFilter feTurbulence"
+      );
+      const textDisplacementMap = document.querySelector(
+        "#textWaterFilter feDisplacementMap"
+      );
 
-      // Text water effects
-      const animateTextWaterEffect = (textElement) => {
-        if (!textElement) return;
-
-        const linkElement = textElement.querySelector("a");
-        if (!linkElement) return;
-
-        linkElement.addEventListener("mouseenter", () => {
-          // Reset all text filters before applying a new one
-          resetTextFilters();
-
-          const textTurbulence = document.querySelector(
-            "#textWaterFilter feTurbulence"
-          );
-          const textDisplacementMap = document.querySelector(
-            "#textWaterFilter feDisplacementMap"
-          );
-
-          if (textTurbulence && textDisplacementMap) {
+      if (textTurbulence && textDisplacementMap) {
+        // Apply the filter to all text link elements
+        [designTextRef, prTextRef, socialTextRef].forEach((ref) => {
+          const linkElement = ref.current?.querySelector("a");
+          if (linkElement) {
             linkElement.style.filter = "url(#textWaterFilter)";
-
-            gsap.to(textTurbulence, {
-              attr: { baseFrequency: "0.01 0.05" },
-              duration: 3.0,
-              ease: "sine.inOut",
-              repeat: -1, // Make it repeat indefinitely
-              yoyo: true, // Go back and forth for a smoother loop
-            });
-
-            gsap.to(textDisplacementMap, {
-              attr: { scale: 50 },
-              duration: 0.3,
-              ease: "power2.out",
-            });
-
-            gsap.to(linkElement, {
-              scale: 1.05,
-              duration: 0.2,
-              ease: "power1.out",
-            });
           }
         });
 
-        linkElement.addEventListener("mouseleave", () => {
-          const textTurbulence = document.querySelector(
-            "#textWaterFilter feTurbulence"
-          );
-          const textDisplacementMap = document.querySelector(
-            "#textWaterFilter feDisplacementMap"
-          );
+        // Set a constant, visible displacement scale
+        gsap.set(textDisplacementMap, { attr: { scale: 15 } }); // Adjust scale as needed
 
-          gsap.killTweensOf(textTurbulence); // Kill repeating turbulence
-          gsap.killTweensOf(textDisplacementMap);
-          gsap.killTweensOf(linkElement); // Kill any ongoing scale animation
-
-          gsap.to(textTurbulence, {
-            attr: { baseFrequency: "0.01 0.01" },
-            duration: 0.5,
-            ease: "power2.out",
-          });
-
-          gsap.to(textDisplacementMap, {
-            attr: { scale: 0 },
-            duration: 0.5,
-            ease: "power2.out",
-            onComplete: () => {
-              linkElement.style.filter = "none";
-            },
-          });
-
-          gsap.to(linkElement, {
-            scale: 1,
-            duration: 0.3,
-            ease: "power1.out",
-          });
+        // Create a smooth, infinite animation for the text turbulence
+        gsap.to(textTurbulence, {
+          attr: { baseFrequency: "0.02 0.05" },
+          duration: 4,
+          ease: "sine.inOut",
+          repeat: -1,
+          yoyo: true,
         });
-      };
-
-      const textEffectsInterval = setInterval(() => {
-        if (
-          designTextRef.current &&
-          prTextRef.current &&
-          socialTextRef.current
-        ) {
-          clearInterval(textEffectsInterval);
-          animateTextWaterEffect(designTextRef.current);
-          animateTextWaterEffect(prTextRef.current);
-          animateTextWaterEffect(socialTextRef.current);
-        }
-      }, 50);
-
+      }
       const handleResize = () => {
         ScrollTrigger.refresh();
         if (isLetterSystemInitialized.current) {
           calculatePositionsAndScrollRange();
-          // requestAnimationFrame(updateLetterTransformations);
         }
       };
 
       window.addEventListener("resize", handleResize);
 
       return () => {
-  clearInterval(checkRefsInterval);
-  clearInterval(textEffectsInterval);
-  window.removeEventListener("resize", handleResize);
+        clearInterval(checkRefsInterval);
+        // clearInterval(textEffectsInterval);
+        window.removeEventListener("resize", handleResize);
 
-  // Remove hover events
-  words.current.forEach((word) => {
-    if (word.splitTextInstance) {
-      word.splitTextInstance.revert();
-    }
-    if (word.linkElement) {
-      word.linkElement.onmouseenter = null;
-      word.linkElement.onmouseleave = null;
-      // ⚠️ Do NOT call gsap.set here
-    }
-  });
+        words.current.forEach((word) => {
+          if (word.splitTextInstance) {
+            word.splitTextInstance.revert();
+          }
+          if (word.linkElement) {
+            word.linkElement.onmouseenter = null;
+            word.linkElement.onmouseleave = null;
+          }
+        });
 
-  imageRefs.current.forEach((imageWrapper) => {
-    const img = imageWrapper.querySelector("img");
-    if (img) {
-      img.onmouseenter = null;
-      img.onmouseleave = null;
-      // ⚠️ Do NOT call gsap.set here
-    }
-  });
+        imageRefs.current.forEach((imageWrapper) => {
+          const img = imageWrapper.querySelector("img");
+          if (img) {
+            img.onmouseenter = null;
+            img.onmouseleave = null;
+          }
+        });
 
-  isLetterSystemInitialized.current = false;
-  isHoverActive.current = false;
-  hoveredWordIndex.current = -1;
-
-  // ctx.revert(); // This already resets all GSAP animations and styles
-};
-
+        isLetterSystemInitialized.current = false;
+        isHoverActive.current = false;
+        hoveredWordIndex.current = -1;
+      };
     }, containerRef);
 
     return () => {
-  ctx.revert();
-  ScrollTrigger.killAll(); // ⚡ saare ScrollTriggers reset
-  gsap.killTweensOf("*"); // saare tweens kill
-};
-
+      ctx.revert();
+      ScrollTrigger.killAll();
+      gsap.killTweensOf("*");
+    };
   }, []);
   useEffect(() => {
-  setTimeout(() => {
-    ScrollTrigger.refresh();
-  }, 200);
-}, []);
-
+    setTimeout(() => {
+      ScrollTrigger.refresh();
+    }, 1000);
+  }, []);
 
   return (
     <>
-      {/* SVG Filters Definitions */}
       <svg className="absolute w-0 h-0 pointer-events-none">
         <filter id="waterFilter">
           <feTurbulence
             type="fractalNoise"
             baseFrequency="0.005 0.008"
-            numOctaves="2"
+            numOctaves="1"
             result="noiseForImage"
           />
           <feDisplacementMap
@@ -447,7 +334,7 @@ gsap.fromTo(textRef.current,
           <feTurbulence
             type="fractalNoise"
             baseFrequency="0.01 0.01"
-            numOctaves="3"
+            numOctaves="1"
             result="noiseForText"
           />
           <feDisplacementMap
@@ -460,10 +347,11 @@ gsap.fromTo(textRef.current,
         </filter>
       </svg>
 
+      <MovingFog />
       <div
         ref={containerRef}
         className="relative w-full overflow-hidden reverse-start-layout z-0"
-        style={{ background: "#000" }}
+        style={{}}
       >
         {/* Left Column */}
         <div
@@ -472,6 +360,7 @@ gsap.fromTo(textRef.current,
           style={{
             left: "50%",
             transform: "translateX(-100%)",
+            willChange: "transform",
             marginLeft: "-2%",
           }}
         >
@@ -479,20 +368,19 @@ gsap.fromTo(textRef.current,
             <div
               key={`left-${key}`}
               ref={addImageRef}
-              className="w-full aspect-[3/4] relative mb-10 md:mb-32 cursor-pointer"
+              className="w-full aspect-[3/4] relative mb-4 md:mb-8 cursor-pointer"
             >
               <Image
                 src={src}
                 alt={`Left Image ${key}`}
                 fill
                 className="object-cover"
-                quality={100}
+                quality={80}
                 sizes="(max-width: 768px) 50vw, 40vw"
               />
             </div>
           ))}
         </div>
-
         {/* Right Column */}
         <div
           ref={rightColRef}
@@ -500,6 +388,7 @@ gsap.fromTo(textRef.current,
           style={{
             left: "50%",
             transform: "translateX(4%)",
+            willChange: "transform",
             marginRight: "-2%",
           }}
         >
@@ -507,56 +396,30 @@ gsap.fromTo(textRef.current,
             <div
               key={`right-${key}`}
               ref={addImageRef}
-              className="w-full aspect-[3/4] relative mb-10 md:mb-32 cursor-pointer"
+              className="w-full aspect-[3/4] relative mb-4 md:mb-8 cursor-pointer"
             >
               <Image
                 src={src}
                 alt={`Right Image ${key}`}
                 fill
                 className="object-cover mb-20 mt-20"
-                quality={100}
+                quality={80}
                 sizes="(max-width: 768px) 50vw, 40vw"
               />
             </div>
           ))}
         </div>
-        <div
+        <ScrollingText
           ref={textRef}
-          className="fixed gap-10 top-1/2 transform -translate-y-1/2 flex md:gap-40 whitespace-nowrap z-20 items-center justify-center"
-          style={{ perspective: "1000px" }}
-        >
-          {/* Apply the font to each h1 element */}
-          <h1
-            ref={designTextRef}
-            className={`text-7xl md:text-9xl lg:text-9xl text-white/90 transition-opacity duration-300 font-bellota-light`}
-          >
-            <a href="/design" className="inline-block">
-              DESIGN
-            </a>
-          </h1>
-          <h1
-            ref={prTextRef}
-            className={`text-7xl md:text-9xl lg:text-9xl text-white/90 transition-opacity duration-300 font-bellota-light`}
-          >
-            <a href="/PR" className="inline-block">
-              PR
-            </a>
-          </h1>
-          <h1
-            ref={socialTextRef}
-            className={`text-7xl md:text-9xl lg:text-9xl text-white/90 transition-opacity duration-300 font-bellota-light`}
-          >
-            <a href="/social-scroll" className="inline-block">
-              SOCIAL
-            </a>
-          </h1>
-        </div>
-        {/* Added this div for the "scroll & select" text with styling */}
+          designTextRef={designTextRef}
+          prTextRef={prTextRef}
+          socialTextRef={socialTextRef}
+        />
         <div className="fixed bottom-10 left-1/2 transform -translate-x-1/2 z-30">
           <p className="text-white text-sm font-bold opacity-35">
             SCROLL AND SELECT
           </p>
-        </div>  
+        </div>
       </div>
     </>
   );

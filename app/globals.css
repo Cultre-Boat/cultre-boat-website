@@ -2,20 +2,20 @@
 
 :root {
   /* Ensure --background is always black or a very dark shade */
-  --background: #000000; /* Use #000000 for pure black */
+  /* --background: #000000; Use #000000 for pure black */
   --foreground: #f0f0f0; /* Set a light color for default text */
 }
 
 /* Remove or modify the dark mode override if you always want black */
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #000000; /* Force black even in dark mode */
+    /* --background: #000000; Force black even in dark mode */
     --foreground: #ededed; /* Keep light text for readability */
   }
 }
 
 body {
-  background: var(--background); /* This will now always be black */
+  /* background: var(--background); This will now always be black */
   background-attachment: fixed; /* Ensures the background stays in place */
   background-size: cover; /* Ensures the background covers the entire viewport */
   color: var(--foreground); /* Use the foreground variable for body text color */
@@ -41,7 +41,7 @@ body {
 }
 
 .animate-marquee-left {
-  animation: marquee-left 19s linear infinite;
+  animation: marquee-left 30s linear infinite;
   display: flex;
   min-width: max-content;
 }

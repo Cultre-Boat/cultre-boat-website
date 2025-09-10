@@ -19,9 +19,13 @@ const images = [
 
 export default function ScrollingLogos() {
   return (
+    <>
+    <h1 className="text-center text-4xl font-bold">LOGO</h1>
+
     <div className="relative w-full overflow-hidden py-8">
       {/* Top Row - Moves Right to Left */}
       <div className="flex w-full overflow-hidden">
+       
         <div className="flex animate-marquee-left space-x-6">
           {[...images, ...images].map((img, index) => ( // Duplicate images for smooth looping
             <a key={index} href={img.link} target="_blank" rel="noopener noreferrer">
@@ -33,5 +37,6 @@ export default function ScrollingLogos() {
         </div>
       </div>
     </div>
+    </>
   );
 }

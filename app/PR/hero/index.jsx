@@ -20,7 +20,7 @@ export default function HeroSection() {
   };
 
   return (
-    <section className="w-full bg-transparent text-white mt-20 md:mt-40 mb-20 md:mb-40">
+    <section className="w-full bg-transparent text-white mt-20 md:mt-25 mb-20 md:mb-40">
       <div className="flex flex-col md:flex-row">
         {/* Left content section */}
         <div className="w-full md:w-1/2 p-6 md:p-16 lg:p-24 flex flex-col justify-center">
@@ -43,7 +43,7 @@ export default function HeroSection() {
         </div>
 
         {/* Right image section - now with video modal trigger */}
-        <div className="w-full md:w-4/5 h-[30vh] sm:h-[40vh] md:h-auto relative">
+        <div className="w-full md:w-4/5 h-[30vh] sm:h-[40vh] md:h-auto relative right-[2%]">
           <button 
             onClick={() => openVideoModal("https://www.youtube.com/watch?v=fPNV5JEMx5A")}
             className="w-full h-full focus:outline-none"
