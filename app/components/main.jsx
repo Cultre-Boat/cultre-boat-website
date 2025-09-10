@@ -398,14 +398,8 @@ export default function EnhancedReverseStartLayout() {
               ref={addImageRef}
               className="w-full aspect-[3/4] relative mb-4 md:mb-8 cursor-pointer"
             >
-              <Image
-                src={src}
-                alt={`Right Image ${key}`}
-                fill
-                className="object-cover mb-20 mt-20"
-                quality={80}
-                sizes="(max-width: 768px) 50vw, 40vw"
-              />
+             <Image src="/image/img6.jpg" alt="test" width={500} height={750} unoptimized />
+
             </div>
           ))}
         </div>
