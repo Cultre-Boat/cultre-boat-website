@@ -40,29 +40,29 @@ export default function EnhancedReverseStartLayout() {
   const [maxScroll, setMaxScroll] = useState(0);
 
   const leftImages = {
-    1: "/image/img1.jpeg",
-    2: "/image/img2.jpeg",
-    3: "/image/img3.jpeg",
-    4: "/image/img4.jpeg",
-    5: "/image/img5.jpeg",
-    6: "/image/img6.jpg",
-    7: "/image/img7.jpg",
-    8: "/image/img8.jpg",
-    9: "/image/img9.jpg",
-    10: "/image/img10.jpg",
+    1: "/img1.jpeg",
+    2: "/img2.jpeg",
+    3: "/img3.jpeg",
+    4: "/img4.jpeg",
+    5: "/img5.jpeg",
+    6: "/img6.jpg",
+    7: "/img7.jpg",
+    8: "/img8.jpg",
+    9: "/img9.jpg",
+    10: "/img10.jpg",
   };
 
   const rightImages = {
-    1: "/image/img10.jpg",
-    2: "/image/img9.jpg",
-    3: "/image/img8.jpg",
-    4: "/image/img7.jpg",
-    5: "/image/img6.jpg",
-    6: "/image/img5.jpeg",
-    7: "/image/img4.jpeg",
-    8: "/image/img3.jpeg",
-    9: "/image/img2.jpeg",
-    10: "/image/img1.jpeg",
+    1: "/img10.jpg",
+    2: "/img9.jpg",
+    3: "/img8.jpg",
+    4: "/img7.jpg",
+    5: "/img6.jpg",
+    6: "/img5.jpeg",
+    7: "/img4.jpeg",
+    8: "/img3.jpeg",
+    9: "/img2.jpeg",
+    10: "/img1.jpeg",
   };
 
   const addImageRef = (el) => {
@@ -211,7 +211,7 @@ export default function EnhancedReverseStartLayout() {
       );
 
       if (imageTurbulence && imageDisplacementMap) {
-        // Apply the filter to all image elements
+        // Apply the filter to all elements
         imageRefs.current.forEach((imageWrapper) => {
           const imageElement = imageWrapper.querySelector("img");
           if (imageElement) {
