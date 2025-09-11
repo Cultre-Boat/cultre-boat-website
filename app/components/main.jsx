@@ -41,28 +41,71 @@ export default function EnhancedReverseStartLayout() {
 
   const leftImages = {
     1: "/img1.jpeg",
-    2: "/img2.jpeg",
-    3: "/img3.jpeg",
-    4: "/img4.jpeg",
-    5: "/img5.jpeg",
-    6: "/img6.jpg",
-    7: "/img7.jpg",
-    8: "/img8.jpg",
-    9: "/img9.jpg",
-    10: "/img10.jpg",
+    2: "/img11.jpg",
+    3: "/img12.jpg",
+    4: "/img2.jpeg",
+    5: "/img13.jpg",
+    6: "/img3.jpeg",
+    7: "/img14.jpg",
+    8: "/img16.jpg",
+    9: "/img15.jpg",
+    10: "/img18.jpg",
+    11: "/img19.jpg",
+    12: "/img20.jpg",
+    13: "/img10.jpg",
+    14: "/img8.jpg",
+    15: "/img7.jpg",
+    16: "/img1.jpeg",
+    17: "/img11.jpg",
+    18: "/img12.jpg",
+    19: "/img2.jpeg",
+    20: "/img13.jpg",
+    21: "/img3.jpeg",
+    22: "/img14.jpg",
+    23: "/img16.jpg",
+    24: "/img15.jpg",
+    25: "/img18.jpg",
+    26: "/img19.jpg",
+    27: "/img20.jpg",
+    28: "/img10.jpg",
+    29: "/img8.jpg",
+    30: "/img7.jpg",
+    
+    
   };
 
   const rightImages = {
-    1: "/img10.jpg",
-    2: "/img9.jpg",
+    1: "/img20.jpg",
+    2: "/img19.jpg",
     3: "/img8.jpg",
-    4: "/img7.jpg",
+    4: "/img11.jpg",
     5: "/img6.jpg",
-    6: "/img5.jpeg",
+    6: "/img15.jpg",
     7: "/img4.jpeg",
-    8: "/img3.jpeg",
-    9: "/img2.jpeg",
-    10: "/img1.jpeg",
+    8: "/img17.jpg",
+    9: "/img14.jpg",
+    10: "/img2.jpeg",
+    11: "/img3.jpeg",
+    12: "/img10.jpg",
+    13: "/img12.jpg",
+    14: "/img1.jpeg",
+    15: "/img16.jpg",
+    16: "/img20.jpg",
+    17: "/img19.jpg",
+    18: "/img8.jpg",
+    19: "/img11.jpg",
+    20: "/img6.jpg",
+    21: "/img15.jpg",
+    22: "/img4.jpeg",
+    23: "/img17.jpg",
+    24: "/img14.jpg",
+    25: "/img2.jpeg",
+    26: "/img3.jpeg",
+    27: "/img10.jpg",
+    28: "/img12.jpg",
+    29: "/img1.jpeg",
+    30: "/img16.jpg",
+  
   };
 
   const addImageRef = (el) => {
@@ -124,7 +167,11 @@ export default function EnhancedReverseStartLayout() {
       }
       const windowHeight = window.innerHeight;
       const columnHeight = leftColRef.current.scrollHeight;
-      const maxScrollDistance = columnHeight - windowHeight + 100;
+      const right = rightColRef.current.scrollHeight;
+      const maxScrollDistance = columnHeight - windowHeight;
+
+      console.log("measure :" ,windowHeight, columnHeight, right, maxScrollDistance);
+
       setMaxScroll(maxScrollDistance);
       gsap.set(containerRef.current, {
         height: maxScrollDistance + windowHeight,
@@ -187,6 +234,15 @@ export default function EnhancedReverseStartLayout() {
       }, 50);
 
       let ticking = false;
+      window.addEventListener("scroll", () => {
+  if (!ticking) {
+    requestAnimationFrame(() => {
+      // GSAP updates
+      ticking = false;
+    });
+    ticking = true;
+  }
+});
       gsap.fromTo(
         textRef.current,
         { x: "30vw" },
@@ -365,6 +421,7 @@ export default function EnhancedReverseStartLayout() {
           }}
         >
           {Object.entries(leftImages).map(([key, src]) => (
+            
             <div
               key={`left-${key}`}
               ref={addImageRef}
@@ -378,10 +435,9 @@ export default function EnhancedReverseStartLayout() {
                 quality={70}
                 sizes="(max-width: 768px) 50vw, 40vw"
                 priority={key === "1"} // preload first image only
-  loading={key === "1" ? "eager" : "lazy"}
-  placeholder="blur"
-  blurDataURL="/tiny-placeholder.jpg"
-                 
+                loading={key === "1" ? "eager" : "lazy"}
+                placeholder="blur"
+                blurDataURL="/tiny-placeholder.jpg"
               />
             </div>
           ))}
@@ -407,13 +463,13 @@ export default function EnhancedReverseStartLayout() {
                 src={src}
                 alt={`Right Image ${key}`}
                 fill
-                className="object-cover mb-20 mt-20"
+                className="object-cover"
                 quality={70}
                 sizes="(max-width: 768px) 50vw, 40vw"
                 priority={key === "1"} // preload first image only
-  loading={key === "1" ? "eager" : "lazy"}
-  placeholder="blur"
-  blurDataURL="/tiny-placeholder.jpg"
+                loading={key === "1" ? "eager" : "lazy"}
+                placeholder="blur"
+                blurDataURL="/tiny-placeholder.jpg"
               />
             </div>
           ))}

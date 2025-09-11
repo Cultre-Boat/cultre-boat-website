@@ -12,7 +12,7 @@ export default function MyPage() {
     
     return (
         <>
-        <div className="text-white py-4 text-center mt-30 mb-5">
+        <div className="text-white py-4 text-center mt-15 mb-15">
         <h1 className="text-2xl md:text-3xl ">STYLISTS</h1>
         {/* <p className="text-lg md:text-xl italic font-light mt-1">Impactful PR Approach</p> */}
     </div>

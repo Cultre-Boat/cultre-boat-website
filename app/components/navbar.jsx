@@ -71,8 +71,8 @@ export default function Navbar() {
         <>
             {/* Navbar */}
             <nav className="fixed top-0 w-full z-50 flex justify-between items-center px-6 py-6 md:px-12 md:py-12 bg-transparent">
-                <div className="text-white font-bold h-10 justify-center items-center flex flex-row gap-4">
-                    <a href='/' className="flex flex-row gap-4 items-center">  
+                <div className="text-white font-bold h-10 justify-center items-center flex flex-row gap-4 -ml-5">
+                    <a href='/' className="flex flex-row gap-6 items-center">  
 
                         <svg style={{ position: 'absolute', width: 0, height: 0 }}>
                             <filter id="wave">
@@ -82,7 +82,7 @@ export default function Navbar() {
                         </svg>
                   
                         <img 
-                            src='/nav-firstt.svg' 
+                            src='/Vector 4.png' 
                             width={32} 
                             height={16} 
                             alt="First icon" 
@@ -91,9 +91,9 @@ export default function Navbar() {
                             style={{ filter: 'none' }}
                         />
                         <img 
-                            src='/nav-second.svg' 
-                            width={32} 
-                            height={24} 
+                            src='/Group 2.png' 
+                            width={25} 
+                            height={15} 
                             alt="Second icon" 
                             onMouseEnter={handleIconMouseEnter} 
                             onMouseLeave={handleIconMouseLeave} 
@@ -101,9 +101,9 @@ export default function Navbar() {
                             style={{ filter: 'none' }}
                         />
                         <img 
-                            src='/nav-last.svg' 
-                            width={32} 
-                            height={16} 
+                            src='/Vector 3.png' 
+                            width={28} 
+                            height={14} 
                             alt="Last icon" 
                             onMouseEnter={handleIconMouseEnter} 
                             onMouseLeave={handleIconMouseLeave} 
