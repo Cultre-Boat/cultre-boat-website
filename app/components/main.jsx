@@ -375,9 +375,13 @@ export default function EnhancedReverseStartLayout() {
                 alt={`Left Image ${key}`}
                 fill
                 className="object-cover"
-                quality={80}
+                quality={70}
                 sizes="(max-width: 768px) 50vw, 40vw"
-                 unoptimized
+                priority={key === "1"} // preload first image only
+  loading={key === "1" ? "eager" : "lazy"}
+  placeholder="blur"
+  blurDataURL="/tiny-placeholder.jpg"
+                 
               />
             </div>
           ))}
@@ -404,9 +408,12 @@ export default function EnhancedReverseStartLayout() {
                 alt={`Right Image ${key}`}
                 fill
                 className="object-cover mb-20 mt-20"
-                quality={80}
+                quality={70}
                 sizes="(max-width: 768px) 50vw, 40vw"
-                 unoptimized
+                priority={key === "1"} // preload first image only
+  loading={key === "1" ? "eager" : "lazy"}
+  placeholder="blur"
+  blurDataURL="/tiny-placeholder.jpg"
               />
             </div>
           ))}
