@@ -66,6 +66,7 @@ export default function HeroSection() {
     });
   }
 }, []);
+
   // Helper function to extract YouTube video ID from various URL formats
   const getYouTubeId = (url) => {
     const arr = url.split(/(vi\/|v%3D|v=|\/v\/|youtu\.be\/|\/embed\/)/);

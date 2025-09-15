@@ -468,6 +468,7 @@ const rightImages = {
               key={`left-${key}`}
               ref={addImageRef}
               className="w-full aspect-[3/4] relative mb-4 md:mb-8 cursor-pointer"
+              style={{ filter: "url(#waterFilter)" }}
             >
               <Image
                 src={src}
@@ -478,8 +479,7 @@ const rightImages = {
                 sizes="(max-width: 768px) 50vw, 40vw"
                 priority={key === "1"} // preload first image only
                 loading={key === "1" ? "eager" : "lazy"}
-                placeholder="blur"
-                blurDataURL="/tiny-placeholder.jpg"
+          
               />
             </div>
           ))}
@@ -493,6 +493,7 @@ const rightImages = {
             transform: "translateX(4%)",
             willChange: "transform",
             marginRight: "-2%",
+            
           }}
         >
           {Object.entries(rightImages).map(([key, src]) => (
@@ -500,6 +501,7 @@ const rightImages = {
               key={`right-${key}`}
               ref={addImageRef}
               className="w-full aspect-[3/4] relative mb-4 md:mb-8 cursor-pointer"
+              style={{ filter: "url(#waterFilter)" }}
             >
               <Image
                 src={src}
@@ -510,8 +512,7 @@ const rightImages = {
                 sizes="(max-width: 768px) 50vw, 40vw"
                 priority={key === "1"} // preload first image only
                 loading={key === "1" ? "eager" : "lazy"}
-                placeholder="blur"
-                blurDataURL="/tiny-placeholder.jpg"
+                
               />
             </div>
           ))}
