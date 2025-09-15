@@ -2,6 +2,7 @@
 import Link from 'next/link';
 import { useEffect, useRef } from 'react';
 import WaterEffect from "../components/WaterEffect"; 
+import MovingFog from '../components/MovingFog';
 
 export default function BrandShowcase() {
   const brands = [
@@ -50,7 +51,7 @@ export default function BrandShowcase() {
     <div className="relative w-full h-screen overflow-hidden bg-black">
       {/* WaterEffect as a background */}
       <div className="absolute inset-0 z-0">
-        <WaterEffect />
+        <MovingFog />
       </div>
 
       {/* Brands List */}

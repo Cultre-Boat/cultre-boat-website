@@ -20,7 +20,7 @@ const images = [
 export default function ScrollingLogos() {
   return (
     <>
-    <h1 className="text-center text-4xl font-bold">LOGO</h1>
+    <h1 className="text-center text-4xl font-bold mb-7">LOGO</h1>
 
     <div className="relative w-full overflow-hidden py-8">
       {/* Top Row - Moves Right to Left */}

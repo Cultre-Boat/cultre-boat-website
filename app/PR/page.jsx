@@ -12,7 +12,7 @@ export default function PRPortfolio() {
   const fashionImages = [
     { src: "/1.png", link: "#" },
     { src: "/2.png", link: "#" },
-    { src: "/16 original.png", link: "#" },
+    { src: "/16-1.png", link: "#" },
     { src: "/3.png", link: "#" },
     { src: "/4.png", link: "#" },
     { src: "/5.png", link: "#" },

@@ -4,6 +4,7 @@ import React from 'react';
 import Image from 'next/image';
 import { IndustriesData } from "../Data.js";
 import WaterEffect from "../../components/WaterEffect.jsx";
+import MovingFog from '../../components/MovingFog.js';
 
 export default function BrandShowcase({ params }) {
     // Unwrap params with React.use() as recommended by Next.js
@@ -35,7 +36,7 @@ export default function BrandShowcase({ params }) {
         <div className="mt-20 text-white min-h-screen p-4 sm:p-10">
                               {/* WaterEffect as a background */}
       {/* <div className="absolute inset-0 z-0"> */}
-        <WaterEffect />
+        <MovingFog />
       {/* </div> */}
             <div className="mb-10 sm:mb-20 z-10">
                 {/* Main Heading and Description */}

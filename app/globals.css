@@ -40,6 +40,8 @@ body {
   to { transform: translateX(0); }
 }
 
+
+
 .animate-marquee-left {
   animation: marquee-left 30s linear infinite;
   display: flex;
