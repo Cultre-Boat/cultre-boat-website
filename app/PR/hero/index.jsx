@@ -20,54 +20,52 @@ export default function HeroSection() {
     document.body.style.overflow = "auto";
   };
 
-  useEffect(() => {
-    const imageTurbulence = document.querySelector(
-      "#waterFilter feTurbulence"
-    );
-    const imageDisplacementMap = document.querySelector(
-      "#waterFilter feDisplacementMap"
-    );
+    useEffect(() => {
+  const imageTurbulence = document.querySelector("#waterFilter feTurbulence");
+  const imageDisplacementMap = document.querySelector(
+    "#waterFilter feDisplacementMap"
+  );
 
-    if (imageTurbulence && imageDisplacementMap) {
-      document.querySelectorAll("img").forEach((img) => {
-        img.style.filter = "url(#waterFilter)";
-      });
+  if (imageTurbulence && imageDisplacementMap) {
+    document.querySelectorAll("img").forEach((img) => {
+      img.style.filter = "url(#waterFilter)";
+    });
 
-      gsap.set(imageDisplacementMap, { attr: { scale: 12 } });
+    gsap.set(imageDisplacementMap, { attr: { scale: 12 } });
 
-      gsap.to(imageTurbulence, {
-        attr: { baseFrequency: "0.012 0.02" },
-        duration: 8,
-        ease: "none",
-        repeat: -1,
-        yoyo: true,
-      });
-    }
+    gsap.to(imageTurbulence, {
+  attr: { baseFrequency: "0.012 0.01" },
+  duration: 15,
+  repeat: -1,
+  yoyo: true,
+  scrollTrigger: { trigger: "section", start: "top bottom", toggleActions: "play pause resume reset" }
+});
 
-    const textTurbulence = document.querySelector(
-      "#textWaterFilter feTurbulence"
-    );
-    const textDisplacementMap = document.querySelector(
-      "#textWaterFilter feDisplacementMap"
-    );
+  }
 
-    if (textTurbulence && textDisplacementMap) {
-      document.querySelectorAll("h1, h2, h3, p, a").forEach((el) => {
-        el.style.filter = "url(#textWaterFilter)";
-      });
+  const textTurbulence = document.querySelector(
+    "#textWaterFilter feTurbulence"
+  );
+  const textDisplacementMap = document.querySelector(
+    "#textWaterFilter feDisplacementMap"
+  );
 
-      gsap.set(textDisplacementMap, { attr: { scale: 10 } });
+  if (textTurbulence && textDisplacementMap) {
+    document.querySelectorAll("h1, h2, h3, p, a").forEach((el) => {
+      el.style.filter = "url(#textWaterFilter)";
+    });
 
-      gsap.to(textTurbulence, {
-        attr: { baseFrequency: "0.04 0.12" },
-        duration: 7,
-        ease: "sine.inOut",
-        repeat: -1,
-        yoyo: true,
-      });
-    }
-  }, []);
+    gsap.set(textDisplacementMap, { attr: { scale: 10 } });
 
+    gsap.to(textTurbulence, {
+      attr: { baseFrequency: "0.04 0.12" },
+      duration: 15, // ⏳ slowed from 7 → 15
+      ease: "sine.inOut",
+      repeat: -1,
+      yoyo: true,
+    });
+  }
+}, []);
   // Helper function to extract YouTube video ID from various URL formats
   const getYouTubeId = (url) => {
     const arr = url.split(/(vi\/|v%3D|v=|\/v\/|youtu\.be\/|\/embed\/)/);
@@ -77,7 +75,7 @@ export default function HeroSection() {
   return (
     <>
       <svg className="absolute w-0 h-0 pointer-events-none">
-        <filter id="waterFilter">
+       <filter id="waterFilter">
           <feTurbulence
             type="fractalNoise"
             baseFrequency="0.005 0.008"

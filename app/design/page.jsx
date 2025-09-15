@@ -172,32 +172,33 @@ export default function DesignPortfolio() {
           </section>
 
          {/* Creative Direction Section with Video */}
+{/* Creative Direction Section with Video */}
 <section className="py-2 text-center">
   <h2 className="text-xl lg:text-2xl font-light tracking-[2px] uppercase">
     CREATIVE DIRECTION AND STRATEGY
   </h2>
-  <p className="text-xs lg:text-sm text-gray-500 italic mb-14">
+  <p className="text-xs lg:text-sm text-gray-500 italic mb-0 md:mb-14">
     Brand Positioning
   </p>
 
-  <div className="flex flex-col lg:flex-row gap-5 lg:gap-24 justify-center mx-4 mb-9">
+  <div className="flex flex-col lg:flex-row gap-3 lg:gap-12 justify-center mx-4 mb-9 items-end">
     {/* Left side - Video with play button */}
-    <div className="relative overflow-hidden w-full">
+    <div className="relative overflow-hidden w-full max-w-[600px]">
       <button
         onClick={() =>
           openVideoModal("https://www.youtube.com/watch?v=C-4C4VnyZco")
         }
-        className="w-full h-full focus:outline-none"
+        className="w-full focus:outline-none block"
         aria-label="Play video"
       >
         <Image
-          src="/Design-image4.png"
+          src="/Design-image4 1.png"
           alt="Kalki Fashion"
           width={600}
           height={350}
-          className="w-full h-auto object-contain grayscale hover:grayscale-0 transition-all duration-300"
+          className="w-full h-[350px] object-contain grayscale hover:grayscale-0 transition-all duration-300"
         />
-        <div className="absolute inset-0 flex items-center justify-center">
+        <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
           <div className="w-16 h-16 md:w-20 md:h-20 bg-white/30 rounded-full flex items-center justify-center backdrop-blur-sm">
             <svg
               className="w-8 h-8 md:w-10 md:h-10 text-white"
@@ -224,19 +225,17 @@ export default function DesignPortfolio() {
     </div>
 
     {/* Right side - Regular image */}
-    <div className="relative overflow-hidden w-full">
+    <div className="relative overflow-hidden w-full max-w-[600px]">
       <Image
         src="/Design-image5 1.png"
         alt="Product Photography"
         width={600}
         height={350}
-        className="w-full h-auto object-contain"
+        className="w-full h-[350px] object-contain"
       />
     </div>
   </div>
 </section>
-
-
           {/* Video Modal */}
           {isVideoOpen && (
             <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
@@ -394,6 +393,7 @@ export default function DesignPortfolio() {
                     alt="Portfolio Item 6"
                     width={570}
                     height={400}
+                    loading="eager" // ✅ ensures it defers loading
                     quality={75}
                     className="w-full h-auto block object-contain"
                   />
@@ -406,6 +406,7 @@ export default function DesignPortfolio() {
                     alt="Portfolio Item 2"
                     width={570}
                     height={400}
+                    loading="eager" // ✅ ensures it defers loading
                     quality={75}
                     className="w-full h-auto block object-contain"
                   />
@@ -416,6 +417,7 @@ export default function DesignPortfolio() {
                     alt="Portfolio Item 5"
                     width={570}
                     height={400}
+                    loading="eager" // ✅ ensures it defers loading
                     quality={75}
                     className="w-full h-auto block object-contain"
                   />
@@ -426,6 +428,7 @@ export default function DesignPortfolio() {
                     alt="Portfolio Item 7"
                     width={570}
                     height={400}
+                    loading="eager" // ✅ ensures it defers loading
                     quality={75}
                     className="w-full h-auto block object-contain"
                   />
@@ -436,6 +439,7 @@ export default function DesignPortfolio() {
                     alt="Portfolio Item 8"
                     width={570}
                     height={400}
+                    loading="eager" // ✅ ensures it defers loading
                     quality={75}
                     className="w-full h-auto block object-contain"
                   />

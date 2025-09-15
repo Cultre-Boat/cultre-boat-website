@@ -16,6 +16,7 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en" bbai-tooltip-injected="true" data-scroll-behavior="smooth">
+        <link rel="preconnect" href="https://cdn.jsdelivr.net" />
       <body
         className={`antialiased overflow-x-hidden font-bellota-light`}
         cz-shortcut-listen="true"

@@ -1,15 +1,15 @@
-// /** @type {import('next').NextConfig} */
-// const nextConfig = {};
-
-// export default nextConfig;
-
-
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  reactStrictMode: true,
   images: {
-    domains: ["cdn.jsdelivr.net"], // allow external images
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'cdn.jsdelivr.net',
+        port: '',
+        pathname: '/gh/Avinesh-2001/CB@main/**',
+      },
+    ],
   },
 };
 
-export default nextConfig; // use export default instead of module.exports
+export default nextConfig;
