@@ -27,51 +27,52 @@ export default function DesignPortfolio() {
   };
 
   useEffect(() => {
-    const imageTurbulence = document.querySelector("#waterFilter feTurbulence");
-    const imageDisplacementMap = document.querySelector(
-      "#waterFilter feDisplacementMap"
-    );
+  const imageTurbulence = document.querySelector("#waterFilter feTurbulence");
+  const imageDisplacementMap = document.querySelector(
+    "#waterFilter feDisplacementMap"
+  );
 
-    if (imageTurbulence && imageDisplacementMap) {
-      // Apply filter to ALL portfolio images
-      document.querySelectorAll("img").forEach((img) => {
-        img.style.filter = "url(#waterFilter)";
-      });
+  if (imageTurbulence && imageDisplacementMap) {
+    document.querySelectorAll("img").forEach((img) => {
+      img.style.filter = "url(#waterFilter)";
+    });
 
-      gsap.set(imageDisplacementMap, { attr: { scale: 12 } });
+    gsap.set(imageDisplacementMap, { attr: { scale: 12 } });
 
-      gsap.to(imageTurbulence, {
-        attr: { baseFrequency: "0.012 0.02" }, //012 024
-        duration: 8, //7
-        ease: "none",
-        repeat: -1,
-        yoyo: true,
-      });
-    }
+    gsap.to(imageTurbulence, {
+  attr: { baseFrequency: "0.012 0.01" },
+  duration: 15,
+  repeat: -1,
+  yoyo: true,
+  scrollTrigger: { trigger: "section", start: "top bottom", toggleActions: "play pause resume reset" }
+});
 
-    const textTurbulence = document.querySelector(
-      "#textWaterFilter feTurbulence"
-    );
-    const textDisplacementMap = document.querySelector(
-      "#textWaterFilter feDisplacementMap"
-    );
+  }
 
-    if (textTurbulence && textDisplacementMap) {
-      document.querySelectorAll("h1, h2, h3, p, a").forEach((el) => {
-        el.style.filter = "url(#textWaterFilter)";
-      });
+  const textTurbulence = document.querySelector(
+    "#textWaterFilter feTurbulence"
+  );
+  const textDisplacementMap = document.querySelector(
+    "#textWaterFilter feDisplacementMap"
+  );
 
-      gsap.set(textDisplacementMap, { attr: { scale: 10 } });
+  if (textTurbulence && textDisplacementMap) {
+    document.querySelectorAll("h1, h2, h3, p, a").forEach((el) => {
+      el.style.filter = "url(#textWaterFilter)";
+    });
 
-      gsap.to(textTurbulence, {
-        attr: { baseFrequency: "0.04 0.12" },
-        duration: 7,
-        ease: "sine.inOut",
-        repeat: -1,
-        yoyo: true,
-      });
-    }
-  }, []);
+    gsap.set(textDisplacementMap, { attr: { scale: 10 } });
+
+    gsap.to(textTurbulence, {
+      attr: { baseFrequency: "0.04 0.12" },
+      duration: 15, // ⏳ slowed from 7 → 15
+      ease: "sine.inOut",
+      repeat: -1,
+      yoyo: true,
+    });
+  }
+}, []);
+
 
   return (
     <>
@@ -111,7 +112,7 @@ export default function DesignPortfolio() {
       <div className=" text-white leading-relaxed overflow-x-hidden">
         <div className="max-w-6xl mx-auto px-4">
           {/* Header Section */}
-          <section className="py-2 relative">
+          <section className="py-2 relative mt-25">
             <div className="flex flex-col lg:flex-row items-center min-h-[400px] lg:min-h-[400px] gap-5 lg:gap-10 md:mt-20">
               <div className="flex-1 text-center lg:text-left px-4 lg:px-5">
                 <p className="text-sm lg:text-base tracking-[2px] uppercase text-gray-500 my-5 font-light">
@@ -144,7 +145,7 @@ export default function DesignPortfolio() {
           <section className="py-2 mt-10 md:mt-0">
             <div className="flex flex-col lg:flex-row gap-0 lg:gap-24 justify-center mb-10">
               {/* Left Image - Bigger Width */}
-              <div className="relative overflow-hidden w-full lg:w-[650px] h-[335px] md:mt-5 -mb-3 md:mb-0">
+              <div className="relative overflow-hidden w-full lg:w-[650px] h-[335px] md:mt-5 -mb-6 md:mb-0">
                 <span className="absolute  left-0 z-10 bg-black text-white py-2.5 px-2.5 rounded-tr-lg rounded-br-lg text-sm lg:text-base tracking-wider">
                   For GURORGANIC by Pernia Qureshi
                 </span>
@@ -170,74 +171,71 @@ export default function DesignPortfolio() {
             </div>
           </section>
 
-          {/* Creative Direction Section with Video */}
-          <section className="py-2 text-center">
-            <h2 className="text-xl lg:text-2xl font-light tracking-[2px] uppercase">
-              CREATIVE DIRECTION AND STRATEGY
-            </h2>
-            <p className="text-xs lg:text-sm text-gray-500 italic mb-14">
-              Brand Positioning
-            </p>
-            <div className="flex flex-col lg:flex-row gap-5 lg:gap-24 justify-center mx-4 mb-9">
-              {/* Left side - Video with play button */}
-              <div className="relative overflow-hidden">
-                <div className="w-full h-80 lg:h-96 relative overflow-hidden">
-                  <button
-                    onClick={() =>
-                      openVideoModal(
-                        "https://www.youtube.com/watch?v=C-4C4VnyZco"
-                      )
-                    }
-                    className="w-full h-full focus:outline-none"
-                    aria-label="Play video"
-                  >
-                    <Image
-                      src="/Design-image4.png"
-                      alt="Kalki Fashion"
-                      width={600}
-                      height={350}
-                      className="w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-300"
-                    />
-                    <div className="absolute inset-0 flex items-center justify-center">
-                      <div className="w-16 h-16 md:w-20 md:h-20 bg-white/30 rounded-full flex items-center justify-center backdrop-blur-sm">
-                        <svg
-                          className="w-8 h-8 md:w-10 md:h-10 text-white"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth="2"
-                            d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"
-                          />
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth="2"
-                            d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                          />
-                        </svg>
-                      </div>
-                    </div>
-                  </button>
-                </div>
-              </div>
-              {/* Right side - Regular image */}
-              <div className="relative overflow-hidden">
-                <div className="w-full h-80 lg:h-96 relative overflow-hidden">
-                  <Image
-                    src="/Design-image5 1.png"
-                    alt="Product Photography"
-                    width={600}
-                    height={350}
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-              </div>
-            </div>
-          </section>
+         {/* Creative Direction Section with Video */}
+<section className="py-2 text-center">
+  <h2 className="text-xl lg:text-2xl font-light tracking-[2px] uppercase">
+    CREATIVE DIRECTION AND STRATEGY
+  </h2>
+  <p className="text-xs lg:text-sm text-gray-500 italic mb-14">
+    Brand Positioning
+  </p>
+
+  <div className="flex flex-col lg:flex-row gap-5 lg:gap-24 justify-center mx-4 mb-9">
+    {/* Left side - Video with play button */}
+    <div className="relative overflow-hidden w-full">
+      <button
+        onClick={() =>
+          openVideoModal("https://www.youtube.com/watch?v=C-4C4VnyZco")
+        }
+        className="w-full h-full focus:outline-none"
+        aria-label="Play video"
+      >
+        <Image
+          src="/Design-image4.png"
+          alt="Kalki Fashion"
+          width={600}
+          height={350}
+          className="w-full h-auto object-contain grayscale hover:grayscale-0 transition-all duration-300"
+        />
+        <div className="absolute inset-0 flex items-center justify-center">
+          <div className="w-16 h-16 md:w-20 md:h-20 bg-white/30 rounded-full flex items-center justify-center backdrop-blur-sm">
+            <svg
+              className="w-8 h-8 md:w-10 md:h-10 text-white"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"
+              />
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+              />
+            </svg>
+          </div>
+        </div>
+      </button>
+    </div>
+
+    {/* Right side - Regular image */}
+    <div className="relative overflow-hidden w-full">
+      <Image
+        src="/Design-image5 1.png"
+        alt="Product Photography"
+        width={600}
+        height={350}
+        className="w-full h-auto object-contain"
+      />
+    </div>
+  </div>
+</section>
+
 
           {/* Video Modal */}
           {isVideoOpen && (
@@ -396,7 +394,6 @@ export default function DesignPortfolio() {
                     alt="Portfolio Item 6"
                     width={570}
                     height={400}
-                    loading="eager" // ✅ ensures it defers loading
                     quality={75}
                     className="w-full h-auto block object-contain"
                   />
@@ -409,7 +406,6 @@ export default function DesignPortfolio() {
                     alt="Portfolio Item 2"
                     width={570}
                     height={400}
-                    loading="eager" // ✅ ensures it defers loading
                     quality={75}
                     className="w-full h-auto block object-contain"
                   />
@@ -420,7 +416,6 @@ export default function DesignPortfolio() {
                     alt="Portfolio Item 5"
                     width={570}
                     height={400}
-                    loading="eager" // ✅ ensures it defers loading
                     quality={75}
                     className="w-full h-auto block object-contain"
                   />
@@ -431,7 +426,6 @@ export default function DesignPortfolio() {
                     alt="Portfolio Item 7"
                     width={570}
                     height={400}
-                    loading="eager" // ✅ ensures it defers loading
                     quality={75}
                     className="w-full h-auto block object-contain"
                   />
@@ -442,7 +436,6 @@ export default function DesignPortfolio() {
                     alt="Portfolio Item 8"
                     width={570}
                     height={400}
-                    loading="eager" // ✅ ensures it defers loading
                     quality={75}
                     className="w-full h-auto block object-contain"
                   />
