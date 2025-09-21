@@ -3,288 +3,119 @@
 import { useEffect, useRef, useState } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { SplitText } from "gsap/SplitText";
-import Image from "next/image";
-import { Montserrat } from "next/font/google"; // Import Montserrat
-import MovingFog from "./MovingFog"; // Import the WaveCanvas component
-import UnderwaterEffect from "./UnderwaterEffect"; // Import the WaveCanvas component
 import ScrollingText from "./ScrollingText";
+import PixiImage from "./PixiImage";
 
-// Initialize Montserrat font
-const montserratLight = Montserrat({
-  weight: "300", // '300' corresponds to Light weight
-  subsets: ["latin"],
-  display: "swap",
-});
+gsap.registerPlugin(ScrollTrigger);
 
-gsap.registerPlugin(ScrollTrigger, SplitText);
+// The list of images can be defined outside the component
+
+const leftImages = [
+  // "https://cdn.jsdelivr.net/gh/Avinesh-2001/CB@main/img1.jpeg",
+  // "https://cdn.jsdelivr.net/gh/Avinesh-2001/CB@main/img2.jpeg",
+  // "https://cdn.jsdelivr.net/gh/Avinesh-2001/CB@main/img13.jpeg",
+  // "https://cdn.jsdelivr.net/gh/Avinesh-2001/CB@main/img3.jpeg",
+  // "https://cdn.jsdelivr.net/gh/Avinesh-2001/CB@main/img-14.jpg",
+  // "https://cdn.jsdelivr.net/gh/Avinesh-2001/CB@main/img-15.jpg",
+  // "https://cdn.jsdelivr.net/gh/Avinesh-2001/CB@main/img4.jpeg",
+  // "https://cdn.jsdelivr.net/gh/Avinesh-2001/CB@main/img5.jpeg",
+  // "https://cdn.jsdelivr.net/gh/Avinesh-2001/CB@main/img1.jpeg",
+  // "https://cdn.jsdelivr.net/gh/Avinesh-2001/CB@main/img2.jpeg",
+  // "https://cdn.jsdelivr.net/gh/Avinesh-2001/CB@main/img13.jpeg",
+  // "https://cdn.jsdelivr.net/gh/Avinesh-2001/CB@main/img3.jpeg",
+  // "https://cdn.jsdelivr.net/gh/Avinesh-2001/CB@main/img-14.jpg",
+  // "https://cdn.jsdelivr.net/gh/Avinesh-2001/CB@main/img-15.jpg",
+  // "https://cdn.jsdelivr.net/gh/Avinesh-2001/CB@main/img4.jpeg",
+  // "https://cdn.jsdelivr.net/gh/Avinesh-2001/CB@main/img5.jpeg",
+  "/image/img13.webp",
+  "/image/img11.webp",
+  "/image/img10.webp",
+  "/image/img9.webp",
+  "/image/img7.webp",
+  "/image/img5.webp",
+  "/image/img4.webp",
+  "/image/img3.webp",
+  "/image/img2.webp",
+  "/image/img1.webp",
+  "/image/img-14.webp",
+  "/image/img-15.webp",
+  "/image/img-16.webp",
+  "/image/img13.webp",
+  "/image/img11.webp",
+  "/image/img10.webp",
+  "/image/img9.webp",
+  "/image/img7.webp",
+  "/image/img5.webp",
+  "/image/img4.webp",
+  "/image/img3.webp",
+  "/image/img2.webp",
+  "/image/img1.webp",
+  "/image/img-14.webp",
+  "/image/img-15.webp",
+  "/image/img-16.webp",
+];
+
+const rightImages = [
+  // "https://cdn.jsdelivr.net/gh/Avinesh-2001/CB@main/img10.jpg",
+  // "https://cdn.jsdelivr.net/gh/Avinesh-2001/CB@main/img9.jpg",
+  // "https://cdn.jsdelivr.net/gh/Avinesh-2001/CB@main/img-15.jpg",
+  // "https://cdn.jsdelivr.net/gh/Avinesh-2001/CB@main/img1.jpeg",
+  // "https://cdn.jsdelivr.net/gh/Avinesh-2001/CB@main/img4.jpeg",
+  // "https://cdn.jsdelivr.net/gh/Avinesh-2001/CB@main/img-14.jpg",
+  // "https://cdn.jsdelivr.net/gh/Avinesh-2001/CB@main/img8.jpg",
+  // "https://cdn.jsdelivr.net/gh/Avinesh-2001/CB@main/img13.jpeg",
+  // "https://cdn.jsdelivr.net/gh/Avinesh-2001/CB@main/img10.jpg",
+  // "https://cdn.jsdelivr.net/gh/Avinesh-2001/CB@main/img9.jpg",
+  // "https://cdn.jsdelivr.net/gh/Avinesh-2001/CB@main/img-15.jpg",
+  // "https://cdn.jsdelivr.net/gh/Avinesh-2001/CB@main/img1.jpeg",
+  // "https://cdn.jsdelivr.net/gh/Avinesh-2001/CB@main/img4.jpeg",
+  // "https://cdn.jsdelivr.net/gh/Avinesh-2001/CB@main/img-14.jpg",
+  // "https://cdn.jsdelivr.net/gh/Avinesh-2001/CB@main/img8.jpg",
+  // "https://cdn.jsdelivr.net/gh/Avinesh-2001/CB@main/img13.jpeg",
+  "/image/img-14.webp",
+  "/image/img-15.webp",
+  "/image/img-16.webp",
+  "/image/img1.webp",
+  "/image/img2.webp",
+  "/image/img3.webp",
+  "/image/img4.webp",
+  "/image/img5.webp",
+  "/image/img7.webp",
+  "/image/img9.webp",
+  "/image/img10.webp",
+  "/image/img11.webp",
+  "/image/img13.webp",
+  "/image/img-14.webp",
+  "/image/img-15.webp",
+  "/image/img-16.webp",
+  "/image/img1.webp",
+  "/image/img2.webp",
+  "/image/img3.webp",
+  "/image/img4.webp",
+  "/image/img5.webp",
+  "/image/img7.webp",
+  "/image/img9.webp",
+  "/image/img10.webp",
+  "/image/img11.webp",
+  "/image/img13.webp",
+];
+
 
 export default function EnhancedReverseStartLayout() {
   const containerRef = useRef(null);
-  const leftColRef = useRef(null);
-  const rightColRef = useRef(null);
-  const textRef = useRef(null);
-  const imageRefs = useRef([]);
+  const textRef = useRef(null); // Refs for the ScrollingText component
   const designTextRef = useRef(null);
   const prTextRef = useRef(null);
-  const socialTextRef = useRef(null);
-  const words = useRef([]);
-  const isLetterSystemInitialized = useRef(false);
-  const wordsData = useRef([]);
-  const totalMovementDistance = useRef(0);
-  const animationScrollBuffer = useRef(0);
-  const wordSpacing = 220;
-  const avgCharWidth = 80;
-  const isHoverActive = useRef(false);
-  const hoveredWordIndex = useRef(-1);
+  const socialTextRef = useRef(null); // State to hold the maximum scroll distance calculated by the PixiImage component
   const [maxScroll, setMaxScroll] = useState(0);
 
-const leftImages = {
-  1: "https://cdn.jsdelivr.net/gh/Avinesh-2001/CB@main/img1.jpeg",
-  // 2: "https://cdn.jsdelivr.net/gh/Avinesh-2001/CB@main/img11.jpg",
-  // 3: "https://cdn.jsdelivr.net/gh/Avinesh-2001/CB@main/img12.jpg",
-  4: "https://cdn.jsdelivr.net/gh/Avinesh-2001/CB@main/img2.jpeg",
-  5: "https://cdn.jsdelivr.net/gh/Avinesh-2001/CB@main/img13.jpeg",
-  6: "https://cdn.jsdelivr.net/gh/Avinesh-2001/CB@main/img3.jpeg",
-  7: "https://cdn.jsdelivr.net/gh/Avinesh-2001/CB@main/img-14.jpg",
-  8: "https://cdn.jsdelivr.net/gh/Avinesh-2001/CB@main/img-15.jpg",
-  9: "https://cdn.jsdelivr.net/gh/Avinesh-2001/CB@main/img4.jpeg",
-  // 10: "https://cdn.jsdelivr.net/gh/Avinesh-2001/CB@main/img11.jpg",
-  // 11: "https://cdn.jsdelivr.net/gh/Avinesh-2001/CB@main/img-16.jpg",
-  12: "https://cdn.jsdelivr.net/gh/Avinesh-2001/CB@main/img5.jpeg",
-  13: "https://cdn.jsdelivr.net/gh/Avinesh-2001/CB@main/img1.jpeg",
-  // 14: "https://cdn.jsdelivr.net/gh/Avinesh-2001/CB@main/img11.jpg",
-  // 15: "https://cdn.jsdelivr.net/gh/Avinesh-2001/CB@main/img12.jpg",
-  16: "https://cdn.jsdelivr.net/gh/Avinesh-2001/CB@main/img2.jpeg",
-  17: "https://cdn.jsdelivr.net/gh/Avinesh-2001/CB@main/img13.jpeg",
-  18: "https://cdn.jsdelivr.net/gh/Avinesh-2001/CB@main/img3.jpeg",
-  19: "https://cdn.jsdelivr.net/gh/Avinesh-2001/CB@main/img-14.jpg",
-  20: "https://cdn.jsdelivr.net/gh/Avinesh-2001/CB@main/img-15.jpg",
-  21: "https://cdn.jsdelivr.net/gh/Avinesh-2001/CB@main/img4.jpeg",
-  // 22: "https://cdn.jsdelivr.net/gh/Avinesh-2001/CB@main/img11.jpg",
-  // 23: "https://cdn.jsdelivr.net/gh/Avinesh-2001/CB@main/img-16.jpg",
-  24: "https://cdn.jsdelivr.net/gh/Avinesh-2001/CB@main/img5.jpeg",
-};
-
-const rightImages = {
-  // 1: "https://cdn.jsdelivr.net/gh/Avinesh-2001/CB@main/img-16.jpg",
-  2: "https://cdn.jsdelivr.net/gh/Avinesh-2001/CB@main/img10.jpg",
-  3: "https://cdn.jsdelivr.net/gh/Avinesh-2001/CB@main/img9.jpg",
-  4: "https://cdn.jsdelivr.net/gh/Avinesh-2001/CB@main/img-15.jpg",
-  5: "https://cdn.jsdelivr.net/gh/Avinesh-2001/CB@main/img1.jpeg",
-  // 6: "https://cdn.jsdelivr.net/gh/Avinesh-2001/CB@main/img11.jpg",
-  7: "https://cdn.jsdelivr.net/gh/Avinesh-2001/CB@main/img4.jpeg",
-  // 8: "https://cdn.jsdelivr.net/gh/Avinesh-2001/CB@main/img12.jpg",
-  9: "https://cdn.jsdelivr.net/gh/Avinesh-2001/CB@main/img-14.jpg",
-  10: "https://cdn.jsdelivr.net/gh/Avinesh-2001/CB@main/img8.jpg",
-  11: "https://cdn.jsdelivr.net/gh/Avinesh-2001/CB@main/img13.jpeg",
-  // 12: "https://cdn.jsdelivr.net/gh/Avinesh-2001/CB@main/img12.jpg",
-  // 13: "https://cdn.jsdelivr.net/gh/Avinesh-2001/CB@main/img-16.jpg",
-  14: "https://cdn.jsdelivr.net/gh/Avinesh-2001/CB@main/img10.jpg",
-  15: "https://cdn.jsdelivr.net/gh/Avinesh-2001/CB@main/img9.jpg",
-  16: "https://cdn.jsdelivr.net/gh/Avinesh-2001/CB@main/img-15.jpg",
-  17: "https://cdn.jsdelivr.net/gh/Avinesh-2001/CB@main/img1.jpeg",
-  // 18: "https://cdn.jsdelivr.net/gh/Avinesh-2001/CB@main/img11.jpg",
-  19: "https://cdn.jsdelivr.net/gh/Avinesh-2001/CB@main/img4.jpeg",
-  // 20: "https://cdn.jsdelivr.net/gh/Avinesh-2001/CB@main/img12.jpg",
-  21: "https://cdn.jsdelivr.net/gh/Avinesh-2001/CB@main/img-14.jpg",
-  22: "https://cdn.jsdelivr.net/gh/Avinesh-2001/CB@main/img8.jpg",
-  23: "https://cdn.jsdelivr.net/gh/Avinesh-2001/CB@main/img13.jpeg",
-  // 24: "https://cdn.jsdelivr.net/gh/Avinesh-2001/CB@main/img12.jpg",
-};
-
-
-  // const leftImages = {
-  //   1: "/img1.jpeg",
-  //   2: "/img11.jpg",
-  //   3: "/img12.jpg",
-  //   4: "/img2.jpeg",
-  //   5: "/img13.jpeg",
-  //   6: "/img3.jpeg",
-  //   7: "/img-14.jpg",
-  //   8: "/img-15.jpg",
-  //   9: "/img4.jpeg",
-  //   10: "/img11.jpeg",
-  //   11: "/img-16.jpeg",
-  //   12: "/img5.jpg",
-  //   13: "/img1.jpeg",
-  //   14: "/img11.jpg",
-  //   15: "/img12.jpg",
-  //   16: "/img2.jpeg",
-  //   17: "/img13.jpeg",
-  //   18: "/img3.jpeg",
-  //   19: "/img-14.jpg",
-  //   20: "/img-15.jpg",
-  //   21: "/img4.jpeg",
-  //   22: "/img11.jpeg",
-  //   23: "/img-16.jpeg",
-  //   24: "/img5.jpg",
-  // };
-
-  // const rightImages = {
-  //   // 1: "/img-16.jpg",
-  //   // 2: "/img10.jpg",
-  //   // 3: "/img9.jpg",
-  //   // 4: "/img-15.jpg",
-  //   // 5: "/img1.jpeg",
-  //   // 6: "/img11.jpg",
-  //   // 7: "/img4.jpeg",
-  //   // 8: "/img12.jpg",
-  //   // 9: "/img-14.jpg",
-  //   // 10: "/img8.jpg",
-  //   // 11: "/img13.jpeg",
-  //   // 12: "/img12.jpg",
-  //   // 13: "/img-16.jpg",
-  //   // 14: "/img10.jpg",
-  //   // 15: "/img9.jpg",
-  //   // 16: "/img-15.jpg",
-  //   // 17: "/img1.jpeg",
-  //   // 18: "/img11.jpg",
-  //   // 19: "/img4.jpeg",
-  //   // 20: "/img12.jpg",
-  //   // 21: "/img-14.jpg",
-  //   // 22: "/img8.jpg",
-  //   // 23: "/img13.jpeg",
-  //   // 24: "/img12.jpg",
-  
-
-  // };
-
-  const addImageRef = (el) => {
-    if (el && !imageRefs.current.includes(el)) {
-      imageRefs.current.push(el);
-    }
-  };
-
-  const calculatePositionsAndScrollRange = () => {
-    if (wordsData.current.length === 0) return;
-
-    const screenWidth = window.innerWidth;
-    let currentXOffset = 0;
-
-    const firstWord = wordsData.current[0];
-    firstWord.initialX = screenWidth / 2 - firstWord.width / 2;
-    currentXOffset = firstWord.initialX + firstWord.width + wordSpacing;
-
-    for (let i = 1; i < wordsData.current.length; i++) {
-      const word = wordsData.current[i];
-      word.initialX = currentXOffset;
-      currentXOffset += word.width + wordSpacing;
-    }
-
-    const lastWord = wordsData.current[wordsData.current.length - 1];
-    const lastWordTargetX = screenWidth / 2 - lastWord.width / 2;
-    totalMovementDistance.current = Math.max(
-      0,
-      lastWord.initialX - lastWordTargetX
-    );
-
-    animationScrollBuffer.current = window.innerHeight * 1;
-  };
-
-  const setupOpacityHoverEvents = () => {
-    words.current.forEach((word, index) => {
-      const linkElement = word.linkElement;
-
-      linkElement.addEventListener("mouseenter", () => {
-        isHoverActive.current = true;
-        hoveredWordIndex.current = index;
-      });
-
-      linkElement.addEventListener("mouseleave", () => {
-        isHoverActive.current = false;
-        hoveredWordIndex.current = -1;
-      });
-    });
-  };
-
   useEffect(() => {
+    if (!containerRef.current || maxScroll === 0) return;
     const ctx = gsap.context(() => {
-      if (
-        !containerRef.current ||
-        !leftColRef.current ||
-        !rightColRef.current
-      ) {
-        return;
-      }
-      const windowHeight = window.innerHeight;
-      const columnHeight = leftColRef.current.scrollHeight;
-      const right = rightColRef.current.scrollHeight;
-      const maxScrollDistance = columnHeight - windowHeight;
-
-      console.log("measure :" ,windowHeight, columnHeight, right, maxScrollDistance);
-
-      setMaxScroll(maxScrollDistance);
       gsap.set(containerRef.current, {
-        height: maxScrollDistance + windowHeight,
-      });
+        height: maxScroll + window.innerHeight,
+      }); // Horizontal text scrolling animation, now using the synchronized `maxScroll` value.
 
-      const initialLeftOffset = 0;
-      const initialRightOffset = 0;
-
-      gsap.set(leftColRef.current, { y: initialLeftOffset });
-      gsap.set(rightColRef.current, {
-        y: -maxScrollDistance - initialRightOffset,
-      });
-
-      gsap.to(leftColRef.current, {
-        y: -maxScrollDistance + initialLeftOffset,
-        ease: "none",
-        scrollTrigger: {
-          trigger: containerRef.current,
-          start: "top top",
-          end: `+=${maxScrollDistance}`,
-          scrub: true,
-        },
-      });
-
-      gsap.to(rightColRef.current, {
-        y: 0 + initialRightOffset,
-        ease: "none",
-        scrollTrigger: {
-          trigger: containerRef.current,
-          start: "top top",
-          end: `+=${maxScrollDistance}`,
-          scrub: true,
-        },
-      });
-
-      const initializeAndSetup = () => {
-        words.current = [
-          { linkElement: designTextRef.current?.querySelector("a") },
-          { linkElement: prTextRef.current?.querySelector("a") },
-          { linkElement: socialTextRef.current?.querySelector("a") },
-        ].filter((word) => word.linkElement); // Filter out nulls if any
-
-        wordsData.current = words.current.map((word) => ({
-          width: word.linkElement?.parentElement?.offsetWidth || 0,
-        }));
-
-        calculatePositionsAndScrollRange();
-        setupOpacityHoverEvents();
-      };
-
-      const checkRefsInterval = setInterval(() => {
-        if (
-          socialTextRef.current &&
-          prTextRef.current &&
-          designTextRef.current
-        ) {
-          clearInterval(checkRefsInterval);
-          initializeAndSetup();
-        }
-      }, 50);
-
-      let ticking = false;
-      window.addEventListener("scroll", () => {
-  if (!ticking) {
-    requestAnimationFrame(() => {
-      // GSAP updates
-      ticking = false;
-    });
-    ticking = true;
-  }
-});
       gsap.fromTo(
         textRef.current,
         { x: "30vw" },
@@ -294,241 +125,41 @@ const rightImages = {
           scrollTrigger: {
             trigger: containerRef.current,
             start: "top top",
-            end: `+=${maxScrollDistance}`,
-            scrub: true,
+            end: "bottom bottom", // Use "bottom bottom" for perfect sync
+            scrub: 1.5,
           },
         }
       );
-
-      // --- CONTINUOUS WATER EFFECT FOR IMAGES ---
-      const imageTurbulence = document.querySelector(
-        "#waterFilter feTurbulence"
-      );
-      const imageDisplacementMap = document.querySelector(
-        "#waterFilter feDisplacementMap"
-      );
-
-      if (imageTurbulence && imageDisplacementMap) {
-        // Apply the filter to all elements
-        imageRefs.current.forEach((imageWrapper) => {
-          const imageElement = imageWrapper.querySelector("img");
-          if (imageElement) {
-            imageElement.style.filter = "url(#waterFilter)";
-          }
-        });
-
-        // Set a constant, visible displacement scale for the effect
-        gsap.set(imageDisplacementMap, { attr: { scale: 25 } });
-
-        // Create a smooth, infinite animation for the turbulence
-        gsap.to(imageTurbulence, {
-          attr: { baseFrequency: "0.015 0.03" }, // Target frequency for the ripple
-          duration: 10, // How long one cycle of the animation takes
-          ease: "none",
-          repeat: -1, // Loop forever
-          yoyo: true, // Animate back and forth smoothly
-        });
-      }
-
-      // --- CONTINUOUS WATER EFFECT FOR TEXT ---
-      const textTurbulence = document.querySelector(
-        "#textWaterFilter feTurbulence"
-      );
-      const textDisplacementMap = document.querySelector(
-        "#textWaterFilter feDisplacementMap"
-      );
-
-      if (textTurbulence && textDisplacementMap) {
-        // Apply the filter to all text link elements
-        [designTextRef, prTextRef, socialTextRef].forEach((ref) => {
-          const linkElement = ref.current?.querySelector("a");
-          if (linkElement) {
-            linkElement.style.filter = "url(#textWaterFilter)";
-          }
-        });
-
-        // Set a constant, visible displacement scale
-        gsap.set(textDisplacementMap, { attr: { scale: 15 } }); // Adjust scale as needed
-
-        // Create a smooth, infinite animation for the text turbulence
-        gsap.to(textTurbulence, {
-          attr: { baseFrequency: "0.02 0.05" },
-          duration: 4,
-          ease: "sine.inOut",
-          repeat: -1,
-          yoyo: true,
-        });
-      }
-      const handleResize = () => {
-        ScrollTrigger.refresh();
-        if (isLetterSystemInitialized.current) {
-          calculatePositionsAndScrollRange();
-        }
-      };
-
-      window.addEventListener("resize", handleResize);
-
-      return () => {
-        clearInterval(checkRefsInterval);
-        // clearInterval(textEffectsInterval);
-        window.removeEventListener("resize", handleResize);
-
-        words.current.forEach((word) => {
-          if (word.splitTextInstance) {
-            word.splitTextInstance.revert();
-          }
-          if (word.linkElement) {
-            word.linkElement.onmouseenter = null;
-            word.linkElement.onmouseleave = null;
-          }
-        });
-
-        imageRefs.current.forEach((imageWrapper) => {
-          const img = imageWrapper.querySelector("img");
-          if (img) {
-            img.onmouseenter = null;
-            img.onmouseleave = null;
-          }
-        });
-
-        isLetterSystemInitialized.current = false;
-        isHoverActive.current = false;
-        hoveredWordIndex.current = -1;
-      };
     }, containerRef);
 
     return () => {
-      ctx.revert();
-      ScrollTrigger.killAll();
-      gsap.killTweensOf("*");
+      ctx.revert(); // No need for ScrollTrigger.killAll() here as context handles cleanup
     };
-  }, []);
-  useEffect(() => {
-    setTimeout(() => {
-      ScrollTrigger.refresh();
-    }, 1000);
-  }, []);
+  }, [maxScroll]); // Dependency array ensures this runs when maxScroll is calculated
 
   return (
     <>
-      <svg className="absolute w-0 h-0 pointer-events-none">
-        <filter id="waterFilter">
-          <feTurbulence
-            type="fractalNoise"
-            baseFrequency="0.005 0.008"
-            numOctaves="1"
-            result="noiseForImage"
-          />
-          <feDisplacementMap
-            in="SourceGraphic"
-            in2="noiseForImage"
-            scale="0"
-            xChannelSelector="R"
-            yChannelSelector="G"
-          />
-        </filter>
-
-        <filter id="textWaterFilter">
-          <feTurbulence
-            type="fractalNoise"
-            baseFrequency="0.01 0.01"
-            numOctaves="1"
-            result="noiseForText"
-          />
-          <feDisplacementMap
-            in="SourceGraphic"
-            in2="noiseForText"
-            scale="0"
-            xChannelSelector="R"
-            yChannelSelector="G"
-          />
-        </filter>
-      </svg>
-
-      <MovingFog />
-      <div
-        ref={containerRef}
-        className="relative w-full overflow-hidden reverse-start-layout z-0"
-        style={{}}
-      >
-        {/* Left Column */}
-        <div
-          ref={leftColRef}
-          className="fixed top-0 w-[42%] md:w-[35%] flex flex-col gap-4 md:gap-8 py-4 md:py-8 px-2 md:px-4 z-10"
-          style={{
-            left: "50%",
-            transform: "translateX(-100%)",
-            willChange: "transform",
-            marginLeft: "-2%",
-          }}
-        >
-          {Object.entries(leftImages).map(([key, src]) => (
-            
-            <div
-              key={`left-${key}`}
-              ref={addImageRef}
-              className="w-full aspect-[3/4] relative mb-4 md:mb-8 cursor-pointer"
-              style={{ filter: "url(#waterFilter)" }}
-            >
-              <Image
-                src={src}
-                alt={`Left Image ${key}`}
-                fill
-                className="object-cover"
-                quality={70}
-                sizes="(max-width: 768px) 50vw, 40vw"
-                priority={key === "1"} // preload first image only
-                loading={key === "1" ? "eager" : "lazy"}
-          
-              />
-            </div>
-          ))}
-        </div>
-        {/* Right Column */}
-        <div
-          ref={rightColRef}
-          className="fixed top-0 w-[42%] md:w-[35%] flex flex-col-reverse gap-4 md:gap-8 py-4 md:py-8 px-2 md:px-4 z-10"
-          style={{
-            left: "50%",
-            transform: "translateX(4%)",
-            willChange: "transform",
-            marginRight: "-2%",
-            
-          }}
-        >
-          {Object.entries(rightImages).map(([key, src]) => (
-            <div
-              key={`right-${key}`}
-              ref={addImageRef}
-              className="w-full aspect-[3/4] relative mb-4 md:mb-8 cursor-pointer"
-              style={{ filter: "url(#waterFilter)" }}
-            >
-              <Image
-                src={src}
-                alt={`Right Image ${key}`}
-                fill
-                className="object-cover"
-                quality={70}
-                sizes="(max-width: 768px) 50vw, 40vw"
-                priority={key === "1"} // preload first image only
-                loading={key === "1" ? "eager" : "lazy"}
-                
-              />
-            </div>
-          ))}
-        </div>
+      <main className="pixi-page">
+      <PixiImage
+        containerRef={containerRef}
+        leftImages={leftImages}
+        rightImages={rightImages}
+        onMaxScrollCalculated={setMaxScroll} // Pass the setter function as a prop
+      />
+      <div ref={containerRef} className="relative w-full overflow-hidden">
         <ScrollingText
           ref={textRef}
           designTextRef={designTextRef}
           prTextRef={prTextRef}
           socialTextRef={socialTextRef}
         />
-        <div className="fixed bottom-10 left-1/2 transform -translate-x-1/2 z-30">
+        <div className="fixed bottom-10 left-1/2 transform -translate-x-1/2 z-30 pointer-events-none">
           <p className="text-white text-sm font-bold opacity-35">
-            SCROLL AND SELECT
+            
           </p>
         </div>
       </div>
+      </main>
     </>
   );
 }

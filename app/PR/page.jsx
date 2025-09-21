@@ -10,27 +10,27 @@ import MovingFog from "../../app/components/MovingFog";
 export default function PRPortfolio() {
   // Object containing images and their associated links
   const fashionImages = [
-    { src: "/1.png", link: "#" },
-    { src: "/2.png", link: "#" },
-    { src: "/16-1.png", link: "#" },
-    { src: "/3.png", link: "#" },
-    { src: "/4.png", link: "#" },
-    { src: "/5.png", link: "#" },
-    { src: "/6.png", link: "#" },
-    { src: "/7.png", link: "#" },
-    { src: "/8.png", link: "#" },
-    { src: "/9.png", link: "#" },
-    { src: "/10.png", link: "#" },
-    { src: "/11.png", link: "#" },
-    { src: "/12.png", link: "#" },
-    { src: "/13.png", link: "#" },
-    { src: "/14.png", link: "#" },
-    { src: "/15.png", link: "#" },
+    { src: "/PR-images/1.webp", link: "#" },
+    { src: "/PR-images/2.webp", link: "#" },
+    { src: "/PR-images/16-1.webp", link: "#" },
+    { src: "/PR-images/3.webp", link: "#" },
+    { src: "/PR-images/4.webp", link: "#" },
+    { src: "/PR-images/5.webp", link: "#" },
+    { src: "/PR-images/6.webp", link: "#" },
+    { src: "/PR-images/7.webp", link: "#" },
+    { src: "/PR-images/8.webp", link: "#" },
+    { src: "/PR-images/9.webp", link: "#" },
+    { src: "/PR-images/10.webp", link: "#" },
+    { src: "/PR-images/11.webp", link: "#" },
+    { src: "/PR-images/12.webp", link: "#" },
+    { src: "/PR-images/13.webp", link: "#" },
+    { src: "/PR-images/14.webp", link: "#" },
+    { src: "/PR-images/15.webp", link: "#" },
   ];
 
   return (
     <div className="text-white min-h-screen p-8 px-0">
-      <MovingFog />
+      {/* <MovingFog /> */}
       <Hero />
       <Second />
       {/* Fashion Images Grid */}

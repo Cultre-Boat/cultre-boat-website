@@ -14,13 +14,23 @@
   }
 }
 
-body {
-  /* background: var(--background); This will now always be black */
-  background-attachment: fixed; /* Ensures the background stays in place */
-  background-size: cover; /* Ensures the background covers the entire viewport */
-  color: var(--foreground); /* Use the foreground variable for body text color */
-  font-family: 'BellotaText-Light', sans-serif; /* Consolidate font-family */
+:root {
+  --background: #000000; /* pure black */
+  --foreground: #f0f0f0; /* light text */
 }
+
+body, html {
+  background: var(--background);
+  color: var(--foreground);
+  min-height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+.pixi-page {
+  background: transparent !important;
+}
+
 
 /* Remove the duplicate body font-family declaration */
 /*
@@ -75,10 +85,7 @@ html, body {
   position: absolute;
 }
 
-canvas {
-  mix-blend-mode: overlay; /* This blends the canvas with the background */
-  opacity: 0.7; /* Controls the intensity of the canvas effect */
-}
+
 
 .reverse-start-layout div,
 .reverse-start-layout img,
@@ -256,7 +263,7 @@ canvas {
   position: relative;
   height: 100vh;
   width: 100vw;
-  /* background: #fff;  This background will be overridden by your WebGL effect */
+  background: #000; 
   overflow: hidden; /* Ensure content outside is clipped */
 }
 

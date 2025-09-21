@@ -8,7 +8,7 @@ export default function PR2() {
         
         {/* Heading on top, centered */}
         <div className="flex justify-center mb-15">
-          <h2 className="text-white text-2xl sm:text-3xl md:text-4xl font-semibold text-center">
+          <h2 className="text-white text-2xl sm:text-3xl md:text-4xl  text-center">
             CONCEPT & DIRECTION
           </h2>
         </div>

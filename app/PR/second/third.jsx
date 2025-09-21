@@ -12,7 +12,7 @@ export default function CreativeConsultancy() {
     <div className="w-full">
       {/* Header Section */}
       <div className="text-white py-4 md:py-8 text-center">
-        <h1 className="text-2xl md:text-3xl font-medium">Creative Consultancy</h1>
+        <h1 className="text-2xl md:text-3xl ">Creative Consultancy</h1>
         <p className="text-lg md:text-xl italic font-light mt-1">
           Impactful PR Approach
         </p>

@@ -11,33 +11,47 @@ const StudioAbout = () => {
   // ✅ useEffect hook is now correctly placed inside the component
   useEffect(() => {
     const imageTurbulence = document.querySelector("#waterFilter feTurbulence");
-    const imageDisplacementMap = document.querySelector("#waterFilter feDisplacementMap");
+    const imageDisplacementMap = document.querySelector(
+      "#waterFilter feDisplacementMap"
+    );
 
     if (imageTurbulence && imageDisplacementMap) {
       document.querySelectorAll("img").forEach((img) => {
         img.style.filter = "url(#waterFilter)";
       });
+
       gsap.set(imageDisplacementMap, { attr: { scale: 12 } });
+
       gsap.to(imageTurbulence, {
-        attr: { baseFrequency: "0.012 0.02" },
-        duration: 8,
-        ease: "none",
+        attr: { baseFrequency: "0.019 0.02" },
+        duration: 20,
         repeat: -1,
         yoyo: true,
+        scrollTrigger: {
+          trigger: "section",
+          start: "top bottom",
+          toggleActions: "play pause resume reset",
+        },
       });
     }
 
-    const textTurbulence = document.querySelector("#textWaterFilter feTurbulence");
-    const textDisplacementMap = document.querySelector("#textWaterFilter feDisplacementMap");
+    const textTurbulence = document.querySelector(
+      "#textWaterFilter feTurbulence"
+    );
+    const textDisplacementMap = document.querySelector(
+      "#textWaterFilter feDisplacementMap"
+    );
 
     if (textTurbulence && textDisplacementMap) {
       document.querySelectorAll("h1, h2, h3, p, a").forEach((el) => {
         el.style.filter = "url(#textWaterFilter)";
       });
+
       gsap.set(textDisplacementMap, { attr: { scale: 10 } });
+
       gsap.to(textTurbulence, {
-        attr: { baseFrequency: "0.04 0.12" },
-        duration: 7,
+        attr: { baseFrequency: "0.02 0.10" },
+        duration: 15,
         ease: "sine.inOut",
         repeat: -1,
         yoyo: true,
@@ -47,21 +61,42 @@ const StudioAbout = () => {
 
   return (
     <>
-      <svg className="absolute w-0 h-0 pointer-events-none">
-        {/* SVG filter definitions remain the same */}
+        <svg className="absolute w-0 h-0 pointer-events-none">
         <filter id="waterFilter">
-          <feTurbulence type="fractalNoise" baseFrequency="0.005 0.008" numOctaves="1" result="noiseForImage" />
-          <feDisplacementMap in="SourceGraphic" in2="noiseForImage" scale="0" xChannelSelector="R" yChannelSelector="G" />
+          <feTurbulence
+            type="fractalNoise"
+            baseFrequency="0.005 0.008"
+            numOctaves="1"
+            result="noiseForImage"
+          />
+          <feDisplacementMap
+            in="SourceGraphic"
+            in2="noiseForImage"
+            scale="0"
+            xChannelSelector="R"
+            yChannelSelector="G"
+          />
         </filter>
         <filter id="textWaterFilter">
-          <feTurbulence type="fractalNoise" baseFrequency="0.01 0.01" numOctaves="1" result="noiseForText" />
-          <feDisplacementMap in="SourceGraphic" in2="noiseForText" scale="0" xChannelSelector="R" yChannelSelector="G" />
+          <feTurbulence
+            type="fractalNoise"
+            baseFrequency="0.01 0.01"
+            numOctaves="1"
+            result="noiseForText"
+          />
+          <feDisplacementMap
+            in="SourceGraphic"
+            in2="noiseForText"
+            scale="0"
+            xChannelSelector="R"
+            yChannelSelector="G"
+          />
         </filter>
       </svg>
       <div className="w-full bg-transparent text-white min-h-screen p-6 md:p-16 overflow-x-hidden mt-20">
-        <MovingFog />
+     
         
-        <h5 className="text-xs md:text-sm uppercase tracking-wider mb-6 md:mb-8 pl-0 md:pl-10 font-bold">WHO ARE WE</h5>
+        <h5 className="text-xs md:text-sm uppercase tracking-wider mb-6 md:mb-8 pl-0 md:pl-10 ">WHO ARE WE</h5>
 
         <div className="flex flex-col md:flex-row mb-12 md:mb-16 relative pl-0 md:pl-20">
           <div className="md:w-1/2">
@@ -106,7 +141,7 @@ const StudioAbout = () => {
         <div className="flex justify-center">
           <p className="text-xl md:text-3xl text-gray-300 mt-12 md:mt-16 max-w-full md:max-w-5xl text-center md:text-right tracking-wider ">
             We're marketers, copywriters, thinkers, social media enthusiasts,
-            visual designers and <span className="font-medium">most importantly, communicators.</span>
+            visual designers and <span>most importantly, communicators.</span>
           </p>
         </div>
       </div>

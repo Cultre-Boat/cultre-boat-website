@@ -25,26 +25,30 @@ export default function ContactForm() {
 
   // ✅ useEffect hook to apply the SVG filter animation to text
   useEffect(() => {
-    const textTurbulence = document.querySelector("#textWaterFilter feTurbulence");
-    const textDisplacementMap = document.querySelector("#textWaterFilter feDisplacementMap");
+  
+    const textTurbulence = document.querySelector(
+      "#textWaterFilter feTurbulence"
+    );
+    const textDisplacementMap = document.querySelector(
+      "#textWaterFilter feDisplacementMap"
+    );
 
     if (textTurbulence && textDisplacementMap) {
-      // Apply filter to all relevant text elements
-      document.querySelectorAll("h2, h3, p, a, label").forEach((el) => {
+      document.querySelectorAll("h1, h2, h3, p, a").forEach((el) => {
         el.style.filter = "url(#textWaterFilter)";
       });
-      
+
       gsap.set(textDisplacementMap, { attr: { scale: 10 } });
 
       gsap.to(textTurbulence, {
-        attr: { baseFrequency: "0.04 0.12" },
-        duration: 7,
+        attr: { baseFrequency: "0.02 0.10" },
+        duration: 15,
         ease: "sine.inOut",
         repeat: -1,
         yoyo: true,
       });
     }
-  }, []); // Runs once after component mounts
+  }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -91,23 +95,39 @@ export default function ContactForm() {
   return (
     <div className="relative mt-30 z-30 md:mt-40 text-white w-full px-4 md:px-8 lg:px-16 tracking-widest mb-20 md:mb-40 overflow-hidden">
       
-      {/* ✅ SVG Filter Definition */}
-      <svg className="absolute w-0 h-0 pointer-events-none">
+       <svg className="absolute w-0 h-0 pointer-events-none">
+       
         <filter id="textWaterFilter">
-          <feTurbulence type="fractalNoise" baseFrequency="0.01 0.01" numOctaves="1" result="noiseForText" />
-          <feDisplacementMap in="SourceGraphic" in2="noiseForText" scale="0" xChannelSelector="R" yChannelSelector="G" />
+          <feTurbulence
+            type="fractalNoise"
+            baseFrequency="0.01 0.01"
+            numOctaves="1"
+            result="noiseForText"
+          />
+          <feDisplacementMap
+            in="SourceGraphic"
+            in2="noiseForText"
+            scale="0"
+            xChannelSelector="R"
+            yChannelSelector="G"
+          />
         </filter>
       </svg>
-      
-      <div className="absolute inset-0 z-[-1]">
-        <MovingFog />
-      </div>
 
+      {/* Mobile: Title at top */}
+      <div className="lg:hidden max-w-7xl mx-auto mb-8">
+        <h2 className="text-3xl md:text-4xl leading-tight">
+          Tell us about your project
+          and find out how we can
+          help your business grow
+        </h2>
+      </div>
+      
       {/* Two Column Layout */}
       <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16">
         
-        {/* Left Side - Company Information */}
-        <div className="lg:pr-8">
+        {/* Left Side - Company Information (Desktop only) */}
+        <div className="hidden lg:block lg:pr-8">
           <h2 className="text-3xl md:text-4xl lg:text-6xl mb-8 md:mb-12 leading-tight md:leading-normal">
             Tell us about your project
             and find out how we can
@@ -116,7 +136,7 @@ export default function ContactForm() {
 
           <div className="mb-8 md:mb-12">
             <div className="mb-4">
-              <h3 className="text-lg md:text-xl font-semibold mb-3">Our Office</h3>
+              <h3 className="text-lg md:text-xl mb-3">Our Office</h3>
               <p className="text-sm md:text-base leading-relaxed">
                 First Floor, U-3A, Green Park Main,<br />
                 Block U, Green Park Extension,<br />
@@ -190,7 +210,7 @@ export default function ContactForm() {
               onChange={handleChange}
             />
             <div>
-              <label htmlFor="projectDescription" className="block text-xs md:text-sm font-medium text-white">
+              <label htmlFor="projectDescription" className="block text-xs md:text-sm text-white">
                 DESCRIBE YOUR PROJECT
               </label>
               <textarea
@@ -206,12 +226,38 @@ export default function ContactForm() {
             <div className="flex justify-end">
               <button
                 type="submit"
-                className="px-6 py-3 md:px-8 md:py-3 text-sm md:text-base bg-blue-600 text-white hover:bg-blue-700 transition-colors rounded font-medium"
+                className="px-6 py-3 md:px-8 md:py-3 text-sm md:text-base bg-blue-600 text-white hover:bg-blue-700 transition-colors rounded "
               >
                 Submit
               </button>
             </div>
           </form>
+        </div>
+      </div>
+
+      {/* Mobile: Address and Social Links below form */}
+      <div className="lg:hidden max-w-7xl mx-auto mt-8">
+        <div className="mb-8">
+          <div className="mb-4">
+            <h3 className="text-lg mb-3">Our Office</h3>
+            <p className="text-sm leading-relaxed">
+              First Floor, U-3A, Green Park Main,<br />
+              Block U, Green Park Extension,<br />
+              Green Park, New Delhi, Delhi 110016
+            </p>
+          </div>
+        </div>
+
+        <div className="flex gap-4">
+          <a href="https://www.facebook.com/CultreBoat/" target="_blank" rel="noopener noreferrer" className="flex items-center justify-center w-12 h-12 rounded-full bg-white shadow-lg cursor-pointer">
+            <FaFacebookF className="text-black text-xl hover:scale-150" />
+          </a>
+          <a href="https://www.instagram.com/cultreboat/" target="_blank" rel="noopener noreferrer" className="flex items-center justify-center w-12 h-12 rounded-full bg-white shadow-lg cursor-pointer">
+            <FaInstagram className="text-black text-xl hover:scale-150" />
+          </a>
+          <a href="https://www.linkedin.com/company/cultre-boat" target="_blank" rel="noopener noreferrer" className="flex items-center justify-center w-12 h-12 rounded-full bg-white shadow-lg cursor-pointer">
+            <FaLinkedinIn className="text-black text-xl hover:scale-150" />
+          </a>
         </div>
       </div>
     </div>
@@ -222,7 +268,7 @@ export default function ContactForm() {
 function InputField({ label, id, name, type, value, onChange }) {
   return (
     <div>
-      <label htmlFor={id} className="block text-xs md:text-sm font-medium text-white">
+      <label htmlFor={id} className="block text-xs md:text-sm  text-white">
         {label}
       </label>
       <input

@@ -128,7 +128,8 @@ export default function BrandShowcase() {
     };
   };
 
-  useEffect(() => {
+useEffect(() => {
+    
     const textTurbulence = document.querySelector(
       "#textWaterFilter feTurbulence"
     );
@@ -144,8 +145,8 @@ export default function BrandShowcase() {
       gsap.set(textDisplacementMap, { attr: { scale: 10 } });
 
       gsap.to(textTurbulence, {
-        attr: { baseFrequency: "0.04 0.12" },
-        duration: 7,
+        attr: { baseFrequency: "0.02 0.10" },
+        duration: 15,
         ease: "sine.inOut",
         repeat: -1,
         yoyo: true,
@@ -155,7 +156,8 @@ export default function BrandShowcase() {
 
   return (
     <>
-      <svg className="absolute w-0 h-0 pointer-events-none">
+        <svg className="absolute w-0 h-0 pointer-events-none">
+      
         <filter id="textWaterFilter">
           <feTurbulence
             type="fractalNoise"
@@ -184,12 +186,7 @@ export default function BrandShowcase() {
           }}
         />
 
-        {/* Background effects */}
-        <div className="absolute inset-0 z-0">
-          <MovingFog />
-          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/20 to-black/60 left-10" />
-        </div>
-
+       
         {/* Brands List */}
         <div
           ref={listRef}

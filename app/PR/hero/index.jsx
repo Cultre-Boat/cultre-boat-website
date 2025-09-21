@@ -21,51 +21,55 @@ export default function HeroSection() {
   };
 
     useEffect(() => {
-  const imageTurbulence = document.querySelector("#waterFilter feTurbulence");
-  const imageDisplacementMap = document.querySelector(
-    "#waterFilter feDisplacementMap"
-  );
+    const imageTurbulence = document.querySelector("#waterFilter feTurbulence");
+    const imageDisplacementMap = document.querySelector(
+      "#waterFilter feDisplacementMap"
+    );
 
-  if (imageTurbulence && imageDisplacementMap) {
-    document.querySelectorAll("img").forEach((img) => {
-      img.style.filter = "url(#waterFilter)";
-    });
+    if (imageTurbulence && imageDisplacementMap) {
+      document.querySelectorAll("img").forEach((img) => {
+        img.style.filter = "url(#waterFilter)";
+      });
 
-    gsap.set(imageDisplacementMap, { attr: { scale: 12 } });
+      gsap.set(imageDisplacementMap, { attr: { scale: 12 } });
 
-    gsap.to(imageTurbulence, {
-  attr: { baseFrequency: "0.012 0.01" },
-  duration: 15,
-  repeat: -1,
-  yoyo: true,
-  scrollTrigger: { trigger: "section", start: "top bottom", toggleActions: "play pause resume reset" }
-});
+      gsap.to(imageTurbulence, {
+        attr: { baseFrequency: "0.019 0.02" },
+        duration: 20,
+        repeat: -1,
+        yoyo: true,
+        scrollTrigger: {
+          trigger: "section",
+          start: "top bottom",
+          toggleActions: "play pause resume reset",
+        },
+      });
+    }
 
-  }
+    const textTurbulence = document.querySelector(
+      "#textWaterFilter feTurbulence"
+    );
+    const textDisplacementMap = document.querySelector(
+      "#textWaterFilter feDisplacementMap"
+    );
 
-  const textTurbulence = document.querySelector(
-    "#textWaterFilter feTurbulence"
-  );
-  const textDisplacementMap = document.querySelector(
-    "#textWaterFilter feDisplacementMap"
-  );
+    if (textTurbulence && textDisplacementMap) {
+      document.querySelectorAll("h1, h2, h3, p, a").forEach((el) => {
+        el.style.filter = "url(#textWaterFilter)";
+      });
 
-  if (textTurbulence && textDisplacementMap) {
-    document.querySelectorAll("h1, h2, h3, p, a").forEach((el) => {
-      el.style.filter = "url(#textWaterFilter)";
-    });
+      gsap.set(textDisplacementMap, { attr: { scale: 10 } });
 
-    gsap.set(textDisplacementMap, { attr: { scale: 10 } });
+      gsap.to(textTurbulence, {
+        attr: { baseFrequency: "0.02 0.10" },
+        duration: 15,
+        ease: "sine.inOut",
+        repeat: -1,
+        yoyo: true,
+      });
+    }
+  }, []);
 
-    gsap.to(textTurbulence, {
-      attr: { baseFrequency: "0.04 0.12" },
-      duration: 15, // ⏳ slowed from 7 → 15
-      ease: "sine.inOut",
-      repeat: -1,
-      yoyo: true,
-    });
-  }
-}, []);
 
   // Helper function to extract YouTube video ID from various URL formats
   const getYouTubeId = (url) => {
@@ -76,7 +80,7 @@ export default function HeroSection() {
   return (
     <>
       <svg className="absolute w-0 h-0 pointer-events-none">
-       <filter id="waterFilter">
+        <filter id="waterFilter">
           <feTurbulence
             type="fractalNoise"
             baseFrequency="0.005 0.008"
@@ -113,7 +117,7 @@ export default function HeroSection() {
           {/* Left text section */}
           <div className="w-full md:w-1/2 p-6 md:p-16 lg:p-15 flex flex-col justify-center text-center md:text-left">
             <div className="space-y-4 md:space-y-12">
-              <h3 className="text-xs md:text-base lg:text-lg tracking-widest uppercase font-medium mb-4">
+              <h3 className="text-xs md:text-base lg:text-lg tracking-widest uppercase  mb-4">
                 DECODING IMPACT
               </h3>
 
@@ -138,7 +142,7 @@ export default function HeroSection() {
               aria-label="Play video"
             >
               <Image
-                src="/PR-main.png"
+                src="/PR-images/PR-main.webp"
                 alt="Cultural celebration with people in traditional attire"
                 fill
                 className="object-contain hover:opacity-90 transition-opacity duration-300"
@@ -222,7 +226,7 @@ export default function HeroSection() {
           {/* Left Image (News Screenshot) */}
           <div className="w-full md:w-1/2 flex justify-center md:justify-start md:mb-0">
             <Image
-              src="/PR-first.png"
+              src="/PR-images/PR-first.webp"
               alt="BuzzFeed article screenshot"
               width={500}
               height={800}
@@ -232,7 +236,7 @@ export default function HeroSection() {
 
           {/* Right Text (Tagline) */}
           <div className="w-full md:w-1/2 flex justify-center md:justify-start text-center md:text-left mt-5">
-            <h2 className="text-lg sm:text-xl md:text-5xl lg:text-6xl font-bold text-white leading-snug sm:leading-tight">
+            <h2 className="text-lg sm:text-xl md:text-5xl lg:text-6xl text-white leading-snug sm:leading-tight">
               Redefining Bridal{" "}
               <span className="text-pink-400">Traditions</span>
             </h2>

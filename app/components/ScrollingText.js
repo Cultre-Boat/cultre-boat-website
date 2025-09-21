@@ -6,6 +6,8 @@ import {
   CSS3DRenderer,
   CSS3DObject,
 } from "three/addons/renderers/CSS3DRenderer.js";
+import { createRoot } from "react-dom/client"; // ✅ import moved to top
+import PixiWaterText from "./PixiWaterText";   // ✅ import moved to top
 
 const ScrollingText = forwardRef(
   ({ designTextRef, prTextRef, socialTextRef }, ref) => {
@@ -39,12 +41,13 @@ const ScrollingText = forwardRef(
         { text: "PR", href: "/PR", ref: prTextRef },
         { text: "SOCIAL", href: "/social-scroll", ref: socialTextRef },
       ];
+
       const radius = 600;
       const objects = [];
       const angleStep = (2 * Math.PI) / elements.length; // Angle between elements
       const rotationSpeed = (2 * Math.PI) / 1000; // Full rotation per 1000px scroll
 
-      // Create only one set of elements (no overlapping)
+      // Create only one set of elements
       elements.forEach((element, i) => {
         const div = document.createElement("div");
         div.className =
@@ -54,11 +57,18 @@ const ScrollingText = forwardRef(
         div.style.cursor = "pointer";
         div.style.zIndex = "20";
 
+        // Wrapper <a> for link
         const a = document.createElement("a");
         a.href = element.href;
-        a.textContent = element.text;
-        a.className = "inline-block";
+        a.style.display = "inline-block";
         div.appendChild(a);
+
+        // Mount PixiWaterText into this link
+        const mountPoint = document.createElement("div");
+        a.appendChild(mountPoint);
+
+        const root = createRoot(mountPoint);
+        root.render(<PixiWaterText text={element.text} />);
 
         // Assign ref
         if (element.ref) {
@@ -117,7 +127,7 @@ const ScrollingText = forwardRef(
       <div
         ref={containerRef}
         className="fixed top-0 left-0 w-screen h-screen pointer-events-none"
-        style={{ perspective: "1000px", zIndex: 20,willChange: "transform" }}
+        style={{ perspective: "1000px", zIndex: 20, willChange: "transform" }}
       />
     );
   }

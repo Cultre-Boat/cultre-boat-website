@@ -2,12 +2,12 @@ import Image from 'next/image';
 
 export default function MyPage() {
     const productImages = [
-        { src: '/stylist/1 34.png', alt: 'Stylist 1'},
-        { src: '/stylist/1 35.png', alt: 'Stylist 2'},
-        { src: '/stylist/1 36.png', alt: 'Stylist 3'},
-        { src: '/stylist/1 37.png', alt: 'Stylist 4'},
-        { src: '/stylist/1 38.png', alt: 'Stylist 5'},
-        { src: '/stylist/1 39.png', alt: 'Stylist 6'},
+        { src: '/stylist/1 34.webp', alt: 'Stylist 1'},
+        { src: '/stylist/1 35.webp', alt: 'Stylist 2'},
+        { src: '/stylist/1 36.webp', alt: 'Stylist 3'},
+        { src: '/stylist/1 37.webp', alt: 'Stylist 4'},
+        { src: '/stylist/1 38.webp', alt: 'Stylist 5'},
+        { src: '/stylist/1 39.webp', alt: 'Stylist 6'},
     ]
     
     return (

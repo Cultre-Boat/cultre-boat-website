@@ -10,6 +10,10 @@ const nextConfig = {
       },
     ],
   },
+   experimental: {
+    // This is the new configuration setting
+    allowedDevOrigins: ["http://192.168.1.5:3000"],
+  },
 };
 
 export default nextConfig;
