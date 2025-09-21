@@ -4,7 +4,9 @@ import * as PIXI from "pixi.js";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
-import { DisplacementFilter } from '@pixi/filter-displacement';
+// import { DisplacementFilter } from '@pixi/filter-displacement';
+import DisplacementFilter from "@pixi/filter-displacement";
+
 
 gsap.registerPlugin(ScrollTrigger);
 
