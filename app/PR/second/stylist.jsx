@@ -1,6 +1,6 @@
 import Image from 'next/image';
 
-export default function MyPage() {
+export default function stylist() {
     const productImages = [
         { src: '/stylist/1 34.webp', alt: 'Stylist 1'},
         { src: '/stylist/1 35.webp', alt: 'Stylist 2'},

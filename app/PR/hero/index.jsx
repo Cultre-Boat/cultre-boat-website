@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import Image from "next/image";
 import { gsap } from "gsap";
 
-export default function HeroSection() {
+export default function Hero() {
   const [videoUrl, setVideoUrl] = useState(null);
   const [isVideoOpen, setIsVideoOpen] = useState(false);
 

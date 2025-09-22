@@ -92,17 +92,19 @@ export default function PixiImage({ containerRef, leftImages, rightImages, onMax
                 scrub: 2,
             },
         });
-        console.log(PIXI.filters);
         // --- WATER DISTORTION EFFECT ---
         const displacementSprite = PIXI.Sprite.from(
             "https://raw.githubusercontent.com/Pierrinho/elephant/master/pattern-clouds.jpg"
             // "/water 0342.jpg"
         );
         displacementSprite.texture.baseTexture.wrapMode = PIXI.WRAP_MODES.REPEAT;
-        const displacementFilter = new DisplacementFilter(displacementSprite);
         displacementSprite.scale.set(0.4);
+        displacementSprite.alpha = 0;
+        const displacementFilter = new DisplacementFilter(displacementSprite);
+        
         app.stage.addChild(displacementSprite);
-        app.stage.filters = [displacementFilter];
+           leftContainer.filters = [displacementFilter];
+    rightContainer.filters = [displacementFilter];
 
         app.ticker.add(() => {
             displacementSprite.x += 0.5;

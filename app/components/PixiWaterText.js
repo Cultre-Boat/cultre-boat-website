@@ -13,13 +13,15 @@ export default function PixiWaterText({ text }) {
       width: 600,
       height: 200,
       transparent: true,
+      backgroundColor: 0x000000,
+      backgroundAlpha: 0, 
     });
     containerRef.current.appendChild(app.view);
 
     // Text
     const textObj = new PIXI.Text(text, {
-      fontFamily: "Arial",
-      fontSize: 120,
+      fontFamily: "Times New Roman",
+      fontSize: 130,
       fill: 0xffffff,
       align: "center",
     });
@@ -32,6 +34,7 @@ export default function PixiWaterText({ text }) {
      "https://raw.githubusercontent.com/Pierrinho/elephant/master/pattern-clouds.jpg"
     );
     displacementSprite.texture.baseTexture.wrapMode = PIXI.WRAP_MODES.REPEAT;
+    displacementSprite.alpha = 0;
     const displacementFilter = new DisplacementFilter(
       displacementSprite
     );

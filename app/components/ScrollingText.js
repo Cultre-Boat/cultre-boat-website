@@ -2,11 +2,11 @@
 
 import React, { forwardRef, useEffect, useRef } from "react";
 import * as THREE from "three";
-import { createRoot } from "react-dom/client";
-import PixiWaterText from "./PixiWaterText";
+import { CSS3DRenderer } from "three/examples/jsm/renderers/CSS3DRenderer.js";
+import { CSS3DObject } from "three/examples/jsm/renderers/CSS3DRenderer.js";
 
-// ✅ Correct import style for Next.js + Vercel
-import { CSS3DRenderer, CSS3DObject } from "three/examples/jsm/renderers/CSS3DRenderer.js";
+import { createRoot } from "react-dom/client"; // ✅ import moved to top
+import PixiWaterText from "./PixiWaterText";   // ✅ import moved to top
 
 const ScrollingText = forwardRef(
   ({ designTextRef, prTextRef, socialTextRef }, ref) => {
@@ -42,30 +42,34 @@ const ScrollingText = forwardRef(
       ];
 
       const radius = 600;
-      const angleStep = (2 * Math.PI) / elements.length;
-      const rotationSpeed = (2 * Math.PI) / 1000; // full rotation per 1000px scroll
+      const objects = [];
+      const angleStep = (2 * Math.PI) / elements.length; // Angle between elements
+      const rotationSpeed = (2 * Math.PI) / 1000; // Full rotation per 1000px scroll
 
+      // Create only one set of elements
       elements.forEach((element, i) => {
         const div = document.createElement("div");
         div.className =
           "text-7xl md:text-9xl lg:text-9xl text-white/90 font-bellota-light transition-opacity duration-300";
+        div.style.borderRadius = "10px";
         div.style.pointerEvents = "auto";
         div.style.cursor = "pointer";
         div.style.zIndex = "20";
 
-        // Wrapper <a>
+        // Wrapper <a> for link
         const a = document.createElement("a");
         a.href = element.href;
         a.style.display = "inline-block";
         div.appendChild(a);
 
-        // Mount PixiWaterText inside link
+        // Mount PixiWaterText into this link
         const mountPoint = document.createElement("div");
         a.appendChild(mountPoint);
 
         const root = createRoot(mountPoint);
         root.render(<PixiWaterText text={element.text} />);
 
+        // Assign ref
         if (element.ref) {
           element.ref.current = div;
         }
@@ -80,12 +84,12 @@ const ScrollingText = forwardRef(
         );
         object.lookAt(new THREE.Vector3(0, 0, 0));
         scene.add(object);
+        objects.push(object);
       });
 
-      // Ensure there's enough scroll space
       const ensureScrollable = () => {
         if (document.body.scrollHeight <= window.innerHeight) {
-          document.body.style.height = `${window.innerHeight + 4000}px`;
+          document.body.style.height = `${window.innerHeight + 4000}px`; // Fallback height
         }
       };
       ensureScrollable();
@@ -105,7 +109,6 @@ const ScrollingText = forwardRef(
         renderer.setSize(window.innerWidth, window.innerHeight);
         ensureScrollable();
       };
-
       window.addEventListener("resize", handleResize);
 
       return () => {

@@ -1,6 +1,6 @@
 import React from "react";
 
-export default function PR2() {
+export default function second() {
   return (
     <div className="relative w-full bg-transparent h-auto md:h-screen overflow-hidden mb-10">
       {/* Main content container */}
