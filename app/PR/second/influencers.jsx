@@ -1,6 +1,6 @@
 import Image from 'next/image';
 
-export default function influencers() {
+export default function Influencers() {
     const productImages = [
         { src: '/Influencers/1 28.webp', alt: 'Product 1' },
         { src: '/Influencers/1 29.webp', alt: 'Product 2' },

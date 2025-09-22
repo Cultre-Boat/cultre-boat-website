@@ -2,7 +2,7 @@ import React from "react";
 import Hero from "../PR/hero";
 import Second from "../PR/second";
 import Third from "../PR/second/third";
-import Influencer from "./second/influencers";
+import Influencers from "./second/influencers";
 import Stylist from "./second/stylist";
 // import WaterEffect from "../../app/components/WaterEffect";
 import MovingFog from "../../app/components/MovingFog";
@@ -51,7 +51,7 @@ export default function PRPortfolio() {
       </div>
 
       <Third />
-      <Influencer />
+      <Influencers />
       <Stylist />
     </div>
   );

@@ -1,6 +1,6 @@
 import React from "react";
 
-export default function second() {
+export default function Second() {
   return (
     <div className="relative w-full bg-transparent h-auto md:h-screen overflow-hidden mb-10">
       {/* Main content container */}

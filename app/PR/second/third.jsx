@@ -1,6 +1,6 @@
 import Image from "next/image";
 
-export default function third() {
+export default function Third() {
   const portfolioItems = [
     { id: 1, image: "/PR4.svg", magazine: "ELLE", title: "SO EXTRA" },
     { id: 2, image: "/PR3.svg", magazine: "ELLE", title: "COSMOPOLITAN" },
