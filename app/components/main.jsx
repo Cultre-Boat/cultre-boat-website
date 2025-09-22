@@ -155,7 +155,7 @@ export default function EnhancedReverseStartLayout() {
         />
         <div className="fixed bottom-10 left-1/2 transform -translate-x-1/2 z-30 pointer-events-none">
           <p className="text-white text-sm font-bold opacity-35">
-            
+             Scroll and Select
           </p>
         </div>
       </div>
