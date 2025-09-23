@@ -32,7 +32,7 @@ const SimpleScroll = ({ containerRef, leftImages, rightImages, onMaxScrollCalcul
     return () => window.removeEventListener("resize", calculateMaxScroll);
   }, [containerRef, leftImages, rightImages, onMaxScrollCalculated]);
 
-  // GSAP animations
+  // GSAP scroll animations
   useEffect(() => {
     if (!containerRef.current || !leftColRef.current || !rightColRef.current || maxScroll <= 0) return;
 
@@ -74,33 +74,75 @@ const SimpleScroll = ({ containerRef, leftImages, rightImages, onMaxScrollCalcul
     return () => ctx.revert();
   }, [maxScroll, containerRef, leftImages, rightImages]);
 
+  // GSAP distortion animation
+  useEffect(() => {
+    const feTurbulence = document.querySelector("#imageDistortFilter feTurbulence");
+
+    if (feTurbulence) {
+      // Apply filter to all images
+      document.querySelectorAll(".left-col img, .right-col img").forEach((img) => {
+        img.style.filter = "url(#imageDistortFilter)";
+      });
+
+      // Animate turbulence for distortion effect
+      gsap.to(feTurbulence, {
+        attr: { baseFrequency: 0.02 },
+        duration: 4,
+        repeat: -1,
+        yoyo: true,
+        ease: "linear",
+      });
+    } else {
+      console.error("feTurbulence element not found");
+    }
+  }, []);
+
   return (
-    <div className="fixed top-0 left-0 z-[0] w-full flex justify-center px-2 mt-20">
-      <div className="flex w-full max-w-[1200px] justify-between">
-        <div ref={leftColRef} className="left-col w-[48%]">
-          {leftImages.map((src, i) => (
-            <img
-              key={i}
-              src={src}
-              alt="Left Scroll"
-              className="w-full h-[270px] mb-[10vh]"
-              loading="lazy"
-            />
-          ))}
-        </div>
-        <div ref={rightColRef} className="right-col w-[48%]">
-          {rightImages.map((src, i) => (
-            <img
-              key={i}
-              src={src}
-              alt="Right Scroll"
-              className="w-full h-[270px] mb-[10vh]"
-              loading="lazy"
-            />
-          ))}
+    <>
+      <svg style={{ position: "absolute", width: 0, height: 0, overflow: "hidden" }}>
+        <filter id="imageDistortFilter">
+          <feTurbulence
+            type="fractalNoise"
+            baseFrequency="0.01"
+            numOctaves="2"
+            result="noise"
+          />
+          <feDisplacementMap
+            in="SourceGraphic"
+            in2="noise"
+            scale="10"
+            xChannelSelector="R"
+            yChannelSelector="G"
+          />
+        </filter>
+      </svg>
+      <div className="fixed top-0 left-0 z-[0] w-full flex justify-center px-2 mt-20">
+        <div className="flex w-full max-w-[1200px] justify-between">
+          <div ref={leftColRef} className="left-col w-[47%]">
+            {leftImages.map((src, i) => (
+              <img
+                key={i}
+                src={src}
+                alt="Left Scroll"
+                className="w-full h-[250px] mb-[12vh]"
+                loading="lazy"
+              />
+            ))}
+          </div>
+          <div ref={rightColRef} className="right-col w-[47%]">
+            {rightImages.map((src, i) => (
+              <img
+                key={i}
+                src={src}
+                alt="Right Scroll"
+                className="w-full h-[250px] mb-[12vh]"
+                loading="lazy"
+              />
+            ))}
+          </div>
         </div>
       </div>
-    </div>
+    </>
   );
 };
 

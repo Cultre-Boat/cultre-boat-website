@@ -117,9 +117,10 @@ export default function DesignPortfolio() {
           <section className="py-2 relative mt-25 text-center sm:text-left">
             <div className="flex flex-col lg:flex-row items-center min-h-[400px] lg:min-h-[400px] gap-5 lg:gap-10 md:mt-20">
               <div className="flex-1 px-4 lg:px-5">
-                <p className="text-sm lg:text-base tracking-[2px] uppercase text-gray-500 my-5 font-light">
-                  DECODING BRANDING
-                </p>
+               <p className="text-lg tracking-[2px] uppercase text-gray-500 my-5">
+  DECODING BRANDING
+</p>
+
                 <h1 className="text-5xl sm:text-6xl lg:text-7xl xl:text-8xl font-light tracking-tight mb-5 leading-none">
                   DESIGN
                 </h1>
@@ -220,7 +221,7 @@ export default function DesignPortfolio() {
                   </div>
                 </button>
               </div>
-              <div className="relative overflow-hidden w-full lg:w-[50%] max-w-[325px] mx-auto lg:mx-0">
+              <div className="relative overflow-hidden w-full lg:w-[50%] max-w-[350px] mx-auto lg:mx-0">
                 <img
                   src="/Design/Design-image5-1.webp"
                   alt="Product Photography"
@@ -340,10 +341,12 @@ export default function DesignPortfolio() {
           <section className="py-2 text-center">
             <div className="mb-12">
               <hr className="w-3/5 h-px bg-gray-600 border-none mx-auto mb-10" />
-              <p className="text-xl lg:text-xl xl:text-2xl 2xl:text-3xl 3xl:text-4xl text-gray-300 max-w-[60%] mx-auto leading-7 font-light mt-2">
-                Explore our latest projects showcasing our design capabilities
-                across various mediums and industries.
-              </p>
+             <p className="text-xl lg:text-xl xl:text-2xl 2xl:text-3xl 3xl:text-4xl max-w-[90%] lg:max-w-[60%] mx-auto leading-7 mt-2 font-light">
+  Explore our latest projects showcasing our design capabilities
+  across various mediums and industries.
+</p>
+
+
             </div>
             <div className="flex flex-col lg:flex-row gap-4 lg:gap-5 items-start justify-center px-4">
               <div className="flex flex-col gap-4 w-full max-w-lg lg:max-w-xl mx-auto lg:mx-0">

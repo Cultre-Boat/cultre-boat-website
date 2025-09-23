@@ -56,32 +56,34 @@ export default function BrandShowcase() {
   const [scrollY, setScrollY] = useState(0);
   const [isMounted, setIsMounted] = useState(false); // This state is key
 
-  useEffect(() => {
-    setIsMounted(true); // Set to true after the component mounts on the client
+ useEffect(() => {
+  setIsMounted(true);
 
-    const list = listRef.current;
-    if (!list) return;
+  const list = listRef.current;
+  if (!list) return;
 
-    list.scrollTop = 0;
+  // Center the last item
+  const lastItem = list.lastElementChild;
+  if (lastItem) {
+    const containerHeight = list.offsetHeight;
+    const lastItemHeight = lastItem.offsetHeight;
+    list.style.paddingBottom = `${containerHeight / 2 - lastItemHeight / 2}px`;
+  }
 
-    const handleScroll = () => {
-      setScrollY(list.scrollTop);
-    };
+  list.scrollTop = 0;
 
-    const handleMouseMove = (e) => {
-      setMousePosition({ x: e.clientX, y: e.clientY });
-    };
+  const handleScroll = () => setScrollY(list.scrollTop);
+  const handleMouseMove = (e) => setMousePosition({ x: e.clientX, y: e.clientY });
 
-    list.addEventListener("scroll", handleScroll);
-    window.addEventListener("mousemove", handleMouseMove);
+  list.addEventListener("scroll", handleScroll);
+  window.addEventListener("mousemove", handleMouseMove);
 
-    return () => {
-      if (list) {
-        list.removeEventListener("scroll", handleScroll);
-      }
-      window.removeEventListener("mousemove", handleMouseMove);
-    };
-  }, []);
+  return () => {
+    list.removeEventListener("scroll", handleScroll);
+    window.removeEventListener("mousemove", handleMouseMove);
+  };
+}, []);
+
 
   // ✅ THE FIX IS HERE
   const getItemStyle = (index) => {

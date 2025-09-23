@@ -117,17 +117,17 @@ export default function Hero() {
           {/* Left text section */}
           <div className="w-full md:w-1/2 p-6 md:p-16 lg:p-15 flex flex-col justify-center text-center md:text-left">
             <div className="space-y-4 md:space-y-12">
-              <h3 className="text-xs md:text-base lg:text-lg tracking-widest uppercase  mb-4">
+              <p className="text-lg tracking-[2px] uppercase text-gray-500 my-5">
                 DECODING IMPACT
-              </h3>
+              </p>
 
               <h1 className="text-4xl md:text-7xl lg:text-8xl mb-0">PR</h1>
 
               <div className="pt-4 md:pt-5 md:ml-[65px] max-w-2xl mx-auto md:mx-0">
-                <h2 className="text-lg md:text-2xl lg:text-3xl text-gray-300 italic leading-relaxed">
+                <p className="text-lg md:text-2xl lg:text-3xl text-gray italic leading-relaxed font-light">
                   Editorial Calendar <br />
                   Potential <br /> Collaborations
-                </h2>
+                </p>
               </div>
             </div>
           </div>
