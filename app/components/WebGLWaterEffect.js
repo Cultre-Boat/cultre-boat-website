@@ -1,209 +1,646 @@
+// src/components/WebGLWaterEffect.js
+
 "use client";
 
-import React, { useEffect, useRef } from 'react';
-import * as THREE from 'three';
+import { useEffect, useRef, useState } from "react";
+import { Curtains } from "curtainsjs";
+import { gsap } from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+import dynamic from 'next/dynamic';
 
-// Vertex Shader for a simple plane that covers the screen
-const vertexShader = `
-  void main() {
-    // gl_Position is the final position of the vertex in clip space
-    gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
-  }
-`;
+const dat = typeof window !== 'undefined' ? require('dat.gui') : null;
 
-// Fragment Shader for the water effect
-const fragmentShader = `
-  uniform float u_time;
-  uniform sampler2D u_noiseTexture; // Your noise.png image
-  uniform vec2 u_resolution;      // Canvas resolution
-
-  void main() {
-    // Normalized screen coordinates (0 to 1)
-    vec2 uv = gl_FragCoord.xy / u_resolution.xy;
-
-    // --- Create a dynamic offset based on time and noise texture ---
-
-    // 1. Sample the noise texture.
-    // We offset the sampling UVs by time to make the noise move.
-    // Adjust 0.005 and 0.003 for speed and direction of the underlying noise flow.
-    vec2 noise_uv = uv + vec2(u_time * 0.005, u_time * 0.003);
-    vec4 noise_color = texture2D(u_noiseTexture, noise_uv);
-
-    // Use the red and green channels of the noise texture for X and Y displacement.
-    // Subtract 0.5 and multiply by 2.0 to remap noise from [0,1] to [-1,1].
-    vec2 displacement_direction = (noise_color.rg - 0.5) * 2.0;
-
-    // 2. Add an explicit wavy pattern using sine/cosine functions
-    // This creates the primary large-scale undulations
-    float wave_strength = 0.2; // 🔥 INCREASED: Controls the intensity of the waves (0.0 to 0.2 typically)
-    float wave_frequency = 10.0; // Controls how many waves are visible across the screen (slight adjustment)
-    float wave_speed = 0.8;    // 🔥 INCREASED: Controls the speed of these waves
-
-    displacement_direction.x += sin(uv.y * wave_frequency + u_time * wave_speed) * wave_strength;
-    displacement_direction.y += cos(uv.x * wave_frequency * 0.8 + u_time * wave_speed * 0.8) * wave_strength * 0.8;
-
-    // Combine displacement from noise and waves, and scale it down for a subtle effect
-    // Multiply by a factor (e.g., 0.05) to control the overall distortion strength.
-    vec2 final_displacement = displacement_direction * 0.1; // 🔥 INCREASED: Adjust this value (e.g., 0.01 to 0.1)
-
-    // 3. Apply displacement to the UVs to create the "wavy" effect
-    vec2 distorted_uv = uv + final_displacement;
-
-    // Re-sampling noise.png with distorted UVs to get the final wavy look.
-    vec4 final_color = texture2D(u_noiseTexture, distorted_uv);
-
-    // --- Optional: Enhance water appearance ---
-    // You can subtly adjust brightness or add color tint here
-    // For a darker, moodier water, you might multiply by a color or reduce brightness.
-    // Let's add a slight tint to make sure it's visible even without strong noise
-    final_color.rgb *= vec3(0.7, 0.8, 0.9); // Example: slight blue-gray tint
-    final_color.rgb += 0.05; // Slightly brighten it
-    final_color.a = 0.9; // 🔥 Ensure some transparency if needed, or 1.0 for opaque
-
-    gl_FragColor = final_color;
-  }
-`;
-
-const WebGLWaterEffect = ({ imageUrl }) => {
-  const mountRef = useRef(null);
-  const rendererRef = useRef(null);
-  const sceneRef = useRef(null);
-  const cameraRef = useRef(null);
-  const materialRef = useRef(null);
-  const meshRef = useRef(null); // Keep a ref to the mesh for disposal
-  const animationFrameId = useRef(null);
-
-  useEffect(() => {
-    // 1. Scene Setup
-    const currentMount = mountRef.current;
-    if (!currentMount) return;
-
-    const width = currentMount.clientWidth;
-    const height = currentMount.clientHeight;
-
-    const scene = new THREE.Scene();
-    sceneRef.current = scene;
-
-    // Orthographic Camera for 2D-like full-screen effects
-    const camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0.1, 1000);
-    camera.position.z = 1;
-    cameraRef.current = camera;
-
-    const renderer = new THREE.WebGLRenderer({
-      antialias: true,
-      alpha: true, // Allow transparency if needed
-    });
-    renderer.setSize(width, height);
-    renderer.setPixelRatio(window.devicePixelRatio);
+// Class that handles the drawing of the ripples (FBOs)
+class Ripples {
+    constructor({
+        callback = null,
+        curtains = null,
+        container = null,
+        viscosity = 2,
+        speed = 3.5,
+        size = 1,
+        gui = null,
+        guiParams = null,
+    } = {}) {
+        if (!curtains) return;
+        this.curtains = curtains;
+        this.params = {
+            container: container,
+            callback: callback,
+            viscosity: viscosity,
+            speed: speed,
+            size: size,
+            gui: gui,
+            guiParams: guiParams,
+        };
+        this.mouse = {
+            current: { x: 0, y: 0 },
+            last: { x: 0, y: 0 },
+            velocity: { x: 0, y: 0 },
+        };
+        this.debug();
+        this.init();
+    }
     
-    // 🔥 DEBUGGING: Set a distinct background color for the renderer
-    renderer.setClearColor(0x333333, 1); // Dark gray, opaque. Change this to something bright like 0xff0000 (red) for clear visibility if no effect.
-
-    currentMount.appendChild(renderer.domElement);
-    rendererRef.current = renderer;
-
-    // 2. Create Shader Material initially (without texture)
-    const material = new THREE.ShaderMaterial({
-      uniforms: {
-        u_time: { value: 0.0 },
-        u_noiseTexture: { value: null }, // Will be set after texture loads
-        u_resolution: { value: new THREE.Vector2(width, height) },
-      },
-      vertexShader: vertexShader,
-      fragmentShader: fragmentShader,
-      transparent: true,
-    });
-    materialRef.current = material;
-
-    // Create geometry and mesh immediately
-    const geometry = new THREE.PlaneGeometry(2, 2); // Plane covering the screen
-    const mesh = new THREE.Mesh(geometry, material);
-    scene.add(mesh);
-    meshRef.current = mesh; // Store reference to the mesh
-
-    // 3. Load Texture
-    const textureLoader = new THREE.TextureLoader();
-    const noiseTexture = textureLoader.load(imageUrl,"/noise.png",
-      (texture) => {
-        texture.wrapS = THREE.RepeatWrapping;
-        texture.wrapT = THREE.RepeatWrapping;
-        // Assign the loaded texture to the uniform
-        if (materialRef.current) {
-          materialRef.current.uniforms.u_noiseTexture.value = texture;
-          console.log('Noise texture loaded successfully!');
+    // All class methods must be defined inside the class block
+    debug() {
+        if (this.params.gui && this.params.guiParams) {
+            this.params.guiParams.viscosity = this.params.viscosity;
+            this.params.guiParams.speed = this.params.speed;
+            this.params.guiParams.size = this.params.size;
+            this.ripplesGui = this.params.gui.addFolder("Render targets");
+            this.ripplesGui.open();
+            this.guiViscosity = this.ripplesGui.add(this.params.guiParams, "viscosity", 1, 15);
+            this.guiSpeed = this.ripplesGui.add(this.params.guiParams, "speed", 1, 15);
+            this.guiSize = this.ripplesGui.add(this.params.guiParams, "size", 0.5, 2.5).step(0.025);
+            this.guiViscosity.onChange((value) => {
+                if (this.ripples) this.ripples.uniforms.viscosity.value = value;
+            });
+            this.guiSpeed.onChange((value) => {
+                if (this.ripples) this.ripples.uniforms.speed.value = value;
+            });
+            this.guiSize.onChange((value) => {
+                if (this.ripples) this.ripples.uniforms.size.value = value;
+            });
         }
-      },
-      undefined, // onProgress callback
-      (error) => {
-        console.error('An error occurred loading the noise texture:', error);
-        // Fallback: If texture fails, perhaps show a flat color or a generated noise pattern
-        if (materialRef.current) {
-          // You could set a dummy texture here, or remove the texture from the shader
-          // For now, it will just use null, resulting in black or transparent depending on shader
+    }
+    getCanvasSizes() {
+        return this.curtains.getBoundingRect();
+    }
+    lerp(start, end, amt) {
+        return (1 - amt) * start + amt * end;
+    }
+    onMouseMove(e) {
+        if (this.ripples) {
+            this.mouse.last.x = this.mouse.current.x;
+            this.mouse.last.y = this.mouse.current.y;
+            let weblgMouseCoords = this.ripples.mouseToPlaneCoords(this.mouse.last.x, this.mouse.last.y);
+            this.ripples.uniforms.lastMousePosition.value = [weblgMouseCoords.x, weblgMouseCoords.y];
+            let updateVelocity = true;
+            if (this.mouse.last.x === 0 && this.mouse.last.y === 0 && this.mouse.current.x === 0 && this.mouse.current.y === 0) {
+                updateVelocity = false;
+            }
+            if (e.targetTouches) {
+                this.mouse.current.x = e.targetTouches[0].clientX;
+                this.mouse.current.y = e.targetTouches[0].clientY;
+            } else {
+                this.mouse.current.x = e.clientX;
+                this.mouse.current.y = e.clientY;
+            }
+            weblgMouseCoords = this.ripples.mouseToPlaneCoords(this.mouse.current.x, this.mouse.current.y);
+            this.ripples.uniforms.mousePosition.value = [weblgMouseCoords.x, weblgMouseCoords.y];
+            if (updateVelocity) {
+                this.mouse.velocity = {
+                    x: (this.mouse.current.x - this.mouse.last.x) / 16,
+                    y: (this.mouse.current.y - this.mouse.last.y) / 16,
+                };
+            }
         }
-      }
+    }
+    setRipplesShaders() {
+        this.ripplesVs = `
+            #ifdef GL_FRAGMENT_PRECISION_HIGH
+            precision highp float;
+            #else
+            precision mediump float;
+            #endif
+            attribute vec3 aVertexPosition;
+            attribute vec2 aTextureCoord;
+            uniform mat4 uMVMatrix;
+            uniform mat4 uPMatrix;
+            varying vec3 vVertexPosition;
+            varying vec2 vTextureCoord;
+            void main() {
+                vec3 vertexPosition = aVertexPosition;
+                gl_Position = uPMatrix * uMVMatrix * vec4(vertexPosition, 1.0);
+                vTextureCoord = aTextureCoord;
+                vVertexPosition = vertexPosition;
+            }
+        `;
+        this.ripplesFs = `
+            #ifdef GL_FRAGMENT_PRECISION_HIGH
+            precision highp float;
+            #else
+            precision mediump float;
+            #endif
+            uniform vec2 uResolution;
+            uniform vec2 uMousePosition;
+            uniform vec2 uLastMousePosition;
+            uniform vec2 uVelocity;
+            uniform int uTime;
+            uniform sampler2D uTargetTexture;
+            uniform float uViscosity;
+            uniform float uSpeed;
+            uniform float uSize;
+            varying vec3 vVertexPosition;
+            varying vec2 vTextureCoord;
+            float sdLine( vec2 p, vec2 a, vec2 b ){
+                float velocity = clamp(length(uVelocity), 0.5, 1.5);
+                vec2 pa = p - a, ba = b - a;
+                float h = clamp( dot(pa, ba)/dot(ba, ba), 0.0, 1.0 );
+                return length( pa - ba*h ) / velocity;
+            }
+            void main() {
+                float velocity = clamp(length(uVelocity), 0.1, 1.0);
+                vec3 speed = vec3(vec2(uSpeed) / uResolution.xy, 0.0);
+                vec2 mouse = (uMousePosition + 1.0) * 0.5;
+                vec2 lastMouse = (uLastMousePosition + 1.0) * 0.5;
+                vec4 color = texture2D(uTargetTexture, vTextureCoord);
+                float shade = smoothstep(0.02 * uSize * velocity, 0.0, sdLine(vTextureCoord, lastMouse, mouse));
+                vec4 texelColor = color;
+                float d = shade * uViscosity;
+                float top = texture2D(uTargetTexture, vTextureCoord - speed.zy, 1.0).x;
+                float right = texture2D(uTargetTexture, vTextureCoord - speed.xz, 1.0).x;
+                float bottom = texture2D(uTargetTexture, vTextureCoord + speed.xz, 1.0).x;
+                float left = texture2D(uTargetTexture, vTextureCoord + speed.zy, 1.0).x;
+                d += -(texelColor.y - 0.5) * 2.0 + (top + right + bottom + left - 2.0);
+                d *= 0.99;
+                d *= float(uTime > 5);
+                d = d * 0.5 + 0.5;
+                color = vec4(d, texelColor.x, 0.0, 1.0);
+                gl_FragColor = color;
+            }
+        `;
+    }
+    swapPasses() {
+        var tempFBO = this.readPass;
+        this.readPass = this.writePass;
+        this.writePass = tempFBO;
+        this.ripplesTexture.setFromTexture(this.readPass.textures[0]);
+    }
+    createRipplesTexture() {
+        this.ripplesTexture = this.ripples.createTexture({
+            sampler: "uTargetTexture",
+        });
+        return new Promise((resolve) => {
+            if (this.ripplesTexture) resolve();
+        });
+    }
+    init() {
+        this.setRipplesShaders();
+        this.readPass = this.curtains.addRenderTarget({ clear: false });
+        this.writePass = this.curtains.addRenderTarget({ clear: false });
+        let boundingRect = this.getCanvasSizes();
+        this.ripplesParams = {
+            vertexShader: this.ripplesVs,
+            fragmentShader: this.ripplesFs,
+            autoloadSources: false,
+            depthTest: false,
+            watchScroll: false,
+            uniforms: {
+                mousePosition: {
+                    name: "uMousePosition",
+                    type: "2f",
+                    value: [this.mouse.current.x, this.mouse.current.y],
+                },
+                lastMousePosition: {
+                    name: "uLastMousePosition",
+                    type: "2f",
+                    value: [this.mouse.current.x, this.mouse.current.y],
+                },
+                velocity: {
+                    name: "uVelocity",
+                    type: "2f",
+                    value: [this.mouse.velocity.x, this.mouse.velocity.y],
+                },
+                resolution: {
+                    name: "uResolution",
+                    type: "2f",
+                    value: [boundingRect.width, boundingRect.height],
+                },
+                time: {
+                    name: "uTime",
+                    type: "1i",
+                    value: -1,
+                },
+                viscosity: {
+                    name: "uViscosity",
+                    type: "1f",
+                    value: this.params.viscosity,
+                },
+                speed: {
+                    name: "uSpeed",
+                    type: "1f",
+                    value: this.params.speed,
+                },
+                size: {
+                    name: "uSize",
+                    type: "1f",
+                    value: this.params.size,
+                },
+            },
+        };
+        this.ripples = this.curtains.addPlane(this.params.container, this.ripplesParams);
+        if (this.ripples) {
+            this.createRipplesTexture().then(() => {
+                if (this.params.callback) this.params.callback(this.ripplesTexture);
+            });
+            this.ripples
+                .onReady(() => {
+                    if (typeof window !== 'undefined') {
+                        window.addEventListener("mousemove", (e) => this.onMouseMove(e));
+                        window.addEventListener("touchmove", (e) => this.onMouseMove(e));
+                    }
+                })
+                .onRender(() => {
+                    this.ripples.uniforms.velocity.value = [this.mouse.velocity.x, this.mouse.velocity.y];
+                    this.mouse.velocity = {
+                        x: this.lerp(this.mouse.velocity.x, 0, 0.1),
+                        y: this.lerp(this.mouse.velocity.y, 0, 0.1),
+                    };
+                    this.ripples.uniforms.velocity.value = [this.mouse.velocity.x, this.mouse.velocity.y];
+                    this.ripples.uniforms.time.value++;
+                    this.writePass && this.ripples.setRenderTarget(this.writePass);
+                })
+                .onAfterRender(() => {
+                    if (this.readPass && this.writePass) this.swapPasses();
+                })
+                .onAfterResize(() => {
+                    boundingRect = this.getCanvasSizes();
+                    this.ripples.uniforms.resolution.value = [boundingRect.width, boundingRect.height];
+                });
+        }
+    }
+}
+
+// Class that renders the whole scene (tiles texture and title) and applies the ripples texture
+class RipplesScene {
+    constructor({
+        viscosity = 5,
+        speed = 3.5,
+        size = 1,
+        displacementStrength = 4,
+        lightIntensity = 5,
+        shadowIntensity = 2.5,
+        containerElement,
+        imageUrls,
+    } = {}) {
+        this.params = {
+            viscosity: viscosity,
+            speed: speed,
+            size: size,
+            displacementStrength: displacementStrength,
+            lightIntensity: lightIntensity,
+            shadowIntensity: shadowIntensity,
+        };
+        this.imageUrls = imageUrls;
+        this.containerElement = containerElement;
+        this.init();
+    }
+    
+    // All class methods must be defined inside the class block
+    init() {
+        this.curtains = new Curtains({
+            container: this.containerElement,
+            alpha: false,
+        })
+        .onError(() => {
+            if (typeof document !== 'undefined') {
+                document.body.classList.add("no-curtains");
+            }
+        })
+        .onContextLost(() => {
+            this.curtains.restoreContext();
+        });
+
+        this.setSceneShaders();
+        this.guiParams = {
+            displacement: this.params.displacementStrength,
+            lights: this.params.lightIntensity,
+            shadows: this.params.shadowIntensity,
+            blurRipples: true,
+            showTexture: true,
+            titleColor: [255, 255, 255],
+        };
+
+        if (dat) {
+            this.gui = new dat.GUI();
+        }
+
+        this.ripples = new Ripples({
+            curtains: this.curtains,
+            container: this.containerElement,
+            viscosity: this.params.viscosity || null,
+            speed: this.params.speed || null,
+            size: this.params.size || null,
+            callback: (texture) => {
+                const imageElement = document.createElement("img");
+                imageElement.src = this.imageUrls[0];
+                imageElement.setAttribute("data-sampler", "planeTexture");
+                this.containerElement.appendChild(imageElement);
+
+                const titleElement = document.createElement("div");
+                titleElement.id = "water-ripples-title";
+                titleElement.innerHTML = "<h1>Ripples</h1>";
+                this.containerElement.appendChild(titleElement);
+                
+                this.createScenePlane(texture, imageElement);
+            },
+            gui: this.gui || null,
+            guiParams: this.guiParams || null,
+        });
+        this.debug();
+    }
+    setSceneShaders() {
+        this.sceneVs = `
+            precision highp float;
+            attribute vec3 aVertexPosition;
+            attribute vec2 aTextureCoord;
+            uniform mat4 uMVMatrix;
+            uniform mat4 uPMatrix;
+            varying vec3 vVertexPosition;
+            varying vec2 vTextureCoord;
+            varying vec2 vPlaneTextureCoord;
+            uniform mat4 planeTextureMatrix;
+            void main() {
+                gl_Position = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);
+                vTextureCoord = aTextureCoord;
+                vPlaneTextureCoord = (planeTextureMatrix * vec4(aTextureCoord, 0.0, 1.0)).xy;
+                vVertexPosition = aVertexPosition;
+            }
+        `;
+        this.sceneFs = `
+            precision highp float;
+            varying vec3 vVertexPosition;
+            varying vec2 vTextureCoord;
+            varying vec2 vPlaneTextureCoord;
+            uniform sampler2D uRippleTexture;
+            uniform sampler2D planeTexture;
+            uniform sampler2D titleTexture;
+            uniform vec2 uResolution;
+            uniform float uDisplacementStrength;
+            uniform float uLightIntensity;
+            uniform float uShadowIntensity;
+            uniform float uBlurRipples;
+            uniform float uShowTexture;
+            uniform vec3 uTitleColor;
+            const float bias = 0.2;
+            const float scale = 10.0;
+            const float power = 10.1;
+            vec4 blur5(sampler2D image, vec2 uv, vec2 resolution, vec2 direction) {
+                vec4 color = vec4(0.0);
+                vec2 off1 = vec2(1.3333333333333333) * direction;
+                color += texture2D(image, uv) * 0.29411764705882354;
+                color += texture2D(image, uv + (off1 / resolution)) * 0.35294117647058826;
+                color += texture2D(image, uv - (off1 / resolution)) * 0.35294117647058826;
+                return color;
+            }
+            float bumpMap(vec2 uv, float height, inout vec3 colormap) {
+                vec3 shade;
+                if(uBlurRipples == 1.0) {
+                    shade = blur5(uRippleTexture, vTextureCoord, uResolution, vec2(1.0, 1.0)).rgb;
+                } else {
+                    shade = texture2D(uRippleTexture, vTextureCoord).rgb;
+                }
+                return 1.0 - shade.r * height;
+            }
+            float bumpMap(vec2 uv, float height) {
+                vec3 colormap;
+                return bumpMap(uv, height, colormap);
+            }
+            vec4 renderPass(vec2 uv, inout float distortion) {
+                vec3 surfacePos = vec3(uv, 0.0);
+                vec3 ray = normalize(vec3(uv, 1.0));
+                vec3 lightPos = vec3( 2.0, 3.0, -3.0);
+                vec3 normal = vec3(0.0, 0.0, -1);
+                vec2 sampleDistance = vec2(0.005, 0.0);
+                vec3 colormap;
+                float fx = bumpMap(sampleDistance.xy, 0.2);
+                float fy = bumpMap(sampleDistance.yx, 0.2);
+                float f = bumpMap(vec2(0.0), 0.2, colormap);
+                distortion = f;
+                fx = (fx - f) / sampleDistance.x;
+                fy = (fy - f) / sampleDistance.x;
+                normal = normalize(normal + vec3(fx, fy, 0.0) * 0.2);
+                float shade = bias + (scale * pow(1.0 + dot(normalize(surfacePos - vec3(uv, -3.0)), normal), power));
+                vec3 lightV = lightPos - surfacePos;
+                float lightDist = max(length(lightV), 0.001);
+                lightV /= lightDist;
+                vec3 lightColor = vec3(1.0 - uLightIntensity / 20.0);
+                float shininess = 0.1;
+                float brightness = 1.0 - uLightIntensity / 40.0;
+                float falloff = 0.1;
+                float attenuation = (0.75 + uLightIntensity / 40.0) / (1.0 + lightDist * lightDist * falloff);
+                float diffuse = max(dot(normal, lightV), 0.0);
+                float specular = pow(max(dot( reflect(-lightV, normal), -ray), 0.0), 15.0) * shininess;
+                vec3 reflect_ray = reflect(vec3(uv, 1.0), normal * 1.0);
+                vec3 texCol = (vec3(0.5) * brightness);
+                float metalness = (1.0 - colormap.x);
+                metalness *= metalness;
+                vec3 color = (texCol * (diffuse * vec3(0.9) * 2.0 + 0.5) + lightColor * specular * f * 2.0 * metalness) * attenuation * 2.0;
+                return vec4(color, 1.0);
+            }
+            void main() {
+                vec4 color = vec4(1.0);
+                float distortion;
+                vec4 reflections = renderPass(vTextureCoord, distortion);
+                vec4 ripples = vec4(0.16);
+                ripples += distortion * 0.1 - 0.1;
+                ripples += reflections * 0.7;
+                vec2 textureCoords = vTextureCoord + distortion * (uDisplacementStrength / 250.0);
+                vec2 planeTextureCoords = vPlaneTextureCoord + distortion * (uDisplacementStrength / 250.0);
+                vec4 texture = texture2D(planeTexture, planeTextureCoords);
+                vec4 title = texture2D(titleTexture, textureCoords);
+                title.rgb *= vec3(uTitleColor.r / 255.0, uTitleColor.g / 255.0, uTitleColor.b / 255.0);
+                color = mix(vec4(0.05, 0.05, 0.05, 1.0), texture, uShowTexture);
+                color = mix(color, title, title.a);
+                float lights = max(0.0, ripples.r - 0.5);
+                color.rgb += lights * (uLightIntensity / 10.0);
+                float shadow = max(0.0, 1.0 - (ripples.r + 0.5));
+                color.rgb -= shadow * (uShadowIntensity / 10.0);
+                gl_FragColor = color;
+            }
+        `;
+    }
+    debug() {
+        if (this.gui) {
+            this.sceneGui = this.gui.addFolder("Scene");
+            this.sceneGui.open();
+            this.guiDisplacement = this.sceneGui.add(this.guiParams, "displacement", 0, 5);
+            this.guiLights = this.sceneGui.add(this.guiParams, "lights", 0.1, 10);
+            this.guiShadows = this.sceneGui.add(this.guiParams, "shadows", 0.1, 10);
+            this.guiBlurRipples = this.sceneGui.add(this.guiParams, "blurRipples", true);
+            this.guiShowTexture = this.sceneGui.add(this.guiParams, "showTexture", true);
+            this.guiTitleColor = this.sceneGui.addColor(this.guiParams, "titleColor");
+            this.guiDisplacement.onChange((value) => {
+                if (this.scenePlane) this.scenePlane.uniforms.displacementStrength.value = value;
+            });
+            this.guiLights.onChange((value) => {
+                if (this.scenePlane) this.scenePlane.uniforms.lightIntensity.value = value;
+            });
+            this.guiShadows.onChange((value) => {
+                if (this.scenePlane) this.scenePlane.uniforms.shadowIntensity.value = value;
+            });
+            this.guiBlurRipples.onChange((value) => {
+                if (this.scenePlane) this.scenePlane.uniforms.blurRipples.value = value ? 1 : 0;
+            });
+            this.guiShowTexture.onChange((value) => {
+                if (this.scenePlane) this.scenePlane.uniforms.showTexture.value = value ? 1 : 0;
+            });
+            this.guiTitleColor.onChange((value) => {
+                if (this.scenePlane) this.scenePlane.uniforms.titleColor.value = value;
+            });
+        }
+    }
+    writeTitleCanvas(canvas) {
+        if (typeof document !== 'undefined') {
+            const title = document.getElementById("water-ripples-title").querySelector("h1");
+            const titleStyle = window.getComputedStyle(title);
+            let titleTopPosition = title.offsetTop * this.curtains.pixelRatio;
+            titleTopPosition += title.clientHeight * this.curtains.pixelRatio * 0.1;
+            const planeBoundinRect = this.scenePlane.getBoundingRect();
+            const htmlPlaneWidth = planeBoundinRect.width;
+            const htmlPlaneHeight = planeBoundinRect.height;
+            canvas.width = htmlPlaneWidth;
+            canvas.height = htmlPlaneHeight;
+            let context = canvas.getContext("2d");
+            context.width = htmlPlaneWidth;
+            context.height = htmlPlaneHeight;
+            context.fillStyle = titleStyle.color;
+            context.font = parseFloat(titleStyle.fontWeight) + " " + parseFloat(titleStyle.fontSize) * this.curtains.pixelRatio + "px " + titleStyle.fontFamily;
+            context.fontStyle = titleStyle.fontStyle;
+            context.textAlign = "center";
+            context.textBaseline = "top";
+            context.fillText(title.innerText, htmlPlaneWidth / 2, titleTopPosition);
+            if (this.scenePlane.textures && this.scenePlane.textures.length > 1) {
+                this.scenePlane.textures[1].resize();
+                this.scenePlane.textures[1].needUpdate();
+            }
+        }
+    }
+    createScenePlane(rippleTexture, imageElement) {
+        let curtainsBBox = this.curtains.getBoundingRect();
+        const params = {
+            vertexShader: this.sceneVs,
+            fragmentShader: this.sceneFs,
+            uniforms: {
+                resolution: {
+                    name: "uResolution",
+                    type: "2f",
+                    value: [curtainsBBox.width, curtainsBBox.height],
+                },
+                displacementStrength: {
+                    name: "uDisplacementStrength",
+                    type: "1f",
+                    value: this.params.displacementStrength,
+                },
+                lightIntensity: {
+                    name: "uLightIntensity",
+                    type: "1f",
+                    value: this.params.lightIntensity,
+                },
+                shadowIntensity: {
+                    name: "uShadowIntensity",
+                    type: "1f",
+                    value: this.params.shadowIntensity,
+                },
+                blurRipples: {
+                    name: "uBlurRipples",
+                    type: "1f",
+                    value: 1,
+                },
+                showTexture: {
+                    name: "uShowTexture",
+                    type: "1f",
+                    value: 1,
+                },
+                titleColor: {
+                    name: "uTitleColor",
+                    type: "3f",
+                    value: [255, 255, 255],
+                },
+            },
+        };
+        this.scenePlane = this.curtains.addPlane(imageElement, params);
+        if (this.scenePlane) {
+            if (typeof document !== 'undefined') {
+                const canvas = document.createElement("canvas");
+                canvas.setAttribute("data-sampler", "titleTexture");
+                canvas.style.display = "none";
+                this.scenePlane.loadCanvas(canvas);
+                this.scenePlane
+                    .onLoading((texture) => {
+                        texture.shouldUpdate = false;
+                        if (this.scenePlane.canvases && this.scenePlane.canvases.length > 0) {
+                            if (document.fonts) {
+                                document.fonts.ready.then(() => {
+                                    this.writeTitleCanvas(canvas);
+                                });
+                            } else {
+                                setTimeout(() => {
+                                    this.writeTitleCanvas(canvas);
+                                }, 750);
+                            }
+                        }
+                    })
+                    .onReady(() => {
+                        this.scenePlane.createTexture({
+                            sampler: "uRippleTexture",
+                            fromTexture: rippleTexture,
+                        });
+                    })
+                    .onAfterResize(() => {
+                        curtainsBBox = this.curtains.getBoundingRect();
+                        this.scenePlane.uniforms.resolution.value = [curtainsBBox.width, curtainsBBox.height];
+                        this.writeTitleCanvas(canvas);
+                    });
+            }
+        }
+    }
+}
+
+// React component that encapsulates the WebGL logic
+const WebGLWaterEffect = ({ containerRef, leftImages, rightImages, onMaxScrollCalculated }) => {
+    const curtainsContainerRef = useRef(null);
+    const planesRef = useRef([]);
+
+    useEffect(() => {
+        let scene;
+        if (curtainsContainerRef.current) {
+            const webglContainer = document.createElement('div');
+            webglContainer.className = 'webgl-container';
+            webglContainer.style.position = 'fixed';
+            webglContainer.style.top = '0';
+            webglContainer.style.left = '0';
+            webglContainer.style.width = '100%';
+            webglContainer.style.height = '100%';
+            webglContainer.style.zIndex = '1';
+            curtainsContainerRef.current.appendChild(webglContainer);
+
+            const allImageUrls = [...leftImages, ...rightImages];
+            scene = new RipplesScene({
+                containerElement: webglContainer,
+                viscosity: 7.5,
+                speed: 5,
+                size: 1.25,
+                displacementStrength: 1.5,
+                lightIntensity: 5,
+                shadowIntensity: 2.5,
+                imageUrls: allImageUrls,
+            });
+            
+            const leftColHeight = leftImages.length * 500;
+            const rightColHeight = rightImages.length * 500;
+            const maxScroll = Math.max(leftColHeight, rightColHeight) - window.innerHeight;
+
+            if (onMaxScrollCalculated) {
+                onMaxScrollCalculated(maxScroll);
+            }
+        }
+
+        return () => {
+            if (scene && scene.curtains) {
+                scene.curtains.dispose();
+            }
+        };
+    }, [leftImages, rightImages, onMaxScrollCalculated]);
+
+    return (
+        <>
+            <div ref={curtainsContainerRef} id="canvas">
+            </div>
+        </>
     );
-
-    // 4. Animation Loop
-    const animate = () => {
-      animationFrameId.current = requestAnimationFrame(animate);
-      if (materialRef.current) {
-        materialRef.current.uniforms.u_time.value += 0.01; // Adjust speed here
-      }
-      renderer.render(scene, camera);
-    };
-    animate();
-
-    // 5. Handle Resize
-    const handleResize = () => {
-      const newWidth = currentMount.clientWidth;
-      const newHeight = currentMount.clientHeight;
-      if (rendererRef.current && cameraRef.current && materialRef.current) {
-          rendererRef.current.setSize(newWidth, newHeight);
-          // For orthographic camera, update based on aspect ratio if bounds are changing
-          // cameraRef.current.left = -newWidth / newHeight;
-          // cameraRef.current.right = newWidth / newHeight;
-          // cameraRef.current.top = 1;
-          // cameraRef.current.bottom = -1;
-          cameraRef.current.updateProjectionMatrix();
-          materialRef.current.uniforms.u_resolution.value.set(newWidth, newHeight);
-      }
-    };
-    window.addEventListener('resize', handleResize);
-
-    // 6. Cleanup
-    return () => {
-      console.log('Cleaning up WebGLWaterEffect...');
-      if (animationFrameId.current) {
-        cancelAnimationFrame(animationFrameId.current);
-      }
-      if (currentMount && rendererRef.current && rendererRef.current.domElement) {
-        currentMount.removeChild(rendererRef.current.domElement);
-      }
-      if (rendererRef.current) {
-        rendererRef.current.dispose();
-      }
-      if (materialRef.current) {
-        materialRef.current.dispose();
-      }
-      if (meshRef.current) {
-        meshRef.current.geometry.dispose();
-        // materialRef.current is disposed above, so no need for meshRef.current.material.dispose();
-      }
-      if (noiseTexture) {
-        noiseTexture.dispose();
-      }
-      console.log('WebGLWaterEffect cleaned up.');
-    };
-  }, [imageUrl]); // Rerun if imageUrl changes
-
-  return (
-    <div
-      ref={mountRef}
-      className="fixed inset-0 w-full h-full -z-10 bg-black" // Added bg-black for initial visibility test
-      style={{ pointerEvents: 'none' }} // Ensure it doesn't block interactions
-    />
-  );
 };
 
 export default WebGLWaterEffect;

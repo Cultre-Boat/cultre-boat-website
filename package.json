@@ -22,6 +22,8 @@
     "autoprefixer": "^10.4.21",
     "babel-plugin-glsl": "^1.0.0",
     "cloc": "^2.4.0-cloc",
+    "curtainsjs": "^8.1.6",
+    "dat.gui": "^0.7.9",
     "framer-motion": "^12.5.0",
     "gsap": "^3.13.0",
     "html-to-image": "^1.11.13",

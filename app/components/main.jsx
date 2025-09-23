@@ -5,117 +5,88 @@ import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import ScrollingText from "./ScrollingText";
 import PixiImage from "./PixiImage";
+import SimpleScroll from "./SimpleScroll";
 
 gsap.registerPlugin(ScrollTrigger);
 
-// The list of images can be defined outside the component
-
 const leftImages = [
-  // "https://cdn.jsdelivr.net/gh/Avinesh-2001/CB@main/img1.jpeg",
-  // "https://cdn.jsdelivr.net/gh/Avinesh-2001/CB@main/img2.jpeg",
-  // "https://cdn.jsdelivr.net/gh/Avinesh-2001/CB@main/img13.jpeg",
-  // "https://cdn.jsdelivr.net/gh/Avinesh-2001/CB@main/img3.jpeg",
-  // "https://cdn.jsdelivr.net/gh/Avinesh-2001/CB@main/img-14.jpg",
-  // "https://cdn.jsdelivr.net/gh/Avinesh-2001/CB@main/img-15.jpg",
-  // "https://cdn.jsdelivr.net/gh/Avinesh-2001/CB@main/img4.jpeg",
-  // "https://cdn.jsdelivr.net/gh/Avinesh-2001/CB@main/img5.jpeg",
-  // "https://cdn.jsdelivr.net/gh/Avinesh-2001/CB@main/img1.jpeg",
-  // "https://cdn.jsdelivr.net/gh/Avinesh-2001/CB@main/img2.jpeg",
-  // "https://cdn.jsdelivr.net/gh/Avinesh-2001/CB@main/img13.jpeg",
-  // "https://cdn.jsdelivr.net/gh/Avinesh-2001/CB@main/img3.jpeg",
-  // "https://cdn.jsdelivr.net/gh/Avinesh-2001/CB@main/img-14.jpg",
-  // "https://cdn.jsdelivr.net/gh/Avinesh-2001/CB@main/img-15.jpg",
-  // "https://cdn.jsdelivr.net/gh/Avinesh-2001/CB@main/img4.jpeg",
-  // "https://cdn.jsdelivr.net/gh/Avinesh-2001/CB@main/img5.jpeg",
-  "/Image/img13.webp",
+  "/Image/img1.webp",
   "/Image/img11.webp",
-  "/Image/img10.webp",
-  "/Image/img9.webp",
-  "/Image/img7.webp",
-  "/Image/img5.webp",
-  "/Image/img4.webp",
   "/Image/img3.webp",
+  "/Image/img-14.webp",
+  "/Image/img5.webp",
+  "/Image/img13.webp",
+  "/Image/img7.webp",
+  "/Image/img-15.webp",
+  "/Image/img9.webp",
   "/Image/img2.webp",
   "/Image/img1.webp",
-  "/Image/img-14.webp",
-  "/Image/img-15.webp",
-  "/Image/img-16.webp",
-  "/Image/img13.webp",
   "/Image/img11.webp",
-  "/Image/img10.webp",
-  "/Image/img9.webp",
-  "/Image/img7.webp",
-  "/Image/img5.webp",
-  "/Image/img4.webp",
   "/Image/img3.webp",
-  "/Image/img2.webp",
-  "/Image/img1.webp",
   "/Image/img-14.webp",
+  "/Image/img5.webp",
+  "/Image/img13.webp",
+  "/Image/img7.webp",
   "/Image/img-15.webp",
-  "/Image/img-16.webp",
+  "/Image/img9.webp",
+  "/Image/img2.webp",
 ];
 
 const rightImages = [
-  // "https://cdn.jsdelivr.net/gh/Avinesh-2001/CB@main/img10.jpg",
-  // "https://cdn.jsdelivr.net/gh/Avinesh-2001/CB@main/img9.jpg",
-  // "https://cdn.jsdelivr.net/gh/Avinesh-2001/CB@main/img-15.jpg",
-  // "https://cdn.jsdelivr.net/gh/Avinesh-2001/CB@main/img1.jpeg",
-  // "https://cdn.jsdelivr.net/gh/Avinesh-2001/CB@main/img4.jpeg",
-  // "https://cdn.jsdelivr.net/gh/Avinesh-2001/CB@main/img-14.jpg",
-  // "https://cdn.jsdelivr.net/gh/Avinesh-2001/CB@main/img8.jpg",
-  // "https://cdn.jsdelivr.net/gh/Avinesh-2001/CB@main/img13.jpeg",
-  // "https://cdn.jsdelivr.net/gh/Avinesh-2001/CB@main/img10.jpg",
-  // "https://cdn.jsdelivr.net/gh/Avinesh-2001/CB@main/img9.jpg",
-  // "https://cdn.jsdelivr.net/gh/Avinesh-2001/CB@main/img-15.jpg",
-  // "https://cdn.jsdelivr.net/gh/Avinesh-2001/CB@main/img1.jpeg",
-  // "https://cdn.jsdelivr.net/gh/Avinesh-2001/CB@main/img4.jpeg",
-  // "https://cdn.jsdelivr.net/gh/Avinesh-2001/CB@main/img-14.jpg",
-  // "https://cdn.jsdelivr.net/gh/Avinesh-2001/CB@main/img8.jpg",
-  // "https://cdn.jsdelivr.net/gh/Avinesh-2001/CB@main/img13.jpeg",
-  "/Image/img-14.webp",
-  "/Image/img-15.webp",
-  "/Image/img-16.webp",
-  "/Image/img1.webp",
-  "/Image/img2.webp",
-  "/Image/img3.webp",
-  "/Image/img4.webp",
-  "/Image/img5.webp",
-  "/Image/img7.webp",
-  "/Image/img9.webp",
   "/Image/img10.webp",
-  "/Image/img11.webp",
-  "/Image/img13.webp",
-  "/Image/img-14.webp",
-  "/Image/img-15.webp",
   "/Image/img-16.webp",
-  "/Image/img1.webp",
-  "/Image/img2.webp",
-  "/Image/img3.webp",
-  "/Image/img4.webp",
-  "/Image/img5.webp",
-  "/Image/img7.webp",
-  "/Image/img9.webp",
-  "/Image/img10.webp",
+  "/Image/img8.webp",
   "/Image/img11.webp",
+  "/Image/img4.webp",
   "/Image/img13.webp",
+  "/Image/img6.webp",
+  "/Image/img-14.webp",
+  "/Image/img12.webp",
+  "/Image/img5.webp",
+  "/Image/img10.webp",
+  "/Image/img-16.webp",
+  "/Image/img8.webp",
+  "/Image/img11.webp",
+  "/Image/img4.webp",
+  "/Image/img13.webp",
+  "/Image/img6.webp",
+  "/Image/img-14.webp",
+  "/Image/img12.webp",
+  "/Image/img5.webp",
 ];
 
+function isMobileDevice() {
+  const userAgent = typeof window.navigator === "undefined" ? "" : navigator.userAgent;
+  return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(userAgent);
+}
 
 export default function EnhancedReverseStartLayout() {
   const containerRef = useRef(null);
-  const textRef = useRef(null); // Refs for the ScrollingText component
-  const designTextRef = useRef(null);
-  const prTextRef = useRef(null);
-  const socialTextRef = useRef(null); // State to hold the maximum scroll distance calculated by the PixiImage component
+  const textRef = useRef(null);
   const [maxScroll, setMaxScroll] = useState(0);
+  const [isMobile, setIsMobile] = useState(false);
+  const [componentHeight, setComponentHeight] = useState("auto");
 
+  // Detect mobile on mount and resize
   useEffect(() => {
-    if (!containerRef.current || maxScroll === 0) return;
-    const ctx = gsap.context(() => {
-      gsap.set(containerRef.current, {
-        height: maxScroll + window.innerHeight,
-      }); // Horizontal text scrolling animation, now using the synchronized `maxScroll` value.
+    setIsMobile(isMobileDevice());
+    const handleResize = () => setIsMobile(isMobileDevice());
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
+  // Update component height when maxScroll changes
+  useEffect(() => {
+    if (maxScroll > 0) {
+      setComponentHeight(maxScroll + window.innerHeight);
+    }
+  }, [maxScroll]);
+
+  // GSAP animation for ScrollingText
+  useEffect(() => {
+    if (!containerRef.current || !textRef.current || maxScroll === 0) return;
+
+    const ctx = gsap.context(() => {
       gsap.fromTo(
         textRef.current,
         { x: "30vw" },
@@ -125,41 +96,45 @@ export default function EnhancedReverseStartLayout() {
           scrollTrigger: {
             trigger: containerRef.current,
             start: "top top",
-            end: "bottom bottom", // Use "bottom bottom" for perfect sync
+            end: `+=${maxScroll}`,
             scrub: 1.5,
+            invalidateOnRefresh: true,
           },
         }
       );
     }, containerRef);
 
-    return () => {
-      ctx.revert(); // No need for ScrollTrigger.killAll() here as context handles cleanup
-    };
-  }, [maxScroll]); // Dependency array ensures this runs when maxScroll is calculated
+    return () => ctx.revert();
+  }, [maxScroll]);
 
   return (
-    <>
-      <main className="pixi-page">
-      <PixiImage
-        containerRef={containerRef}
-        leftImages={leftImages}
-        rightImages={rightImages}
-        onMaxScrollCalculated={setMaxScroll} // Pass the setter function as a prop
-      />
-      <div ref={containerRef} className="relative w-full overflow-hidden">
-        <ScrollingText
-          ref={textRef}
-          designTextRef={designTextRef}
-          prTextRef={prTextRef}
-          socialTextRef={socialTextRef}
+    <main className="pixi-page">
+      {isMobile ? (
+        <SimpleScroll
+          containerRef={containerRef}
+          leftImages={leftImages}
+          rightImages={rightImages}
+          onMaxScrollCalculated={setMaxScroll}
+          maxScroll={maxScroll}
         />
-        <div className="fixed bottom-10 left-1/2 transform -translate-x-1/2 z-30 pointer-events-none">
-          <p className="text-white text-sm font-bold opacity-35">
-             Scroll and Select
-          </p>
+      ) : (
+        <PixiImage
+          containerRef={containerRef}
+          leftImages={leftImages}
+          rightImages={rightImages}
+          onMaxScrollCalculated={setMaxScroll}
+        />
+      )}
+      <div
+        ref={containerRef}
+        style={{ height: componentHeight }}
+        className="relative w-full"
+      >
+        <ScrollingText ref={textRef} />
+        <div className="fixed bottom-10 left-1/2 -translate-x-1/2 z-30 pointer-events-none">
+          <p className="text-white text-sm font-bold opacity-35">Scroll and Select</p>
         </div>
       </div>
-      </main>
-    </>
+    </main>
   );
 }

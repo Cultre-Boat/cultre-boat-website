@@ -332,3 +332,21 @@ html, body {
 }
 
 
+/* styles.css */
+.scrolling-text {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%); /* Vertically center the text */
+  width: 100%;
+  text-align: center; /* Optional: Horizontally center text content */
+  z-index: 10; /* Ensure text is above images */
+  /* Add any other styles like font-size, color, etc. */
+}
+
+/* Ensure the parent container supports absolute positioning */
+.pixi-page {
+  position: relative;
+  width: 100%;
+  overflow-y: auto;
+  min-height: 100vh;
+}
