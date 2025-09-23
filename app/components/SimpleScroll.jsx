@@ -77,7 +77,7 @@ const SimpleScroll = ({ containerRef, leftImages, rightImages, onMaxScrollCalcul
   return (
     <div className="fixed top-0 left-0 z-[0] w-full flex justify-center px-2 mt-20">
       <div className="flex w-full max-w-[1200px] justify-between">
-        <div ref={leftColRef} className="left-col w-[45%]">
+        <div ref={leftColRef} className="left-col w-[48%]">
           {leftImages.map((src, i) => (
             <img
               key={i}
@@ -88,7 +88,7 @@ const SimpleScroll = ({ containerRef, leftImages, rightImages, onMaxScrollCalcul
             />
           ))}
         </div>
-        <div ref={rightColRef} className="right-col w-[45%]">
+        <div ref={rightColRef} className="right-col w-[48%]">
           {rightImages.map((src, i) => (
             <img
               key={i}
