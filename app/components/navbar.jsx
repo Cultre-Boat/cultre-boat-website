@@ -17,14 +17,14 @@ export default function Navbar() {
         <div className="text-white font-bold h-10 justify-center items-center flex flex-row gap-4 -ml-5">
           <a href="/" className="flex flex-row gap-7 items-center">
             <img
-              src="/Vector 4 1.svg"
+              src="/Vector 4.png"
               width={32}
               height={16}
               alt="First icon"
               style={{ filter: "none" }}
             />
             <img
-              src="/Group 2 1.svg"
+              src="/Group 2.png"
               width={25}
               height={15}
               alt="Second icon"
@@ -32,7 +32,7 @@ export default function Navbar() {
               style={{ filter: "none", marginLeft: "10px" }}
             />
             <img
-              src="/Vector 3 1.svg"
+              src="/Vector 3.png"
               width={28}
               height={14}
               alt="Last icon"

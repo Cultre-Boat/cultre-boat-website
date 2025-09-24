@@ -14,7 +14,7 @@ gsap.registerPlugin(ScrollTrigger);
 const mobileLeftImages = [
   "/mobile/img1.jpeg",   // food
   "/mobile/img11.jpeg",  // model
-  "/mobile/img3.jpeg",   // food
+  "/mobile/img10.jpeg",   // food
   "/mobile/img13.jpeg",  // jewellery
   "/mobile/img5.jpeg",   // food
   "/mobile/img-15.jpeg",  // model
@@ -54,54 +54,51 @@ const mobileRightImages = [
   "/mobile/img12.jpeg",  // model
 ];
 
-
-// --- 2. RENAME ORIGINAL DESKTOP IMAGES ---
-// These arrays will be used for the desktop view only
 const desktopLeftImages = [
-  "/Image/img1.webp",
-  "/Image/img11.webp",
-  "/Image/img3.webp",
-  "/Image/img-14.webp",
-  "/Image/img5.webp",
-  "/Image/img13.webp",
-  "/Image/img7.webp",
-  "/Image/img-15.webp",
-  "/Image/img9.webp",
-  "/Image/img2.webp",
-  "/Image/img1.webp",
-  "/Image/img11.webp",
-  "/Image/img3.webp",
-  "/Image/img-14.webp",
-  "/Image/img5.webp",
-  "/Image/img13.webp",
-  "/Image/img7.webp",
-  "/Image/img-15.webp",
-  "/Image/img9.webp",
-  // "/Image/img2.webp",
+  // Food → Model → Jewellery → Food → Model → Food → Model → Food
+  "/Image/img1.webp",     // Food
+  "/Image/img11.webp",    // Food
+  "/Image/img2.webp",    // Model
+  "/Image/img13.webp",    // Jewellery
+  "/Image/img5.webp",     // Food
+  "/Image/img-14.webp",   // Model
+  "/Image/img7.webp",     // Food
+  "/Image/img-15.webp",    // Model
+  "/Image/img9.webp",     // Food
+  "/Image/img-16.webp",   // Model
+  "/Image/img2.webp",     // Food
+  "/Image/img13.webp",    // Model
+  "/Image/img-15.webp",   // Food
+  "/Image/img1.webp",     // Food
+  "/Image/img13.webp",     // Food
+  "/Image/img11.webp",    // Food
+  "/Image/img2.webp",    // Model
+  "/Image/img13.webp",    // Jewellery
+  "/Image/img5.webp", 
 ];
 
 const desktopRightImages = [
-  "/Image/img10.webp",
-  "/Image/img-16.webp",
-  "/Image/img8.webp",
-  "/Image/img11.webp",
-  "/Image/img4.webp",
-  "/Image/img13.webp",
-  "/Image/img6.webp",
-  "/Image/img-14.webp",
-  "/Image/img12.webp",
-  "/Image/img5.webp",
-  "/Image/img10.webp",
-  "/Image/img-16.webp",
-  "/Image/img8.webp",
-  "/Image/img11.webp",
-  "/Image/img4.webp",
-  "/Image/img13.webp",
-  "/Image/img6.webp",
-  "/Image/img-14.webp",
-  "/Image/img12.webp",
-  // "/Image/img5.webp",
+  "/Image/img1.webp",   // Foodb  1
+  "/Image/img-14.webp",  // Model  14
+  "/Image/img6.webp",    // Food 6
+  "/Image/img4.webp",   // Model  4
+  "/Image/img13.webp",    // Food   13
+  "/Image/img8.webp",   // Jewellery  8
+  "/Image/img11.webp",    // Food  11
+  "/Image/img10.webp",  // Model 10
+  "/Image/img-16.webp",   // Food  16
+  "/Image/img5.webp",    // Food  5
+  "/Image/img12.webp",  // Model 
+  "/Image/img-14.webp",   // Food
+  "/Image/img6.webp",   // Model
+  "/Image/img13.webp",    // Food
+  "/Image/img4.webp",   // Jewellery
+  "/Image/img11.webp",    // Food
+  "/Image/img8.webp",    // Food
+  "/Image/img-16.webp",  // Model
+  "/Image/img10.webp",   // Food
 ];
+
 
 function isMobileDevice() {
   const userAgent = typeof window.navigator === "undefined" ? "" : navigator.userAgent;
