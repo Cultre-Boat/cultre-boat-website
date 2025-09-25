@@ -5,38 +5,33 @@ import * as PIXI from "pixi.js";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { DisplacementFilter } from "@pixi/filter-displacement";
-import { Assets } from "@pixi/assets"; // Explicitly import Assets
 
 gsap.registerPlugin(ScrollTrigger);
 
-// Initialize Pixi.js Assets (required for v6 with @pixi/assets)
-Assets.init({ manifest: { bundles: [] } });
-
-export default function PixiImage({ containerRef, leftImages, rightImages, onMaxScrollCalculated }) {
+// 1. REMOVE the `maxScroll` and `onMaxScrollCalculated` props.
+const SimpleScroll = ({ containerRef, leftImages, rightImages }) => {
+  
   const canvasRef = useRef(null);
   const leftContainerRef = useRef(null);
   const rightContainerRef = useRef(null);
-  const appRef = useRef(null);
-  const displacementSpriteRef = useRef(null);
+  
+  // 2. ADD a ref to store the maxScroll value internally.
+  const maxScrollRef = useRef(0);
 
+  // Remove maxScroll and onMaxScrollCalculated from the dependency array.
   useEffect(() => {
+     console.log(`Images received: Left=${leftImages.length}, Right=${rightImages.length}`);
     if (!canvasRef.current || !containerRef.current) return;
 
-    // Detect mobile device
-    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-
-    // Initialize PIXI application with mobile optimizations
+    // ... (PIXI application setup remains the same)
     const app = new PIXI.Application({
       view: canvasRef.current,
       resizeTo: window,
       backgroundColor: 0x000000,
       backgroundAlpha: 1,
+      resolution: window.devicePixelRatio || 1,
       autoDensity: true,
-      resolution: isMobile ? 1 : window.devicePixelRatio,
-      powerPreference: "high-performance",
-      antialias: !isMobile,
     });
-    appRef.current = app;
 
     const leftContainer = new PIXI.Container();
     const rightContainer = new PIXI.Container();
@@ -44,15 +39,36 @@ export default function PixiImage({ containerRef, leftImages, rightImages, onMax
     rightContainerRef.current = rightContainer;
     app.stage.addChild(leftContainer, rightContainer);
 
-    // Image dimensions
-    const imageWidth = window.innerWidth * (isMobile ? 0.45 : 0.35);
+    const imageWidth = window.innerWidth * 0.45;
     const imageHeight = imageWidth * (4 / 3);
-    const gap = window.innerHeight * 0.1;
+    const gap = window.innerHeight * 0.10;
 
-    // Preload images using Assets.load
-    Assets.load([...leftImages, ...rightImages]).then(() => {
+    // ... (Loader logic remains the same)
+    const loader = new PIXI.Loader();
+    const resourceMap = new Map();
+
+    leftImages.forEach((src, i) => {
+      const uniqueName = `left_${i}_${src}`;
+      loader.add(uniqueName, src);
+      resourceMap.set(uniqueName, src);
+    });
+
+    rightImages.forEach((src, i) => {
+      const uniqueName = `right_${i}_${src}`;
+      loader.add(uniqueName, src);
+      resourceMap.set(uniqueName, src);
+    });
+
+
+     loader.onError.add((error, loader, resource) => {
+      console.error(`PIXI Loader Error on resource: ${resource.url}`, error);
+    });
+
+    loader.load(() => {
+      // ... (Sprite creation remains the same)
       leftImages.forEach((src, i) => {
-        const sprite = PIXI.Sprite.from(src);
+        const uniqueName = `left_${i}_${src}`;
+        const sprite = PIXI.Sprite.from(loader.resources[uniqueName].texture);
         sprite.width = imageWidth;
         sprite.height = imageHeight;
         sprite.y = i * (imageHeight + gap);
@@ -60,14 +76,14 @@ export default function PixiImage({ containerRef, leftImages, rightImages, onMax
       });
 
       rightImages.forEach((src, i) => {
-        const sprite = PIXI.Sprite.from(src);
+        const uniqueName = `right_${i}_${src}`;
+        const sprite = PIXI.Sprite.from(loader.resources[uniqueName].texture);
         sprite.width = imageWidth;
         sprite.height = imageHeight;
         sprite.y = i * (imageHeight + gap);
         rightContainer.addChild(sprite);
       });
 
-      // Position containers
       const positionContainers = () => {
         const screenWidth = window.innerWidth;
         leftContainer.x = screenWidth * 0.5 - imageWidth - screenWidth * 0.02;
@@ -75,18 +91,26 @@ export default function PixiImage({ containerRef, leftImages, rightImages, onMax
       };
       positionContainers();
 
-      // Calculate maxScroll
+      // MODIFIED: This function now updates the ref instead of calling a prop.
       const calculateMaxScroll = () => {
         const leftColHeight = leftContainer.height;
         const rightColHeight = rightContainer.height;
-        const maxScroll = Math.max(leftColHeight, rightColHeight) - window.innerHeight;
-        if (onMaxScrollCalculated) {
-          onMaxScrollCalculated(maxScroll);
-        }
+        const calculatedMaxScroll = Math.max(leftColHeight, rightColHeight) - window.innerHeight;
+        maxScrollRef.current = calculatedMaxScroll > 0 ? calculatedMaxScroll : 0;
       };
       calculateMaxScroll();
 
-      // GSAP animations
+      
+
+       console.log("--- Calculation Details ---");
+      console.log(`Sprites created: Left=${leftContainer.children.length}, Right=${rightContainer.children.length}`);
+      console.log(`Container heights: Left=${leftContainer.height.toFixed(2)}px, Right=${rightContainer.height.toFixed(2)}px`);
+      console.log(`Window height: ${window.innerHeight.toFixed(2)}px`);
+      console.log(`Final maxScroll value: ${maxScrollRef.current.toFixed(2)}px`);
+      console.log("---------------------------");
+
+
+
       gsap.set(leftContainer, { y: 0 });
       gsap.set(rightContainer, { y: -rightContainer.height + window.innerHeight });
 
@@ -97,8 +121,10 @@ export default function PixiImage({ containerRef, leftImages, rightImages, onMax
           scrollTrigger: {
             trigger: containerRef.current,
             start: "top top",
-            end: `+=${Math.max(leftContainer.height, rightContainer.height) - window.innerHeight}`,
-            scrub: 2,
+            // 3. CHANGE `end` to a function that reads the ref's current value.
+            // This makes it dynamic and always correct on creation and resize.
+            end: () => `+=${maxScrollRef.current}`,
+            scrub: 1.5,
             invalidateOnRefresh: true,
           },
         });
@@ -109,48 +135,38 @@ export default function PixiImage({ containerRef, leftImages, rightImages, onMax
           scrollTrigger: {
             trigger: containerRef.current,
             start: "top top",
-            end: `+=${Math.max(leftContainer.height, rightContainer.height) - window.innerHeight}`,
-            scrub: 2,
+            // 3. CHANGE `end` here as well.
+            end: () => `+=${maxScrollRef.current}`,
+            scrub: 1.5,
             invalidateOnRefresh: true,
           },
         });
       }, containerRef);
 
-      // Displacement filter with mobile optimizations
-      const displacementTexture = PIXI.Texture.from(
-        "https://raw.githubusercontent.com/Pierrinho/elephant/master/pattern-clouds.jpg",
-        { resolution: isMobile ? 0.5 : 1 }
+      // ... (Displacement filter logic remains the same)
+      const displacementSprite = PIXI.Sprite.from(
+        "https://raw.githubusercontent.com/Pierrinho/elephant/master/pattern-clouds.jpg"
       );
-      const displacementSprite = new PIXI.Sprite(displacementTexture);
-      displacementSpriteRef.current = displacementSprite;
       displacementSprite.texture.baseTexture.wrapMode = PIXI.WRAP_MODES.REPEAT;
-      displacementSprite.scale.set(isMobile ? 0.2 : 0.4);
+      displacementSprite.scale.set(0.2);
       displacementSprite.alpha = 0;
       const displacementFilter = new DisplacementFilter(displacementSprite);
-      displacementFilter.scale.set(isMobile ? 5 : 10);
+      displacementFilter.scale.set(10, 10);
 
       app.stage.addChild(displacementSprite);
       leftContainer.filters = [displacementFilter];
       rightContainer.filters = [displacementFilter];
 
-      // Optimize ticker for mobile
-      let lastTime = 0;
-      const update = (time) => {
-        if (!displacementSpriteRef.current) return;
-        const delta = time - lastTime;
-        if (delta > (isMobile ? 33 : 16)) {
-          displacementSprite.x += isMobile ? 0.3 : 0.5;
-          displacementSprite.y += isMobile ? 0.3 : 0.5;
-          lastTime = time;
-        }
-      };
-      app.ticker.add(update);
+      app.ticker.add(() => {
+        displacementSprite.x += 0.3;
+        displacementSprite.y += 0.3 ;
+      });
 
       // Handle resize
       const handleResize = () => {
-        const newImageWidth = window.innerWidth * (isMobile ? 0.45 : 0.35);
+        const newImageWidth = window.innerWidth * 0.45;
         const newImageHeight = newImageWidth * (4 / 3);
-        const newGap = window.innerHeight * 0.1;
+        const newGap = window.innerHeight * 0.15;
 
         leftContainer.children.forEach((sprite, i) => {
           sprite.width = newImageWidth;
@@ -165,20 +181,29 @@ export default function PixiImage({ containerRef, leftImages, rightImages, onMax
         });
 
         positionContainers();
+        // Recalculate and update the ref on resize. GSAP will pick up the new
+        // value automatically because of `invalidateOnRefresh: true` and the function in `end`.
         calculateMaxScroll();
       };
+
       window.addEventListener("resize", handleResize);
 
       // Cleanup
       return () => {
         window.removeEventListener("resize", handleResize);
         ctx.revert();
-        app.ticker.remove(update);
         app.destroy(true, { children: true, texture: true, baseTexture: true });
       };
     });
+    // MODIFIED: Clean up the dependency array.
+  }, [containerRef, leftImages, rightImages]);
 
-  }, [containerRef, leftImages, rightImages, onMaxScrollCalculated]);
+  return (
+    <canvas
+      ref={canvasRef}
+      className="fixed top-0 left-0 w-full h-full z-[0] opacity-[0.7]"
+    />
+  );
+};
 
-  return <canvas ref={canvasRef} className="fixed top-0 left-0 w-full h-full z-[0]" />;
-}
+export default SimpleScroll;

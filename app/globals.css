@@ -1,8 +1,6 @@
 
 
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
 
 :root {
   /* Ensure --background is always black or a very dark shade */

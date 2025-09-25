@@ -20,7 +20,6 @@ export default function PixiWaterText({ text }) {
 
     // Text
     const textObj = new PIXI.Text(text, {
-      fontFamily: "Times New Roman",
       fontSize: 130,
       fill: 0xffffff,
       align: "center",
@@ -31,7 +30,7 @@ export default function PixiWaterText({ text }) {
 
     // Displacement sprite (noise texture for water effect)
     const displacementSprite = PIXI.Sprite.from(
-     "https://raw.githubusercontent.com/Pierrinho/elephant/master/pattern-clouds.jpg"
+     "/pattern-clouds.jpg"
     );
     displacementSprite.texture.baseTexture.wrapMode = PIXI.WRAP_MODES.REPEAT;
     displacementSprite.alpha = 0;

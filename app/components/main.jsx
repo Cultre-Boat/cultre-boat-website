@@ -12,8 +12,8 @@ gsap.registerPlugin(ScrollTrigger);
 // --- 1. DEFINE MOBILE-SPECIFIC IMAGES ---
 // Left column for mobile with a mix of food, model, and jewellery
 const mobileLeftImages = [
-  "/mobile/img1.jpeg",   // food
-  "/mobile/img11.jpeg",  // model
+  "/mobile/img1.jpeg",   // food1
+  "/mobile/img11.jpeg",  // model2
   "/mobile/img3.jpeg",   // food
   "/mobile/img13.jpeg",  // jewellery
   "/mobile/img5.jpeg",   // food
@@ -48,10 +48,6 @@ const mobileRightImages = [
   "/mobile/img-14.jpeg",  // model
   "/mobile/img6.jpeg",   // food
   "/mobile/img-16.jpeg",  // model
-  "/mobile/img8.jpeg",   // food
-  "/mobile/img10.jpeg",  // food
-    "/mobile/img2.jpeg",   // food
-  "/mobile/img12.jpeg",  // model
 ];
 
 

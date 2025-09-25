@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import { motion } from 'framer-motion';
+import { useEffect, useState } from "react";
+import { motion } from "framer-motion";
 
 const LoadingScreen = ({ onLoadingComplete }) => {
   const [counter, setCounter] = useState(1);
@@ -10,7 +10,7 @@ const LoadingScreen = ({ onLoadingComplete }) => {
   useEffect(() => {
     // Simulate loading progress from 1 to 100
     const interval = setInterval(() => {
-      setCounter(prev => {
+      setCounter((prev) => {
         if (prev >= 100) {
           clearInterval(interval);
           setTimeout(() => {
@@ -29,7 +29,7 @@ const LoadingScreen = ({ onLoadingComplete }) => {
   if (isComplete) return null;
 
   return (
-    <motion.div 
+    <motion.div
       className="fixed inset-0 bg-black z-50 flex flex-col items-center justify-center"
       initial={{ opacity: 1 }}
       animate={{ opacity: isComplete ? 0 : 1 }}
@@ -43,14 +43,33 @@ const LoadingScreen = ({ onLoadingComplete }) => {
           transition={{ duration: 0.5 }}
           className="text-white text-6xl font-bold mb-16"
         >
-                          <div className="text-white font-bold h-10 justify-center items-center flex flex-row gap-5">
-                    <a href='/' className="flex flex-row gap-5 items-center">                    
-                        <img src='/nav-firstt.svg' width={40} height={20} alt="First icon" />
-                        <img src='/nav-second.svg' width={40} height={30} alt="Second icon" className='scale-140 -left-1 relative' />
-                        <img src='/nav-last.svg' width={40} height={20} alt="Last icon" className='scale-120' /></a>
-                </div>
+          <div className="text-white font-bold h-10 justify-center items-center flex flex-row gap-5">
+            <a href="/" className="flex flex-row gap-5 items-center">
+              <img
+                src="/Vector 4.png"
+                width={34}
+                height={17}
+                alt="First icon"
+                className=""
+              />
+              <img
+                src="/Group 2.png"
+                width={26}
+                height={16}
+                alt="Second icon"
+                className="scale-125 -left-1 relative ml-3"
+              />
+              <img
+                src="/Vector 3.png"
+                width={30}
+                height={15}
+                alt="Last icon"
+                className="scale-110  ml-3"
+              />
+            </a>
+          </div>
         </motion.div>
-        
+
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
