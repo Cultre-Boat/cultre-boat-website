@@ -1,149 +1,184 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import * as PIXI from "pixi.js";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { DisplacementFilter } from "@pixi/filter-displacement";
+import { Assets } from "@pixi/assets"; // Explicitly import Assets
 
 gsap.registerPlugin(ScrollTrigger);
 
-const SimpleScroll = ({ containerRef, leftImages, rightImages, onMaxScrollCalculated, maxScroll }) => {
-  const leftColRef = useRef(null);
-  const rightColRef = useRef(null);
+// Initialize Pixi.js Assets (required for v6 with @pixi/assets)
+Assets.init({ manifest: { bundles: [] } });
 
-  // Calculate maxScroll and update parent
+export default function PixiImage({ containerRef, leftImages, rightImages, onMaxScrollCalculated }) {
+  const canvasRef = useRef(null);
+  const leftContainerRef = useRef(null);
+  const rightContainerRef = useRef(null);
+  const appRef = useRef(null);
+  const displacementSpriteRef = useRef(null);
+
   useEffect(() => {
-    if (!containerRef.current) return;
+    if (!canvasRef.current || !containerRef.current) return;
 
-    const calculateMaxScroll = () => {
-      const imageWidth = window.innerWidth * 0.45;
-      const imageHeight = imageWidth * (4 / 3);
-      const gap = window.innerHeight * 0.15;
-      const leftColHeight = leftImages.length * imageHeight + (leftImages.length - 1) * gap;
-      const rightColHeight = rightImages.length * imageHeight + (rightImages.length - 1) * gap;
-      const calculatedMaxScroll = Math.max(leftColHeight, rightColHeight) - window.innerHeight;
+    // Detect mobile device
+    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 
-      if (onMaxScrollCalculated) {
-        onMaxScrollCalculated(calculatedMaxScroll);
-      }
-    };
+    // Initialize PIXI application with mobile optimizations
+    const app = new PIXI.Application({
+      view: canvasRef.current,
+      resizeTo: window,
+      backgroundColor: 0x000000,
+      backgroundAlpha: 1,
+      autoDensity: true,
+      resolution: isMobile ? 1 : window.devicePixelRatio,
+      powerPreference: "high-performance",
+      antialias: !isMobile,
+    });
+    appRef.current = app;
 
-    calculateMaxScroll();
-    window.addEventListener("resize", calculateMaxScroll);
-    return () => window.removeEventListener("resize", calculateMaxScroll);
+    const leftContainer = new PIXI.Container();
+    const rightContainer = new PIXI.Container();
+    leftContainerRef.current = leftContainer;
+    rightContainerRef.current = rightContainer;
+    app.stage.addChild(leftContainer, rightContainer);
+
+    // Image dimensions
+    const imageWidth = window.innerWidth * (isMobile ? 0.45 : 0.35);
+    const imageHeight = imageWidth * (4 / 3);
+    const gap = window.innerHeight * 0.1;
+
+    // Preload images using Assets.load
+    Assets.load([...leftImages, ...rightImages]).then(() => {
+      leftImages.forEach((src, i) => {
+        const sprite = PIXI.Sprite.from(src);
+        sprite.width = imageWidth;
+        sprite.height = imageHeight;
+        sprite.y = i * (imageHeight + gap);
+        leftContainer.addChild(sprite);
+      });
+
+      rightImages.forEach((src, i) => {
+        const sprite = PIXI.Sprite.from(src);
+        sprite.width = imageWidth;
+        sprite.height = imageHeight;
+        sprite.y = i * (imageHeight + gap);
+        rightContainer.addChild(sprite);
+      });
+
+      // Position containers
+      const positionContainers = () => {
+        const screenWidth = window.innerWidth;
+        leftContainer.x = screenWidth * 0.5 - imageWidth - screenWidth * 0.02;
+        rightContainer.x = screenWidth * 0.5 + screenWidth * 0.02;
+      };
+      positionContainers();
+
+      // Calculate maxScroll
+      const calculateMaxScroll = () => {
+        const leftColHeight = leftContainer.height;
+        const rightColHeight = rightContainer.height;
+        const maxScroll = Math.max(leftColHeight, rightColHeight) - window.innerHeight;
+        if (onMaxScrollCalculated) {
+          onMaxScrollCalculated(maxScroll);
+        }
+      };
+      calculateMaxScroll();
+
+      // GSAP animations
+      gsap.set(leftContainer, { y: 0 });
+      gsap.set(rightContainer, { y: -rightContainer.height + window.innerHeight });
+
+      const ctx = gsap.context(() => {
+        gsap.to(leftContainer, {
+          y: -leftContainer.height + window.innerHeight,
+          ease: "none",
+          scrollTrigger: {
+            trigger: containerRef.current,
+            start: "top top",
+            end: `+=${Math.max(leftContainer.height, rightContainer.height) - window.innerHeight}`,
+            scrub: 2,
+            invalidateOnRefresh: true,
+          },
+        });
+
+        gsap.to(rightContainer, {
+          y: 0,
+          ease: "none",
+          scrollTrigger: {
+            trigger: containerRef.current,
+            start: "top top",
+            end: `+=${Math.max(leftContainer.height, rightContainer.height) - window.innerHeight}`,
+            scrub: 2,
+            invalidateOnRefresh: true,
+          },
+        });
+      }, containerRef);
+
+      // Displacement filter with mobile optimizations
+      const displacementTexture = PIXI.Texture.from(
+        "https://raw.githubusercontent.com/Pierrinho/elephant/master/pattern-clouds.jpg",
+        { resolution: isMobile ? 0.5 : 1 }
+      );
+      const displacementSprite = new PIXI.Sprite(displacementTexture);
+      displacementSpriteRef.current = displacementSprite;
+      displacementSprite.texture.baseTexture.wrapMode = PIXI.WRAP_MODES.REPEAT;
+      displacementSprite.scale.set(isMobile ? 0.2 : 0.4);
+      displacementSprite.alpha = 0;
+      const displacementFilter = new DisplacementFilter(displacementSprite);
+      displacementFilter.scale.set(isMobile ? 5 : 10);
+
+      app.stage.addChild(displacementSprite);
+      leftContainer.filters = [displacementFilter];
+      rightContainer.filters = [displacementFilter];
+
+      // Optimize ticker for mobile
+      let lastTime = 0;
+      const update = (time) => {
+        if (!displacementSpriteRef.current) return;
+        const delta = time - lastTime;
+        if (delta > (isMobile ? 33 : 16)) {
+          displacementSprite.x += isMobile ? 0.3 : 0.5;
+          displacementSprite.y += isMobile ? 0.3 : 0.5;
+          lastTime = time;
+        }
+      };
+      app.ticker.add(update);
+
+      // Handle resize
+      const handleResize = () => {
+        const newImageWidth = window.innerWidth * (isMobile ? 0.45 : 0.35);
+        const newImageHeight = newImageWidth * (4 / 3);
+        const newGap = window.innerHeight * 0.1;
+
+        leftContainer.children.forEach((sprite, i) => {
+          sprite.width = newImageWidth;
+          sprite.height = newImageHeight;
+          sprite.y = i * (newImageHeight + newGap);
+        });
+
+        rightContainer.children.forEach((sprite, i) => {
+          sprite.width = newImageWidth;
+          sprite.height = newImageHeight;
+          sprite.y = i * (newImageHeight + newGap);
+        });
+
+        positionContainers();
+        calculateMaxScroll();
+      };
+      window.addEventListener("resize", handleResize);
+
+      // Cleanup
+      return () => {
+        window.removeEventListener("resize", handleResize);
+        ctx.revert();
+        app.ticker.remove(update);
+        app.destroy(true, { children: true, texture: true, baseTexture: true });
+      };
+    });
+
   }, [containerRef, leftImages, rightImages, onMaxScrollCalculated]);
 
-  // GSAP scroll animations
-  useEffect(() => {
-    if (!containerRef.current || !leftColRef.current || !rightColRef.current || maxScroll <= 0) return;
-
-    const imageWidth = window.innerWidth * 0.45;
-    const imageHeight = imageWidth * (4 / 3);
-    const gap = window.innerHeight * 0.15;
-    const leftColHeight = leftImages.length * imageHeight + (leftImages.length - 1) * gap;
-    const rightColHeight = rightImages.length * imageHeight + (rightImages.length - 1) * gap;
-
-    gsap.set(leftColRef.current, { y: 0 });
-    gsap.set(rightColRef.current, { y: -rightColHeight + window.innerHeight });
-
-    const ctx = gsap.context(() => {
-      gsap.to(leftColRef.current, {
-        y: -leftColHeight + window.innerHeight,
-        ease: "none",
-        scrollTrigger: {
-          trigger: containerRef.current,
-          start: "top top",
-          end: `+=${maxScroll}`,
-          scrub: 1.5,
-          invalidateOnRefresh: true,
-        },
-      });
-
-      gsap.to(rightColRef.current, {
-        y: 0,
-        ease: "none",
-        scrollTrigger: {
-          trigger: containerRef.current,
-          start: "top top",
-          end: `+=${maxScroll}`,
-          scrub: 1.5,
-          invalidateOnRefresh: true,
-        },
-      });
-    }, containerRef);
-
-    return () => ctx.revert();
-  }, [maxScroll, containerRef, leftImages, rightImages]);
-
-  // GSAP distortion animation
-  useEffect(() => {
-    const feTurbulence = document.querySelector("#imageDistortFilter feTurbulence");
-
-    if (feTurbulence) {
-      // Apply filter to all images
-      document.querySelectorAll(".left-col img, .right-col img").forEach((img) => {
-        img.style.filter = "url(#imageDistortFilter)";
-      });
-
-      // Animate turbulence for distortion effect
-      gsap.to(feTurbulence, {
-        attr: { baseFrequency: 0.02 },
-        duration: 4,
-        repeat: -1,
-        yoyo: true,
-        ease: "linear",
-      });
-    } else {
-      console.error("feTurbulence element not found");
-    }
-  }, []);
-
-  return (
-    <>
-      <svg style={{ position: "absolute", width: 0, height: 0, overflow: "hidden" }}>
-        <filter id="imageDistortFilter">
-          <feTurbulence
-            type="fractalNoise"
-            baseFrequency="0.01"
-            numOctaves="2"
-            result="noise"
-          />
-          <feDisplacementMap
-            in="SourceGraphic"
-            in2="noise"
-            scale="10"
-            xChannelSelector="R"
-            yChannelSelector="G"
-          />
-        </filter>
-      </svg>
-      <div className="fixed top-0 left-0 z-[0] w-full flex justify-center px-2 mt-20">
-        <div className="flex w-full max-w-[1200px] justify-between">
-          <div ref={leftColRef} className="left-col w-[47%]">
-            {leftImages.map((src, i) => (
-              <img
-                key={i}
-                src={src}
-                alt="Left Scroll"
-                className="w-full h-[250px] mb-[12vh]"
-                loading="lazy"
-              />
-            ))}
-          </div>
-          <div ref={rightColRef} className="right-col w-[47%]">
-            {rightImages.map((src, i) => (
-              <img
-                key={i}
-                src={src}
-                alt="Right Scroll"
-                className="w-full h-[250px] mb-[12vh]"
-                loading="lazy"
-              />
-            ))}
-          </div>
-        </div>
-      </div>
-    </>
-  );
-};
-
-export default SimpleScroll;
+  return <canvas ref={canvasRef} className="fixed top-0 left-0 w-full h-full z-[0]" />;
+}

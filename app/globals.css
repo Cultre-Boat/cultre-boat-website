@@ -1,4 +1,8 @@
-@import "tailwindcss";
+
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 :root {
   /* Ensure --background is always black or a very dark shade */
@@ -65,8 +69,8 @@ body {
 }
 
 @font-face {
-  font-family: 'BellotaText-Light';
-  src: url('/fonts/BellotaText-Light.ttf') format('truetype');
+  font-family: 'BellotaText-Light' !important;
+  src: url('/fonts/BellotaText-Light.ttf') format('truetype') ;
   font-weight: 300;
   font-style: normal;
   font-display: swap;
