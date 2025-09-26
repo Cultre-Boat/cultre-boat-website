@@ -9,7 +9,7 @@ import ClientLoadingWrapper from '../app/components/clientloadingwrapper';
 
 
 export const metadata = {
-  title: "Culture Boat",
+  title: "Cultre Boat",
   description: "Everybody loves a good story. We love to build them.We're a creative studio that specialises in brand strategy and digital creation. We enjoy a close working relationship with each of our clients and engaging in meaningful digital experiences.We're marketers, copywriters, thinkers, social media enthusiasts, visual designers and most importantly, communicators.",
 };
 
