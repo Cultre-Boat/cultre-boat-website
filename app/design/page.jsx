@@ -395,10 +395,13 @@ export default function DesignPortfolio() {
           <section className="py-2 text-center z-[10]">
             <div className="mb-12">
               <hr className="w-3/5 h-px bg-gray-600 border-none mx-auto mb-10" />
-              <p className="text-xl lg:text-xl xl:text-2xl 2xl:text-3xl 3xl:text-4xl max-w-[90%] lg:max-w-[60%] mx-auto leading-7 mt-2 font-light">
-                Explore our latest projects showcasing our design capabilities
-                across various mediums and industries.
-              </p>
+              <p className="text-base sm:text-lg md:text-xl lg:text-xl xl:text-2xl 2xl:text-3xl 3xl:text-4xl max-w-[75%] sm:max-w-[80%] md:max-w-[85%] lg:max-w-[50%] mx-auto leading-5 sm:leading-6 md:leading-7 mt-2 font-light break-words">
+  Explore our latest projects showcasing our design 
+</p>
+<p className="text-base sm:text-lg md:text-xl lg:text-xl xl:text-2xl 2xl:text-3xl 3xl:text-4xl max-w-[75%] sm:max-w-[80%] md:max-w-[85%] lg:max-w-[50%] mx-auto leading-5 sm:leading-6 md:leading-7 font-light break-words">
+ capabilities across various mediums and industries.
+</p>
+
             </div>
             <div className="flex flex-col lg:flex-row gap-4 lg:gap-5 items-start justify-center px-4">
               <div className="flex flex-col gap-4 w-full max-w-lg lg:max-w-xl mx-auto lg:mx-0 z-[10]">
