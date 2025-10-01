@@ -79,8 +79,8 @@ const PixiWaterText = ({ containerRef }) => {
 
     // Animate displacement
     app.ticker.add(() => {
-      displacementSprite.x += 3;
-      displacementSprite.y += 3;
+      displacementSprite.x += 1;
+      displacementSprite.y += 1;
     });
 
     // Update positions on resize and scroll
