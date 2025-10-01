@@ -114,8 +114,8 @@ export default function PixiImage({ containerRef, leftImages, rightImages, onMax
     rightContainer.filters = [displacementFilter];
 
     app.ticker.add(() => {
-      displacementSprite.x += 0.5;
-      displacementSprite.y += 0.5;
+      displacementSprite.x += 0.3;
+      displacementSprite.y += 0.3;
     });
 
     // Handle resize

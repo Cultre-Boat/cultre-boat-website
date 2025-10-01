@@ -6,97 +6,94 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import ScrollingText from "./ScrollingText";
 import PixiImage from "./PixiImage";
 import SimpleScroll from "./SimpleScroll";
+import FullScreenWaterEffect from "./FullScreenWaterEffect";
 
 gsap.registerPlugin(ScrollTrigger);
 
 // --- 1. DEFINE MOBILE-SPECIFIC IMAGES ---
 // Left column for mobile with a mix of food, model, and jewellery
 const mobileLeftImages = [
-  "/mobile/img1.jpeg",   // food1
-  "/mobile/img11.jpeg",  // model2
-  "/mobile/img3.jpeg",   // food
-  "/mobile/img13.jpeg",  // jewellery
-  "/mobile/img5.jpeg",   // food
-  "/mobile/img-15.jpeg",  // model
-  "/mobile/img7.jpeg",   // food
-  "/mobile/img9.jpeg",   // food
-  "/mobile/img1.jpeg",   // food
-  "/mobile/img11.jpeg",  // model
-  "/mobile/img3.jpeg",   // food
-  "/mobile/img13.jpeg",  // jewellery
-  "/mobile/img5.jpeg",   // food
-  "/mobile/img-15.jpeg",  // model
-  "/mobile/img7.jpeg",   // food
-  "/mobile/img9.jpeg",   // food
+  "/mobile/1.jpeg",   // food1
+  "/mobile/2.jpeg",  // model2
+  "/mobile/3.jpeg",   // food
+  "/mobile/4.jpeg",  // jewellery
+  "/mobile/5.jpeg",   // food
+  "/mobile/7.jpeg",  // model
+  "/mobile/6.jpeg",   // food
+  "/mobile/8.jpeg",   // food
+  "/mobile/9.jpeg",   // food
+  "/mobile/10.jpeg",  // model
+  "/mobile/1.jpeg",   // food1
+  "/mobile/2.jpeg",  // model2
+  "/mobile/3.jpeg",   // food
+  "/mobile/4.jpeg",  // jewellery
 ];
 
 // Right column for mobile with the remaining mixed images
 const mobileRightImages = [
-  "/mobile/img2.jpeg",   // food
-  "/mobile/img12.jpeg",  // model
-  "/mobile/img4.jpeg",   // food
-  "/mobile/img-14.jpeg",  // model
-  "/mobile/img6.jpeg",   // food
-  "/mobile/img-16.jpeg",  // model
-  "/mobile/img8.jpeg",   // food
-  "/mobile/img10.jpeg",  // food
-    "/mobile/img2.jpeg",   // food
-  "/mobile/img12.jpeg",  // model
-  "/mobile/img2.jpeg",   // food
-  "/mobile/img12.jpeg",  // model
-  "/mobile/img4.jpeg",   // food
-  "/mobile/img-14.jpeg",  // model
-  "/mobile/img6.jpeg",   // food
-  "/mobile/img-16.jpeg",  // model
+  "/mobile/11.jpeg",   // food
+  "/mobile/15.jpeg",  // model
+  "/mobile/13.jpeg",   // food
+  "/mobile/14.jpeg",  // model
+  "/mobile/16.jpeg",   // food
+  "/mobile/12.jpeg",  // model
+  "/mobile/17.jpeg",   // food
+  "/mobile/19.jpeg",  // food
+  "/mobile/18.jpeg",  // food
+  "/mobile/20.jpeg",  // food
+  "/mobile/11.jpeg",   // food
+  "/mobile/15.jpeg",  // model
+  "/mobile/13.jpeg",   // food
+  "/mobile/14.jpeg",  // model
 ];
 
 
 // --- 2. RENAME ORIGINAL DESKTOP IMAGES ---
 // These arrays will be used for the desktop view only
 const desktopLeftImages = [
-  "/Image/img1.webp",
-  "/Image/img11.webp",
-  "/Image/img3.webp",
-  "/Image/img-14.webp",
-  "/Image/img5.webp",
-  "/Image/img13.webp",
-  "/Image/img7.webp",
-  "/Image/img-15.webp",
-  "/Image/img9.webp",
-  "/Image/img2.webp",
-  "/Image/img1.webp",
-  "/Image/img11.webp",
-  "/Image/img3.webp",
-  "/Image/img-14.webp",
-  "/Image/img5.webp",
-  "/Image/img13.webp",
-  "/Image/img7.webp",
-  "/Image/img-15.webp",
-  "/Image/img9.webp",
-  // "/Image/img2.webp",
+"/Image/1.png",   // food1
+  "/Image/2.webp",  // model2
+  "/Image/3.png",   // food
+  "/Image/4.png",  // jewellery
+  "/Image/5.webp",   // food
+  "/Image/7.webp",  // model
+  "/Image/6.png",   // food
+  "/Image/8.webp",   // food
+  "/Image/9.png",   // food
+  "/Image/10.png",  // model
+"/Image/1.png",   // food1
+  "/Image/2.webp",  // model2
+  "/Image/3.png",   // food
+  "/Image/4.png",  // jewellery
+  "/Image/5.webp",   // food
+  "/Image/7.webp",  // model
+  "/Image/6.png",   // food
+  "/Image/8.webp",   // food
+  "/Image/9.png",   // food
+  "/Image/10.png",  // model
 ];
 
 const desktopRightImages = [
-  "/Image/img10.webp",
-  "/Image/img-16.webp",
-  "/Image/img8.webp",
-  "/Image/img11.webp",
-  "/Image/img4.webp",
-  "/Image/img13.webp",
-  "/Image/img6.webp",
-  "/Image/img-14.webp",
-  "/Image/img12.webp",
-  "/Image/img5.webp",
-  "/Image/img10.webp",
-  "/Image/img-16.webp",
-  "/Image/img8.webp",
-  "/Image/img11.webp",
-  "/Image/img4.webp",
-  "/Image/img13.webp",
-  "/Image/img6.webp",
-  "/Image/img-14.webp",
-  "/Image/img12.webp",
-  // "/Image/img5.webp",
+  "/Image/11.webp",   // food
+  "/Image/15.webp",  // model
+  "/Image/13.png",   // food
+  "/Image/14.webp",  // model
+  "/Image/16.png",   // food
+  "/Image/12.png",  // model
+  "/Image/17.png",   // food
+  "/Image/19.png",  // food
+  "/Image/18.png",  // food
+  "/Image/20.png",  // food
+  "/Image/11.webp",   // food
+  "/Image/15.webp",  // model
+  "/Image/13.png",   // food
+  "/Image/14.webp",  // model
+  "/Image/16.png",   // food
+  "/Image/12.png",  // model
+  "/Image/17.png",   // food
+  "/Image/19.png",  // food
+  "/Image/18.png",  // food
+  "/Image/20.png",  // food
 ];
 
 function isMobileDevice() {
@@ -153,7 +150,7 @@ export default function EnhancedReverseStartLayout() {
   const rightImages = isMobile ? mobileRightImages : desktopRightImages;
 
   return (
-    <main className="pixi-page">
+    <main className="pixi-page relative ">
       {isMobile ? (
         <SimpleScroll
           containerRef={containerRef}

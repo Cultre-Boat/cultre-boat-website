@@ -13,7 +13,7 @@ export default function Navbar() {
   return (
     <>
       {/* Navbar */}
-      <nav className="fixed top-0 w-full z-50 flex justify-between items-center px-6 py-6 md:px-12 md:py-12 bg-transparent">
+      <nav className="fixed top-0 w-full z-50 flex justify-between items-center px-6 py-6 md:px-12 md:py-12 ">
         <div className="text-white font-bold h-10 justify-center items-center flex flex-row gap-4 -ml-5">
           <a href="/" className="flex flex-row gap-7 items-center">
             <img

@@ -8,27 +8,23 @@ import { DisplacementFilter } from "@pixi/filter-displacement";
 
 gsap.registerPlugin(ScrollTrigger);
 
-// 1. REMOVE the `maxScroll` and `onMaxScrollCalculated` props.
 const SimpleScroll = ({ containerRef, leftImages, rightImages }) => {
-  
   const canvasRef = useRef(null);
   const leftContainerRef = useRef(null);
   const rightContainerRef = useRef(null);
-  
-  // 2. ADD a ref to store the maxScroll value internally.
   const maxScrollRef = useRef(0);
+  const initialGapRef = useRef(0); // Store initial gap
 
-  // Remove maxScroll and onMaxScrollCalculated from the dependency array.
   useEffect(() => {
-     console.log(`Images received: Left=${leftImages.length}, Right=${rightImages.length}`);
+    console.log(`Images received: Left=${leftImages.length}, Right=${rightImages.length}`);
     if (!canvasRef.current || !containerRef.current) return;
 
-    // ... (PIXI application setup remains the same)
+    // Initialize PIXI application
     const app = new PIXI.Application({
       view: canvasRef.current,
       resizeTo: window,
       backgroundColor: 0x000000,
-      backgroundAlpha: 1,
+      backgroundAlpha: 1, // Transparent to show underlying content
       resolution: window.devicePixelRatio || 1,
       autoDensity: true,
     });
@@ -39,11 +35,12 @@ const SimpleScroll = ({ containerRef, leftImages, rightImages }) => {
     rightContainerRef.current = rightContainer;
     app.stage.addChild(leftContainer, rightContainer);
 
-    const imageWidth = window.innerWidth * 0.45;
+    // Set initial dimensions and gap
+    const imageWidth = window.innerWidth * 0.42;
     const imageHeight = imageWidth * (4 / 3);
-    const gap = window.innerHeight * 0.10;
+    initialGapRef.current = window.innerHeight * 0.05; // Fix gap based on initial viewport
 
-    // ... (Loader logic remains the same)
+    // Load images and create sprites
     const loader = new PIXI.Loader();
     const resourceMap = new Map();
 
@@ -59,19 +56,18 @@ const SimpleScroll = ({ containerRef, leftImages, rightImages }) => {
       resourceMap.set(uniqueName, src);
     });
 
-
-     loader.onError.add((error, loader, resource) => {
+    loader.onError.add((error, loader, resource) => {
       console.error(`PIXI Loader Error on resource: ${resource.url}`, error);
     });
 
     loader.load(() => {
-      // ... (Sprite creation remains the same)
+      // Create sprites with fixed gap
       leftImages.forEach((src, i) => {
         const uniqueName = `left_${i}_${src}`;
         const sprite = PIXI.Sprite.from(loader.resources[uniqueName].texture);
         sprite.width = imageWidth;
         sprite.height = imageHeight;
-        sprite.y = i * (imageHeight + gap);
+        sprite.y = i * (imageHeight + initialGapRef.current);
         leftContainer.addChild(sprite);
       });
 
@@ -80,7 +76,7 @@ const SimpleScroll = ({ containerRef, leftImages, rightImages }) => {
         const sprite = PIXI.Sprite.from(loader.resources[uniqueName].texture);
         sprite.width = imageWidth;
         sprite.height = imageHeight;
-        sprite.y = i * (imageHeight + gap);
+        sprite.y = i * (imageHeight + initialGapRef.current);
         rightContainer.addChild(sprite);
       });
 
@@ -91,7 +87,6 @@ const SimpleScroll = ({ containerRef, leftImages, rightImages }) => {
       };
       positionContainers();
 
-      // MODIFIED: This function now updates the ref instead of calling a prop.
       const calculateMaxScroll = () => {
         const leftColHeight = leftContainer.height;
         const rightColHeight = rightContainer.height;
@@ -100,17 +95,15 @@ const SimpleScroll = ({ containerRef, leftImages, rightImages }) => {
       };
       calculateMaxScroll();
 
-      
-
-       console.log("--- Calculation Details ---");
+      console.log("--- Calculation Details ---");
       console.log(`Sprites created: Left=${leftContainer.children.length}, Right=${rightContainer.children.length}`);
       console.log(`Container heights: Left=${leftContainer.height.toFixed(2)}px, Right=${rightContainer.height.toFixed(2)}px`);
       console.log(`Window height: ${window.innerHeight.toFixed(2)}px`);
+      console.log(`Initial gap: ${initialGapRef.current.toFixed(2)}px`);
       console.log(`Final maxScroll value: ${maxScrollRef.current.toFixed(2)}px`);
       console.log("---------------------------");
 
-
-
+      // GSAP animations
       gsap.set(leftContainer, { y: 0 });
       gsap.set(rightContainer, { y: -rightContainer.height + window.innerHeight });
 
@@ -121,8 +114,6 @@ const SimpleScroll = ({ containerRef, leftImages, rightImages }) => {
           scrollTrigger: {
             trigger: containerRef.current,
             start: "top top",
-            // 3. CHANGE `end` to a function that reads the ref's current value.
-            // This makes it dynamic and always correct on creation and resize.
             end: () => `+=${maxScrollRef.current}`,
             scrub: 1.5,
             invalidateOnRefresh: true,
@@ -135,7 +126,6 @@ const SimpleScroll = ({ containerRef, leftImages, rightImages }) => {
           scrollTrigger: {
             trigger: containerRef.current,
             start: "top top",
-            // 3. CHANGE `end` here as well.
             end: () => `+=${maxScrollRef.current}`,
             scrub: 1.5,
             invalidateOnRefresh: true,
@@ -143,7 +133,7 @@ const SimpleScroll = ({ containerRef, leftImages, rightImages }) => {
         });
       }, containerRef);
 
-      // ... (Displacement filter logic remains the same)
+      // Displacement filter
       const displacementSprite = PIXI.Sprite.from(
         "https://raw.githubusercontent.com/Pierrinho/elephant/master/pattern-clouds.jpg"
       );
@@ -158,31 +148,29 @@ const SimpleScroll = ({ containerRef, leftImages, rightImages }) => {
       rightContainer.filters = [displacementFilter];
 
       app.ticker.add(() => {
-        displacementSprite.x += 0.3;
-        displacementSprite.y += 0.3 ;
+        displacementSprite.x += 0.2;
+        displacementSprite.y += 0.2;
       });
 
       // Handle resize
       const handleResize = () => {
-        const newImageWidth = window.innerWidth * 0.45;
+        const newImageWidth = window.innerWidth * 0.42;
         const newImageHeight = newImageWidth * (4 / 3);
-        const newGap = window.innerHeight * 0.15;
 
+        // Update sprite sizes but keep initial gap
         leftContainer.children.forEach((sprite, i) => {
           sprite.width = newImageWidth;
           sprite.height = newImageHeight;
-          sprite.y = i * (newImageHeight + newGap);
+          sprite.y = i * (newImageHeight + initialGapRef.current);
         });
 
         rightContainer.children.forEach((sprite, i) => {
           sprite.width = newImageWidth;
           sprite.height = newImageHeight;
-          sprite.y = i * (newImageHeight + newGap);
+          sprite.y = i * (newImageHeight + initialGapRef.current);
         });
 
         positionContainers();
-        // Recalculate and update the ref on resize. GSAP will pick up the new
-        // value automatically because of `invalidateOnRefresh: true` and the function in `end`.
         calculateMaxScroll();
       };
 
@@ -195,13 +183,12 @@ const SimpleScroll = ({ containerRef, leftImages, rightImages }) => {
         app.destroy(true, { children: true, texture: true, baseTexture: true });
       };
     });
-    // MODIFIED: Clean up the dependency array.
   }, [containerRef, leftImages, rightImages]);
 
   return (
     <canvas
       ref={canvasRef}
-      className="fixed top-0 left-0 w-full h-full z-[0] opacity-[0.7]"
+      className="fixed top-0 left-0 w-full h-full z-[0] opacity-[0.9]"
     />
   );
 };

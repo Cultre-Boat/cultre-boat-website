@@ -3,9 +3,8 @@
 @import "tailwindcss";
 
 :root {
-  /* Ensure --background is always black or a very dark shade */
-  /* --background: #000000; Use #000000 for pure black */
-  --foreground: #f0f0f0; /* Set a light color for default text */
+  --background: #000000; /* Solid black, no alpha */
+  --foreground: #f0f0f0;
 }
 
 /* Remove or modify the dark mode override if you always want black */
@@ -29,17 +28,7 @@ body, html {
   padding: 0;
 }
 
-.pixi-page {
-  background: transparent !important;
-}
 
-
-/* Remove the duplicate body font-family declaration */
-/*
-body {
-  font-family: Arial, Helvetica, sans-serif;
-}
-*/
 
 /* Keep your existing @keyframes, .animate-marquee-left, .animate-marquee-right */
 @keyframes marquee-left {
@@ -345,11 +334,27 @@ html, body {
   /* Add any other styles like font-size, color, etc. */
 }
 
-/* Ensure the parent container supports absolute positioning */
 .pixi-page {
   position: relative;
   width: 100%;
-  overflow-y: auto;
   min-height: 100vh;
+  background: #000000; /* Explicitly set to solid black */
+  overflow-y: auto;
 }
 
+
+@media (max-width: 767px) {
+  .break-words {
+    line-height: 1.25; /* Ensure 3 lines fit well */
+  }
+}
+
+@media (min-width: 768px) {
+  .break-words {
+    line-height: 1.75; /* Adjust for 2 lines */
+  }
+}
+
+.hidden-water-text {
+  opacity: 0 !important;
+}

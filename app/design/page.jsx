@@ -1,68 +1,145 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { gsap } from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { useState, useEffect, useRef } from "react";
+import * as PIXI from "pixi.js";
+import { DisplacementFilter } from "@pixi/filter-displacement";
 import Last from "../components/design-last";
 import Logos from "../components/brand-logos";
 import Mailers from "../components/mailers";
 import LIZ from "../components/designLiz";
 import MovingFog from "../components/MovingFog";
+import FullScreenWaterEffect from "../components/FullScreenWaterEffect";
+import PixiWaterImages from "../components/PixiWaterImages";
 
-gsap.registerPlugin(ScrollTrigger);
+const PixiWaterText = ({ containerRef }) => {
+  const pixiContainerRef = useRef(null);
+
+  useEffect(() => {
+    if (!pixiContainerRef.current || !containerRef.current) return;
+
+    // Get text elements within containerRef, excluding no-water-effect
+    const textElements = containerRef.current.querySelectorAll(
+      "h1:not(.no-water-effect), h2:not(.no-water-effect), h3:not(.no-water-effect), p:not(.no-water-effect), a:not(.no-water-effect)"
+    );
+    if (textElements.length === 0) return;
+
+    // Initialize PIXI application
+    const app = new PIXI.Application({
+      width: window.innerWidth,
+      height: window.innerHeight,
+      backgroundColor: 0x000000,
+      backgroundAlpha: 0,
+      resolution: window.devicePixelRatio || 1,
+      autoDensity: true,
+    });
+    pixiContainerRef.current.appendChild(app.view);
+    app.view.style.position = "absolute";
+    app.view.style.top = "0";
+    app.view.style.left = "0";
+    app.view.style.pointerEvents = "none";
+
+    // Displacement sprite with fallback
+    const displacementSprite = PIXI.Sprite.from("/pattern-clouds.jpg");
+    displacementSprite.texture.baseTexture.on("error", () => {
+      console.error("Failed to load /pattern-clouds.jpg, using fallback");
+      displacementSprite.texture = PIXI.Texture.from("https://i.imgur.com/3PTiU4U.jpg");
+    });
+    displacementSprite.texture.baseTexture.wrapMode = PIXI.WRAP_MODES.REPEAT;
+    displacementSprite.alpha = 0;
+    displacementSprite.width = window.innerWidth;
+    displacementSprite.height = window.innerHeight;
+    const displacementFilter = new DisplacementFilter(displacementSprite);
+    displacementFilter.scale.set(10, 10);
+
+    app.stage.addChild(displacementSprite);
+
+    // Create PIXI text for each DOM text element
+    const textSprites = [];
+    textElements.forEach((el) => {
+      const text = el.textContent;
+      const style = window.getComputedStyle(el);
+      const rect = el.getBoundingClientRect();
+
+      const textSprite = new PIXI.Text(text, {
+        fontFamily: style.fontFamily,
+        fontSize: parseFloat(style.fontSize),
+        fontWeight: style.fontWeight,
+        fill: style.color,
+        align: "left",
+      });
+
+      textSprite.x = rect.left + rect.width / 2;
+      textSprite.y = rect.top + rect.height / 2;
+      textSprite.anchor.set(0.5);
+      textSprite.filters = [displacementFilter];
+
+      app.stage.addChild(textSprite);
+      textSprites.push({ sprite: textSprite, element: el });
+    });
+
+    // Animate displacement
+    app.ticker.add(() => {
+      displacementSprite.x += 3;
+      displacementSprite.y += 3;
+    });
+
+    // Update positions on resize and scroll
+    const updatePositions = () => {
+      textSprites.forEach(({ sprite, element }) => {
+        const rect = element.getBoundingClientRect();
+        sprite.x = rect.left + rect.width / 2;
+        sprite.y = rect.top + rect.height / 2;
+        sprite.visible = rect.top >= 0 && rect.bottom <= window.innerHeight;
+      });
+      app.renderer.resize(window.innerWidth, window.innerHeight);
+      displacementSprite.width = window.innerWidth;
+      displacementSprite.height = window.innerHeight;
+    };
+
+    window.addEventListener("resize", updatePositions);
+    window.addEventListener("scroll", updatePositions);
+
+    // Cleanup
+    return () => {
+      window.removeEventListener("resize", updatePositions);
+      window.removeEventListener("scroll", updatePositions);
+      app.destroy(true, { children: true, texture: true, baseTexture: true });
+      if (pixiContainerRef.current) pixiContainerRef.current.innerHTML = "";
+    };
+  }, [containerRef]);
+
+  return <div ref={pixiContainerRef} className="fixed top-0 left-0 w-full h-full pointer-events-none z-[2]" />;
+};
 
 export default function DesignPortfolio() {
   const [videoUrl, setVideoUrl] = useState(null);
   const [isVideoOpen, setIsVideoOpen] = useState(false);
+  const contentRef = useRef(null);
 
   useEffect(() => {
-    const imageTurbulence = document.querySelector("#waterFilter feTurbulence");
-    const imageDisplacementMap = document.querySelector(
-      "#waterFilter feDisplacementMap"
+    if (!contentRef.current) return;
+
+    // Hide text elements within contentRef, excluding no-water-effect
+    const textElements = contentRef.current.querySelectorAll(
+      "h1:not(.no-water-effect), h2:not(.no-water-effect), h3:not(.no-water-effect), p:not(.no-water-effect), a:not(.no-water-effect)"
     );
+    textElements.forEach((el) => {
+      el.style.opacity = "0";
+    });
 
-    if (imageTurbulence && imageDisplacementMap) {
-      document.querySelectorAll("img").forEach((img) => {
-        img.style.filter = "url(#waterFilter)";
+    // Debug image loading
+    const images = contentRef.current.querySelectorAll("img");
+    images.forEach((img) => {
+      if (!img.complete || img.naturalWidth === 0) {
+        console.error(`Failed to load image: ${img.src}`);
+      }
+    });
+
+    return () => {
+      textElements.forEach((el) => {
+        el.style.opacity = "1";
       });
-
-      gsap.set(imageDisplacementMap, { attr: { scale: 12 } });
-
-      gsap.to(imageTurbulence, {
-        attr: { baseFrequency: "0.019 0.02" },
-        duration: 20,
-        repeat: -1,
-        yoyo: true,
-        scrollTrigger: {
-          trigger: "section",
-          start: "top bottom",
-          toggleActions: "play pause resume reset",
-        },
-      });
-    }
-
-    const textTurbulence = document.querySelector(
-      "#textWaterFilter feTurbulence"
-    );
-    const textDisplacementMap = document.querySelector(
-      "#textWaterFilter feDisplacementMap"
-    );
-
-    if (textTurbulence && textDisplacementMap) {
-      document.querySelectorAll("h1, h2, h3, p, a").forEach((el) => {
-        el.style.filter = "url(#textWaterFilter)";
-      });
-
-      gsap.set(textDisplacementMap, { attr: { scale: 10 } });
-
-      gsap.to(textTurbulence, {
-        attr: { baseFrequency: "0.02 0.10" },
-        duration: 15,
-        ease: "sine.inOut",
-        repeat: -1,
-        yoyo: true,
-      });
-    }
+    };
   }, []);
 
   const openVideoModal = (url) => {
@@ -79,48 +156,17 @@ export default function DesignPortfolio() {
 
   return (
     <>
-      <svg className="absolute w-0 h-0 pointer-events-none">
-        <filter id="waterFilter">
-          <feTurbulence
-            type="fractalNoise"
-            baseFrequency="0.005 0.008"
-            numOctaves="1"
-            result="noiseForImage"
-          />
-          <feDisplacementMap
-            in="SourceGraphic"
-            in2="noiseForImage"
-            scale="0"
-            xChannelSelector="R"
-            yChannelSelector="G"
-          />
-        </filter>
-        <filter id="textWaterFilter">
-          <feTurbulence
-            type="fractalNoise"
-            baseFrequency="0.01 0.01"
-            numOctaves="1"
-            result="noiseForText"
-          />
-          <feDisplacementMap
-            in="SourceGraphic"
-            in2="noiseForText"
-            scale="0"
-            xChannelSelector="R"
-            yChannelSelector="G"
-          />
-        </filter>
-      </svg>
-      <div className="text-white leading-relaxed">
+      <PixiWaterText containerRef={contentRef} />
+      <PixiWaterImages containerRef={contentRef} />
+      <div ref={contentRef} className="text-white leading-relaxed bg-[#000000]">
         <div className="max-w-6xl mx-auto px-4">
           {/* Header Section */}
-          <section className="py-2 relative mt-25 text-center sm:text-left">
-            <div className="flex flex-col lg:flex-row items-center min-h-[400px] lg:min-h-[400px] gap-5 lg:gap-10 md:mt-20">
+          <section className="py-2 relative mt-25 text-center sm:text-left z-[10]">
+            <div className="flex flex-col lg:flex-row items-center min-h-[400px] lg:min-h-[400px] gap-5 lg:gap-10 md:mt-0">
               <div className="flex-1 px-4 lg:px-5">
-               <p className="text-lg tracking-[2px] uppercase text-gray-500 my-5">
-  DECODING BRANDING
-</p>
-
+                <p className="text-lg tracking-[2px] uppercase text-gray-500 my-5">
+                  DECODING BRANDING
+                </p>
                 <h1 className="text-5xl sm:text-6xl lg:text-7xl xl:text-8xl font-light tracking-tight mb-5 leading-none">
                   DESIGN
                 </h1>
@@ -131,23 +177,24 @@ export default function DesignPortfolio() {
                   Tone Of Voice
                 </p>
               </div>
-              <div className="flex-1 relative w-full max-w-md lg:max-w-2xl mx-auto lg:mx-0">
+              <div className="flex-1 relative w-full max-w-md lg:max-w-2xl mx-auto lg:mx-0 z-[10]">
                 <img
                   src="/Design/Design-image1.webp"
                   alt="Traditional Fashion Design"
                   width={600}
                   height={400}
                   className="w-full h-auto opacity-90"
+                  onError={(e) => console.error(`Failed to load image: ${e.target.src}`)}
                 />
               </div>
             </div>
           </section>
 
           {/* Projects Grid */}
-          <section className="py-2 mt-10 md:mt-0 text-center sm:text-left">
+          <section className="py-2 mt-10 md:mt-0 text-center sm:text-left z-[10]">
             <div className="flex flex-col lg:flex-row gap-0 lg:gap-24 justify-center mb-10 mx-auto">
-              <div className="relative overflow-hidden w-full lg:w-[650px] h-[335px] md:mt-5 -mb-6 md:mb-0 mx-auto lg:mx-0">
-                <span className="absolute left-0 z-10 bg-black text-white py-2.5 px-2.5 rounded-tr-lg rounded-br-lg text-sm lg:text-base tracking-wider">
+              <div className="relative overflow-hidden w-full lg:w-[650px] h-[335px] md:mt-5 -mb-6 md:mb-0 mx-auto lg:mx-0 z-[10]">
+                <span className="absolute left-0 z-[11] bg-black text-white py-2.5 px-2.5 rounded-tr-lg rounded-br-lg text-sm lg:text-base tracking-wider">
                   For GURORGANIC by Pernia Qureshi
                 </span>
                 <img
@@ -156,35 +203,35 @@ export default function DesignPortfolio() {
                   width={650}
                   height={320}
                   className="w-full h-auto object-contain"
+                  onError={(e) => console.error(`Failed to load image: ${e.target.src}`)}
                 />
               </div>
-              <div className="relative overflow-hidden w-full lg:w-[500px] mx-auto lg:mx-0">
+              <div className="relative overflow-hidden w-full lg:w-[500px] mx-auto lg:mx-0 z-[10]">
                 <img
                   src="/Design/Design-image3-1.webp"
                   alt="Fashion Photography"
                   width={500}
                   height={350}
                   className="w-full h-auto mt-5"
+                  onError={(e) => console.error(`Failed to load image: ${e.target.src}`)}
                 />
               </div>
             </div>
           </section>
 
           {/* Creative Direction Section with Video */}
-          <section className="py-2 text-center">
-            <h2 className="text-xl lg:text-2xl font-light tracking-[2px] uppercase">
+          <section className="py-2 text-center z-[10]">
+            <h2 className="text-xl lg:text-2xl font-light tracking-[2px] uppercase md:mt:4">
               CREATIVE DIRECTION AND STRATEGY
             </h2>
-            <p className="text-xs lg:text-sm text-gray-500 italic mb-0 md:mb-14">
+            <p className="text-xs lg:text-sm text-gray-500 italic mb-0 md:mb-18">
               Brand Positioning
             </p>
             <div className="flex flex-col lg:flex-row gap-3 lg:gap-40 justify-center mx-4 mb-9 items-end">
-              <div className="relative overflow-hidden w-full max-w-[600px] mx-auto lg:mx-0">
+              <div className="relative overflow-hidden w-full max-w-[600px] mx-auto lg:mx-0 z-[10]">
                 <button
                   onClick={() =>
-                    openVideoModal(
-                      "https://www.youtube.com/watch?v=C-4C4VnyZco"
-                    )
+                    openVideoModal("https://www.youtube.com/watch?v=C-4C4VnyZco")
                   }
                   className="w-full focus:outline-none block"
                   aria-label="Play video"
@@ -195,6 +242,7 @@ export default function DesignPortfolio() {
                     width={600}
                     height={350}
                     className="w-full h-auto object-contain grayscale hover:grayscale-0 transition-all duration-300"
+                    onError={(e) => console.error(`Failed to load image: ${e.target.src}`)}
                   />
                   <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
                     <div className="w-16 h-16 md:w-20 md:h-20 bg-white/30 rounded-full flex items-center justify-center backdrop-blur-sm">
@@ -215,19 +263,20 @@ export default function DesignPortfolio() {
                           strokeLinejoin="round"
                           strokeWidth="2"
                           d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                        />g
+                        />
                       </svg>
                     </div>
                   </div>
                 </button>
               </div>
-              <div className="relative overflow-hidden w-full lg:w-[50%] max-w-[350px] mx-auto lg:mx-0">
+              <div className="relative overflow-hidden w-full lg:w-[50%] max-w-[350px] mx-auto lg:mx-0 z-[10]">
                 <img
                   src="/Design/Design-image5-1.webp"
                   alt="Product Photography"
                   width={600}
                   height={350}
                   className="w-full h-auto object-contain"
+                  onError={(e) => console.error(`Failed to load image: ${e.target.src}`)}
                 />
               </div>
             </div>
@@ -235,15 +284,15 @@ export default function DesignPortfolio() {
 
           {/* Video Modal */}
           {isVideoOpen && (
-            <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+            <div className="fixed inset-0 z-[50] flex items-center justify-center p-4">
               <div
                 className="absolute inset-0 bg-black/80 backdrop-blur-md"
                 onClick={closeVideoModal}
               ></div>
-              <div className="relative z-10 w-full max-w-4xl rounded-lg overflow-hidden">
+              <div className="relative z-[51] w-full max-w-4xl rounded-lg overflow-hidden">
                 <button
                   onClick={closeVideoModal}
-                  className="absolute top-2 right-2 z-20 bg-black/50 hover:bg-black/70 text-white p-2 rounded-full transition-colors"
+                  className="absolute top-2 right-2 z-[52] bg-black/50 hover:bg-black/70 text-white p-2 rounded-full transition-colors"
                   aria-label="Close video"
                 >
                   <svg
@@ -278,7 +327,7 @@ export default function DesignPortfolio() {
           )}
 
           {/* Visual Vocabulary Section */}
-          <section className="py-2 text-center">
+          <section className="py-2 text-center z-[10]">
             <h2 className="text-xl lg:text-2xl font-light tracking-[2px] uppercase">
               VISUAL VOCABULARY
             </h2>
@@ -286,29 +335,31 @@ export default function DesignPortfolio() {
               Exhibition Guidelines
             </p>
             <div className="flex flex-col lg:flex-row gap-5 lg:gap-24 justify-center mx-4 mb-9">
-              <div className="relative overflow-hidden w-[70%] lg:max-w-[400px] mx-auto lg:mx-0">
+              <div className="relative overflow-hidden w-[70%] lg:max-w-[400px] mx-auto lg:mx-0 z-[10]">
                 <img
                   src="/Design/image-2.webp"
                   alt="Visual Vocabulary Design 1"
                   width={600}
                   height={450}
                   className="w-full h-full object-cover"
+                  onError={(e) => console.error(`Failed to load image: ${e.target.src}`)}
                 />
               </div>
-              <div className="relative overflow-hidden w-[70%] lg:max-w-[400px] mx-auto lg:mx-0">
+              <div className="relative overflow-hidden w-[70%] lg:max-w-[400px] mx-auto lg:mx-0 z-[10]">
                 <img
                   src="/Design/image-3.webp"
                   alt="Visual Vocabulary Design 2"
                   width={600}
                   height={450}
                   className="w-full h-full object-cover"
+                  onError={(e) => console.error(`Failed to load image: ${e.target.src}`)}
                 />
               </div>
             </div>
           </section>
 
           {/* Print Section */}
-          <section className="text-center py-2">
+          <section className="text-center py-2 z-[10]">
             <h2 className="text-xl lg:text-2xl font-light tracking-[2px] uppercase">
               PRINT AND DIGITAL DESIGN
             </h2>
@@ -316,91 +367,125 @@ export default function DesignPortfolio() {
               Collaterals
             </p>
             <div className="flex flex-col lg:flex-row gap-5 lg:gap-24 justify-center mx-4 mb-5">
-              <div className="relative overflow-hidden w-[60%] lg:max-w-[350px] mx-auto lg:mx-0">
+              <div className="relative overflow-hidden w-[60%] lg:max-w-[350px] mx-auto lg:mx-0 z-[10]">
                 <img
                   src="/Design/image-4.webp"
                   alt="Print Design 1"
                   width={600}
                   height={450}
                   className="w-full h-full object-cover"
+                  onError={(e) => console.error(`Failed to load image: ${e.target.src}`)}
                 />
               </div>
-              <div className="relative overflow-hidden w-[60%] lg:max-w-[350px] mx-auto lg:mx-0">
+              <div className="relative overflow-hidden w-[60%] lg:max-w-[350px] mx-auto lg:mx-0 z-[10]">
                 <img
                   src="/Design/image-5.webp"
                   alt="Print Design 2"
                   width={600}
                   height={450}
                   className="w-full h-full object-cover"
+                  onError={(e) => console.error(`Failed to load image: ${e.target.src}`)}
                 />
               </div>
             </div>
           </section>
 
           {/* Portfolio Collage Section */}
-          <section className="py-2 text-center">
+          <section className="py-2 text-center z-[10]">
             <div className="mb-12">
               <hr className="w-3/5 h-px bg-gray-600 border-none mx-auto mb-10" />
-             <p className="text-xl lg:text-xl xl:text-2xl 2xl:text-3xl 3xl:text-4xl max-w-[90%] lg:max-w-[60%] mx-auto leading-7 mt-2 font-light">
-  Explore our latest projects showcasing our design capabilities
-  across various mediums and industries.
-</p>
+             <div className="text-center">
+  {/* Mobile version (screens < 768px) */}
+  <div className="block md:hidden">
+    <p className="text-xl lg:text-xl xl:text-2xl 2xl:text-3xl 3xl:text-4xl max-w-[90%] sm:max-w-[95%] mx-auto leading-7 mt-2 font-light break-words">
+      Explore our latest projects showcasing
+    </p>
+    <p className="text-xl lg:text-xl xl:text-2xl 2xl:text-3xl 3xl:text-4xl max-w-[90%] sm:max-w-[95%] mx-auto leading-7 mt-2 font-light break-words">
+      our design capabilities across various .
+    </p>
+    <p className="text-xl lg:text-xl xl:text-2xl 2xl:text-3xl 3xl:text-4xl max-w-[90%] sm:max-w-[95%] mx-auto leading-7 mt-2 font-light break-words">
+      mediums and industries.
+    </p>
+  </div>
 
-
+  {/* Desktop version (screens >= 768px) */}
+  <div className="hidden md:block">
+    <p className="text-xl lg:text-xl xl:text-2xl 2xl:text-3xl 3xl:text-4xl max-w-[90%] sm:max-w-[95%] mx-auto leading-7 mt-2 font-light break-words">
+      Explore our latest projects showcasing our design
+    </p>
+    <p className="text-xl lg:text-xl xl:text-2xl 2xl:text-3xl 3xl:text-4xl max-w-[90%] sm:max-w-[95%] mx-auto leading-7 mt-2 font-light break-words">
+      capabilities across various mediums and industries.
+    </p>
+  </div>
+</div>
             </div>
             <div className="flex flex-col lg:flex-row gap-4 lg:gap-5 items-start justify-center px-4">
-              <div className="flex flex-col gap-4 w-full max-w-lg lg:max-w-xl mx-auto lg:mx-0">
+              <div className="flex flex-col gap-4 w-full max-w-lg lg:max-w-xl mx-auto lg:mx-0 z-[10]">
                 <img
                   src="/Mailer/1.webp"
                   alt="Portfolio Item 1"
                   width={570}
                   height={400}
+                  className="w-full h-auto object-contain z-[10]"
+                  onError={(e) => console.error(`Failed to load image: ${e.target.src}`)}
                 />
                 <img
                   src="/Mailer/4.webp"
                   alt="Portfolio Item 4"
                   width={570}
                   height={400}
+                  className="w-full h-auto object-contain z-[10]"
+                  onError={(e) => console.error(`Failed to load image: ${e.target.src}`)}
                 />
                 <img
                   src="/Mailer/6.webp"
                   alt="Portfolio Item 6"
                   width={570}
                   height={400}
+                  className="w-full h-auto object-contain z-[10]"
+                  onError={(e) => console.error(`Failed to load image: ${e.target.src}`)}
                 />
               </div>
-              <div className="flex flex-col gap-4 w-full max-w-lg lg:max-w-xl mx-auto lg:mx-0">
+              <div className="flex flex-col gap-4 w-full max-w-lg lg:max-w-xl mx-auto lg:mx-0 z-[10]">
                 <img
                   src="/Mailer/2.webp"
                   alt="Portfolio Item 2"
                   width={570}
                   height={400}
+                  className="w-full h-auto object-contain z-[10]"
+                  onError={(e) => console.error(`Failed to load image: ${e.target.src}`)}
                 />
                 <img
                   src="/Mailer/5.webp"
                   alt="Portfolio Item 5"
                   width={570}
                   height={400}
+                  className="w-full h-auto object-contain z-[10]"
+                  onError={(e) => console.error(`Failed to load image: ${e.target.src}`)}
                 />
                 <img
                   src="/Mailer/7.webp"
                   alt="Portfolio Item 7"
                   width={570}
                   height={400}
+                  className="w-full h-auto object-contain z-[10]"
+                  onError={(e) => console.error(`Failed to load image: ${e.target.src}`)}
                 />
                 <img
                   src="/Mailer/Group.webp"
                   alt="Portfolio Item 3"
                   width={570}
                   height={400}
+                  className="w-full h-auto object-contain z-[10]"
+                  onError={(e) => console.error(`Failed to load image: ${e.target.src}`)}
                 />
               </div>
             </div>
             <hr className="w-3/5 h-px bg-gray-600 border-none mx-auto mb-5 mt-15" />
           </section>
 
-          {/* Logos Section (Unchanged) */}
-          <section className="py-2">
+          {/* Logos Section */}
+          <section className="py-2 z-[10]">
             <Logos />
           </section>
         </div>

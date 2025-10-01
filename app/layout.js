@@ -6,6 +6,7 @@ import { bellotaText } from './fonts';
 import VFXCanvas from '../app/components/VFXWrapper';
 import Expand from '../app/components/expand';
 import ClientLoadingWrapper from '../app/components/clientloadingwrapper';
+import FullScreenScreenWaterEffect from "./components/FullScreenWaterEffect";
 
 
 export const metadata = {
@@ -22,6 +23,7 @@ export default function RootLayout({ children }) {
         cz-shortcut-listen="true"
       >
         <ClientLoadingWrapper>
+          <FullScreenScreenWaterEffect/>
           <Navbar />
           <CustomCursor />
           <Expand>{children}</Expand>

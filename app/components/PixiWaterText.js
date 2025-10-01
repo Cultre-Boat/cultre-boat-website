@@ -45,8 +45,8 @@ export default function PixiWaterText({ text }) {
 
     // Animate displacement
     app.ticker.add(() => {
-      displacementSprite.x += 1;
-      displacementSprite.y += 1;
+      displacementSprite.x += 3;
+      displacementSprite.y += 3;
     });
 
     return () => {

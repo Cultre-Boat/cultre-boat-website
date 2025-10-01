@@ -1,16 +1,17 @@
 "use client";
 
-import React from "react";
+import React, { useRef } from "react";
 import Hero from "../PR/hero";
 import Second from "../PR/second";
 import Third from "../PR/second/third";
 import Influencers from "./second/influencers";
 import Stylist from "./second/stylist";
-// import WaterEffect from "../../app/components/WaterEffect";
-import MovingFog from "../../app/components/MovingFog";
+import PixiWaterImages from "../../app/components/PixiWaterImages";
+import PixiWaterText from "../../app/PR/PixiWaterText";
+import FullScreenScreenWaterEffect from "../components/FullScreenWaterEffect";
 
 export default function PRPortfolio() {
-  // Object containing images and their associated links
+  const contentRef = useRef(null);
   const fashionImages = [
     { src: "/PR-images/1.webp", link: "#" },
     { src: "/PR-images/2.webp", link: "#" },
@@ -31,30 +32,33 @@ export default function PRPortfolio() {
   ];
 
   return (
-    <div className="text-white min-h-screen p-8 px-0">
-      {/* <MovingFog /> */}
-      <Hero />
-      <Second />
-      {/* Fashion Images Grid */}
-      <div className="px-4 sm:px-4 md:px-6 lg:px-10 mt-25">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-10 mb-8">
-          {fashionImages.map((image, index) => (
-            <div key={index} className="col-span-1 w-full flex justify-center">
-              <img
-                src={image.src}
-                alt={`Fashion ${index + 1}`}
-                width={400} // set a width
-                height={400} // set a height
-                className=" object-contain"
-              />
-            </div>
-          ))}
+    <>
+      <div className="text-white min-h-screen p-8 px-0" ref={contentRef}>
+        
+        <PixiWaterImages containerRef={contentRef} />
+          <PixiWaterText containerRef={contentRef} />
+        <Hero />
+        <Second />
+        {/* Fashion Images Grid */}
+        <div className="px-4 sm:px-4 md:px-6 lg:px-10 mt-25">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-10 mb-8">
+            {fashionImages.map((image, index) => (
+              <div key={index} className="col-span-1 w-full flex justify-center">
+                <img
+                  src={image.src}
+                  alt={`Fashion ${index + 1}`}
+                  width={400}
+                  height={400}
+                  className="object-contain"
+                />
+              </div>
+            ))}
+          </div>
         </div>
+        <Third />
+        <Influencers />
+        <Stylist />
       </div>
-
-      <Third />
-      <Influencers />
-      <Stylist />
-    </div>
+    </>
   );
 }

@@ -5,6 +5,7 @@ import { gsap } from "gsap"; // Import GSAP
 import { createClient } from "@supabase/supabase-js";
 import MovingFog from "../components/MovingFog";
 import { FaFacebookF, FaInstagram, FaLinkedinIn } from "react-icons/fa";
+import FullScreenScreenWaterEffect from "../components/FullScreenWaterEffect";
 
 // Initialize Supabase
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -94,7 +95,6 @@ export default function ContactForm() {
 
   return (
     <div className="relative mt-30 z-30 md:mt-40 text-white w-full px-4 md:px-8 lg:px-16 tracking-widest mb-20 md:mb-40 overflow-hidden">
-      
        <svg className="absolute w-0 h-0 pointer-events-none">
        
         <filter id="textWaterFilter">
