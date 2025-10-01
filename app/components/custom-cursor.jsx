@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import { useEffect, useRef, useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { useEffect, useRef, useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 
 export default function CustomCursor() {
   const cursorRef = useRef(null);
@@ -21,34 +21,42 @@ export default function CustomCursor() {
     };
 
     checkIfMobile();
-    window.addEventListener('resize', checkIfMobile);
+    window.addEventListener("resize", checkIfMobile);
 
     const handleMouseMove = (e) => {
       if (!isMobile) {
-        posRef.current = { 
-          x: e.clientX, 
+        posRef.current = {
+          x: e.clientX,
           y: e.clientY,
         };
       }
     };
 
-    window.addEventListener('mousemove', handleMouseMove);
+    window.addEventListener("mousemove", handleMouseMove);
 
     const updateCursorPosition = () => {
       if (isMobile) return;
 
       // Smooth trailing effect
       trailPosRef.current = {
-        x: trailPosRef.current.x + (posRef.current.x - trailPosRef.current.x) * 0.2,
-        y: trailPosRef.current.y + (posRef.current.y - trailPosRef.current.y) * 0.2,
+        x:
+          trailPosRef.current.x +
+          (posRef.current.x - trailPosRef.current.x) * 0.4,
+        y:
+          trailPosRef.current.y +
+          (posRef.current.y - trailPosRef.current.y) * 0.4,
       };
 
       if (cursorRef.current) {
-        cursorRef.current.style.transform = `translate(${posRef.current.x - 1}px, ${posRef.current.y - 1}px)`;
+        cursorRef.current.style.transform = `translate(${
+          posRef.current.x - 1
+        }px, ${posRef.current.y - 1}px)`;
       }
 
       if (trailRef.current) {
-        trailRef.current.style.transform = `translate(${trailPosRef.current.x - 32}px, ${trailPosRef.current.y - 32}px)`;
+        trailRef.current.style.transform = `translate(${
+          trailPosRef.current.x - 32
+        }px, ${trailPosRef.current.y - 32}px)`;
       }
 
       // Only add smoke if mouse position has changed and throttled
@@ -57,7 +65,8 @@ export default function CustomCursor() {
         posRef.current.y !== prevPosRef.current.y
       ) {
         const now = performance.now();
-        if (now - lastSmokeTimeRef.current >= 100) { // Throttle to every 50ms for trail
+        if (now - lastSmokeTimeRef.current >= 100) {
+          // Throttle to every 50ms for trail
           setSmokeEffects((prev) => [
             ...prev,
             {
@@ -85,8 +94,8 @@ export default function CustomCursor() {
     animationFrameRef.current = requestAnimationFrame(updateCursorPosition);
 
     return () => {
-      window.removeEventListener('mousemove', handleMouseMove);
-      window.removeEventListener('resize', checkIfMobile);
+      window.removeEventListener("mousemove", handleMouseMove);
+      window.removeEventListener("resize", checkIfMobile);
       cancelAnimationFrame(animationFrameRef.current);
     };
   }, [isMobile]);
@@ -106,7 +115,7 @@ export default function CustomCursor() {
         ref={trailRef}
         className="fixed top-0 left-0 w-20 h-20 border-2 border-blue-500 rounded-full pointer-events-none z-40 transition-transform duration-300 ease-out"
         style={{
-          borderWidth: '3px',
+          borderWidth: "3px",
           opacity: 0.8,
         }}
       ></div>
@@ -118,21 +127,22 @@ export default function CustomCursor() {
             key={smoke.id}
             className="fixed w-48 h-48 rounded-full pointer-events-none z-30"
             style={{
-              left: smoke.x - 20, // Center the 40px smoke (40/2 = 20)
-              top: smoke.y - 20,
-              background: 'radial-gradient(circle, rgba(200, 200, 200, 0.5) 0%, rgba(200, 200, 200, 0) 80%)',
+              left: smoke.x - 40, // Center the 40px smoke (40/2 = 20)
+              top: smoke.y - 40,
+              background:
+                "radial-gradient(circle, rgba(255,255,255,0.7) 0%, rgba(200,200,255,0) 90%)", // brighter center, bluish scattering
+              filter: "blur(12px)",
             }}
-            initial={{ opacity: 0.2, scale: 0.8 }}
-            animate={{ opacity: 0, scale: 1.3 }}
+            initial={{ opacity: 0.4, scale: 0.8 }}
+            animate={{ opacity: 0, scale: 1.6 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 1.5, ease: 'easeOut' }}
+            transition={{ duration: 1.5, ease: "easeOut" }}
           />
         ))}
       </AnimatePresence>
     </>
   );
 }
-
 
 // OLD Cursor
 
@@ -158,8 +168,8 @@ export default function CustomCursor() {
 
 //     const handleMouseMove = (e) => {
 //       if (!isMobile) {
-//         posRef.current = { 
-//           x: e.clientX, 
+//         posRef.current = {
+//           x: e.clientX,
 //           y: e.clientY,
 //         };
 //       }
@@ -178,7 +188,7 @@ export default function CustomCursor() {
 //       if (cursorRef.current) {
 //         cursorRef.current.style.transform = `translate(${posRef.current.x - 1}px, ${posRef.current.y - 1}px)`;
 //       }
-      
+
 //       if (trailRef.current) {
 //         trailRef.current.style.transform = `translate(${trailPosRef.current.x - 32}px, ${trailPosRef.current.y - 32}px)`;
 //       }
