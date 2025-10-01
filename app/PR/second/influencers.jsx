@@ -4,12 +4,12 @@ import Image from 'next/image';
 
 export default function Influencers() {
     const productImages = [
-        { src: '/Influencers/1 28.webp', alt: 'Product 1' },
-        { src: '/Influencers/1 29.webp', alt: 'Product 2' },
-        { src: '/Influencers/1 30.webp', alt: 'Product 3' },
-        { src: '/Influencers/1 31.webp', alt: 'Product 4' },
-        { src: '/Influencers/1 32.webp', alt: 'Product 5' },
-        { src: '/Influencers/1 33.webp', alt: 'Product 6' },
+        { src: '/Influencers/1_28.webp', alt: 'Product 1' },
+        { src: '/Influencers/1_29.webp', alt: 'Product 2' },
+        { src: '/Influencers/1_30.webp', alt: 'Product 3' },
+        { src: '/Influencers/1_31.webp', alt: 'Product 4' },
+        { src: '/Influencers/1_32.webp', alt: 'Product 5' },
+        { src: '/Influencers/1_33.webp', alt: 'Product 6' },
     ]
 
     return (

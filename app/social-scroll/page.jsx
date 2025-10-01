@@ -6,8 +6,7 @@ import * as PIXI from "pixi.js";
 import { DisplacementFilter } from "@pixi/filter-displacement";
 
 export default function BrandShowcase() {
-   const brands = [
-    // Your brands array remains unchanged
+  const brands = [
     {
       name: "AMAYRA by Bagrecha Gems",
       slug: "/Brands/amayra-by-bagrecha-gems",
@@ -52,7 +51,6 @@ export default function BrandShowcase() {
     { name: "Zevar by geeta", slug: "/Brands/zevar-by-geeta" },
   ];
 
-
   const listRef = useRef(null);
   const canvasRef = useRef(null);
   const pixiAppRef = useRef(null);
@@ -61,6 +59,7 @@ export default function BrandShowcase() {
   const [hoveredIndex, setHoveredIndex] = useState(null);
   const [scrollY, setScrollY] = useState(0);
   const [isMounted, setIsMounted] = useState(false);
+  const [isPixiReady, setIsPixiReady] = useState(false); // New state to track PixiJS readiness
   const maxScrollRef = useRef(0);
 
   useEffect(() => {
@@ -91,7 +90,7 @@ export default function BrandShowcase() {
         }
 
         // Initialize PixiJS
-        PIXI.utils.skipHello(); // Suppress PixiJS logs
+        PIXI.utils.skipHello();
         const app = new PIXI.Application({
           view: canvasRef.current,
           width,
@@ -102,49 +101,79 @@ export default function BrandShowcase() {
         });
         pixiAppRef.current = app;
 
-        // Create displacement sprite
-        const displacementSprite = PIXI.Sprite.from("/pattern-clouds.jpg");
-        displacementSprite.texture.baseTexture.wrapMode = PIXI.WRAP_MODES.REPEAT;
-        displacementSprite.alpha = 0;
-        displacementSprite.width = width;
-        displacementSprite.height = height;
-        app.stage.addChild(displacementSprite);
+        // Preload texture using PIXI.Loader
+        const loader = new PIXI.Loader();
+        loader.add("displacement", "/pattern-clouds.jpg");
 
-        displacementSprite.texture.baseTexture.on("loaded", () => {
+        loader.load((loader, resources) => {
           console.log("Displacement texture loaded successfully");
-        });
-        displacementSprite.texture.baseTexture.on("error", (event) => {
-          console.error("Failed to load displacement texture:", event);
-          displacementSprite.texture = PIXI.Texture.EMPTY;
-        });
+          const displacementSprite = new PIXI.Sprite(resources.displacement.texture);
+          displacementSprite.texture.baseTexture.wrapMode = PIXI.WRAP_MODES.REPEAT;
+          displacementSprite.width = width;
+          displacementSprite.height = height;
+          displacementSprite.alpha = 0;
+          app.stage.addChild(displacementSprite);
 
-        // Create text objects
-        const textObjects = brands.map((brand, index) => {
-          const text = new PIXI.Text(brand.name.toUpperCase(), {
-            fontFamily: "BellotaText-Light, sans-serif",
-            fontSize: width < 768 ? 24 : 64,
-            fill: 0xffffff,
-            align: "center",
-            letterSpacing: 0.02,
+          // Create text objects
+          const textObjects = brands.map((brand, index) => {
+            const text = new PIXI.Text(brand.name.toUpperCase(), {
+              fontFamily: "BellotaText-Light, sans-serif",
+              fontSize: width < 768 ? 28 : 72,
+              fill: 0xffffff,
+              align: "center",
+              letterSpacing: 0.02,
+            });
+            text.anchor.set(0.5);
+            text.position.set(width / 2, 128 + index * 80);
+            const displacementFilter = new DisplacementFilter(displacementSprite);
+            displacementFilter.scale.set(width < 768 ? 5 : 15);
+            text.filters = [displacementFilter];
+            app.stage.addChild(text);
+            return text;
           });
-          text.anchor.set(0.5);
-          text.position.set(width / 2, 128 + index * 80);
-          const displacementFilter = new DisplacementFilter(displacementSprite);
-          displacementFilter.scale.set(15);
-          text.filters = [displacementFilter];
-          app.stage.addChild(text);
-          return text;
-        });
-        textObjectsRef.current = textObjects;
+          textObjectsRef.current = textObjects;
 
-        // Animate displacement sprite
-        gsap.to(displacementSprite, {
-          x: "+=100",
-          y: "+=100",
-          duration: 12,
-          ease: "sine.inOut",
-          repeat: -1,
-          yoyo: true,
+          // Animate displacement sprite
+          gsap.to(displacementSprite, {
+            x: "+=100",
+            y: "+=100",
+            duration: 12,
+            ease: "sine.inOut",
+            repeat: -1,
+            yoyo: true,
+          });
+
+          // Mark PixiJS as ready
+          setIsPixiReady(true);
+
+          // Force render
+          app.renderer.render(app.stage);
+        });
+
+        // Handle texture loading error
+        loader.onError.add((error) => {
+          console.error("Failed to load displacement texture:", error);
+          // Create text objects without displacement filter
+          const textObjects = brands.map((brand, index) => {
+            const text = new PIXI.Text(brand.name.toUpperCase(), {
+              fontFamily: "BellotaText-Light, sans-serif",
+              fontSize: width < 768 ? 28 : 72,
+              fill: 0xffffff,
+              align: "center",
+              letterSpacing: 0.02,
+            });
+            text.anchor.set(0.5);
+            text.position.set(width / 2, 128 + index * 80);
+            app.stage.addChild(text);
+            return text;
+          });
+          textObjectsRef.current = textObjects;
+
+          // Mark PixiJS as ready even on error
+          setIsPixiReady(true);
+
+          // Force render
+          app.renderer.render(app.stage);
         });
 
         // Handle resize
@@ -152,13 +181,21 @@ export default function BrandShowcase() {
           const newWidth = window.innerWidth > 0 ? window.innerWidth : 800;
           const newHeight = window.innerHeight > 0 ? window.innerHeight : 600;
           app.renderer.resize(newWidth, newHeight);
-          displacementSprite.width = newWidth;
-          displacementSprite.height = newHeight;
+          if (textObjectsRef.current.length > 0 && textObjectsRef.current[0].filters && textObjectsRef.current[0].filters[0]) {
+            const displacementSprite = textObjectsRef.current[0].filters[0].sprite;
+            if (displacementSprite && displacementSprite.texture.baseTexture.valid) {
+              displacementSprite.width = newWidth;
+              displacementSprite.height = newHeight;
+            }
+          }
           textObjectsRef.current.forEach((text, index) => {
             if (text) {
-              text.style.fontSize = newWidth < 768 ? 24 : 64;
+              text.style.fontSize = newWidth < 768 ? 28 : 72;
               text.position.x = newWidth / 2;
               text.position.y = 128 + index * 80 - scrollY;
+              if (text.filters && text.filters[0]) {
+                text.filters[0].scale.set(newWidth < 768 ? 5 : 15);
+              }
             }
           });
 
@@ -167,8 +204,9 @@ export default function BrandShowcase() {
             const containerHeight = newHeight;
             const lastItemHeight = list.lastElementChild.offsetHeight;
             const lastItemTop = 128 + (brands.length - 1) * 80;
-            maxScrollRef.current = lastItemTop - (containerHeight - lastItemHeight) / 2;
-            list.style.paddingBottom = `${(containerHeight - lastItemHeight) / 2}px`;
+            maxScrollRef.current = lastItemTop - containerHeight / 2 + lastItemHeight / 2;
+            list.style.paddingBottom = `${containerHeight / 2 - lastItemHeight / 2}px`;
+            list.style.paddingTop = `${containerHeight / 2 - lastItemHeight / 2}px`;
           }
         };
 
@@ -178,8 +216,9 @@ export default function BrandShowcase() {
           const containerHeight = height;
           const lastItemHeight = list.lastElementChild.offsetHeight;
           const lastItemTop = 128 + (brands.length - 1) * 80;
-          maxScrollRef.current = lastItemTop - (containerHeight - lastItemHeight) / 2;
-          list.style.paddingBottom = `${(containerHeight - lastItemHeight) / 2}px`;
+          maxScrollRef.current = lastItemTop - containerHeight / 2 + lastItemHeight / 2;
+          list.style.paddingBottom = `${containerHeight / 2 - lastItemHeight / 2}px`;
+          list.style.paddingTop = `${containerHeight / 2 - lastItemHeight / 2}px`;
           list.scrollTop = 0;
         }
 
@@ -224,7 +263,7 @@ export default function BrandShowcase() {
         };
       } catch (error) {
         console.error("Failed to initialize PixiJS:", error);
-        return;
+        setIsPixiReady(true); // Fallback to show HTML if PixiJS fails
       }
     };
 
@@ -235,12 +274,12 @@ export default function BrandShowcase() {
   }, []);
 
   const getItemStyle = (index) => {
-    if (!isMounted || !textObjectsRef.current[index]) {
+    if (!isMounted || !isPixiReady || !textObjectsRef.current[index]) {
       return {
         fontFamily: "BellotaText-Light, sans-serif",
         letterSpacing: "0.02em",
         lineHeight: "1.2",
-        visibility: "hidden",
+        visibility: isPixiReady ? "hidden" : "visible", // Hide HTML text once PixiJS is ready
       };
     }
 
@@ -293,7 +332,7 @@ export default function BrandShowcase() {
           <Link
             key={`${brand.slug}-${index}`}
             href={brand.slug}
-            className="group relative text-white text-2xl md:text-7xl font-stretch-95% text-center transition-all duration-500 ease-out cursor-pointer will-change-transform"
+            className="group relative text-white text-3xl md:text-8xl font-stretch-95% text-center transition-all duration-500 ease-out cursor-pointer will-change-transform"
             style={getItemStyle(index)}
             onMouseEnter={() => setHoveredIndex(index)}
             onMouseLeave={() => setHoveredIndex(null)}

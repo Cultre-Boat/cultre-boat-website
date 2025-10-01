@@ -4,12 +4,12 @@ import Image from 'next/image';
 
 export default function Stylist() {
     const productImages = [
-        { src: '/stylist/1 34.webp', alt: 'Stylist 1'},
-        { src: '/stylist/1 35.webp', alt: 'Stylist 2'},
-        { src: '/stylist/1 36.webp', alt: 'Stylist 3'},
-        { src: '/stylist/1 37.webp', alt: 'Stylist 4'},
-        { src: '/stylist/1 38.webp', alt: 'Stylist 5'},
-        { src: '/stylist/1 39.webp', alt: 'Stylist 6'},
+        { src: '/stylist/1_34.webp', alt: 'Stylist 1'},
+        { src: '/stylist/1_35.webp', alt: 'Stylist 2'},
+        { src: '/stylist/1_36.webp', alt: 'Stylist 3'},
+        { src: '/stylist/1_37.webp', alt: 'Stylist 4'},
+        { src: '/stylist/1_38.webp', alt: 'Stylist 5'},
+        { src: '/stylist/1_39.webp', alt: 'Stylist 6'},
     ]
     
     return (

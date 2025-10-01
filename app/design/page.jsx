@@ -156,9 +156,10 @@ export default function DesignPortfolio() {
 
   return (
     <>
+      <FullScreenWaterEffect />
       <PixiWaterText containerRef={contentRef} />
       <PixiWaterImages containerRef={contentRef} />
-      <div ref={contentRef} className="text-white leading-relaxed bg-[#000000]">
+      <div ref={contentRef} className="text-white leading-relaxed">
         <div className="max-w-6xl mx-auto px-4">
           {/* Header Section */}
           <section className="py-2 relative mt-25 text-center sm:text-left z-[10]">
@@ -183,7 +184,7 @@ export default function DesignPortfolio() {
                   alt="Traditional Fashion Design"
                   width={600}
                   height={400}
-                  className="w-full h-auto opacity-90"
+                  className="w-full h-auto"
                   onError={(e) => console.error(`Failed to load image: ${e.target.src}`)}
                 />
               </div>
@@ -221,10 +222,10 @@ export default function DesignPortfolio() {
 
           {/* Creative Direction Section with Video */}
           <section className="py-2 text-center z-[10]">
-            <h2 className="text-xl lg:text-2xl font-light tracking-[2px] uppercase md:mt:4">
+            <h2 className="text-xl lg:text-2xl font-light tracking-[2px] uppercase">
               CREATIVE DIRECTION AND STRATEGY
             </h2>
-            <p className="text-xs lg:text-sm text-gray-500 italic mb-0 md:mb-18">
+            <p className="text-xs lg:text-sm text-gray-500 italic mb-0 md:mb-14">
               Brand Positioning
             </p>
             <div className="flex flex-col lg:flex-row gap-3 lg:gap-40 justify-center mx-4 mb-9 items-end">
@@ -394,30 +395,10 @@ export default function DesignPortfolio() {
           <section className="py-2 text-center z-[10]">
             <div className="mb-12">
               <hr className="w-3/5 h-px bg-gray-600 border-none mx-auto mb-10" />
-             <div className="text-center">
-  {/* Mobile version (screens < 768px) */}
-  <div className="block md:hidden">
-    <p className="text-xl lg:text-xl xl:text-2xl 2xl:text-3xl 3xl:text-4xl max-w-[90%] sm:max-w-[95%] mx-auto leading-7 mt-2 font-light break-words">
-      Explore our latest projects showcasing
-    </p>
-    <p className="text-xl lg:text-xl xl:text-2xl 2xl:text-3xl 3xl:text-4xl max-w-[90%] sm:max-w-[95%] mx-auto leading-7 mt-2 font-light break-words">
-      our design capabilities across various .
-    </p>
-    <p className="text-xl lg:text-xl xl:text-2xl 2xl:text-3xl 3xl:text-4xl max-w-[90%] sm:max-w-[95%] mx-auto leading-7 mt-2 font-light break-words">
-      mediums and industries.
-    </p>
-  </div>
-
-  {/* Desktop version (screens >= 768px) */}
-  <div className="hidden md:block">
-    <p className="text-xl lg:text-xl xl:text-2xl 2xl:text-3xl 3xl:text-4xl max-w-[90%] sm:max-w-[95%] mx-auto leading-7 mt-2 font-light break-words">
-      Explore our latest projects showcasing our design
-    </p>
-    <p className="text-xl lg:text-xl xl:text-2xl 2xl:text-3xl 3xl:text-4xl max-w-[90%] sm:max-w-[95%] mx-auto leading-7 mt-2 font-light break-words">
-      capabilities across various mediums and industries.
-    </p>
-  </div>
-</div>
+              <p className="text-xl lg:text-xl xl:text-2xl 2xl:text-3xl 3xl:text-4xl max-w-[90%] lg:max-w-[60%] mx-auto leading-7 mt-2 font-light">
+                Explore our latest projects showcasing our design capabilities
+                across various mediums and industries.
+              </p>
             </div>
             <div className="flex flex-col lg:flex-row gap-4 lg:gap-5 items-start justify-center px-4">
               <div className="flex flex-col gap-4 w-full max-w-lg lg:max-w-xl mx-auto lg:mx-0 z-[10]">
