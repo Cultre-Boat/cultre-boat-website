@@ -25,7 +25,6 @@ if (canvasRef.current) {
   });
 }
 
-
     // Create a container for the displacement effect
     const container = new PIXI.Container();
     app.stage.addChild(container);
@@ -114,7 +113,7 @@ displacementSprite.texture.baseTexture.on("error", () => {
   return (
     <canvas
       ref={canvasRef}
-      className="fixed top-0 left-0 w-full h-full z-[1000] pointer-events-none"
+      className="fixed top-0 left-0 w-full h-full z-[9999] pointer-events-none"
     />
   );
 }

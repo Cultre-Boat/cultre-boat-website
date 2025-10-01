@@ -151,5 +151,5 @@ export default function PixiImage({ containerRef, leftImages, rightImages, onMax
     };
   }, [containerRef, leftImages, rightImages, onMaxScrollCalculated]);
 
-  return <canvas ref={canvasRef} className="fixed top-0 left-0 w-full h-full z-[0] opacity-[1]" />;
+  return <canvas ref={canvasRef} className="fixed top-0 left-0 w-full h-full z-[1] opacity-[1]" />;
 }

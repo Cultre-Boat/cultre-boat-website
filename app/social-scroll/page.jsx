@@ -2,8 +2,7 @@
 import Link from "next/link";
 import { gsap } from "gsap";
 import { useEffect, useRef, useState } from "react";
-import * as PIXI from "pixi.js";
-import { DisplacementFilter } from "@pixi/filter-displacement";
+import MovingFog from "../components/MovingFog";
 
 export default function BrandShowcase() {
   const brands = [
@@ -52,358 +51,263 @@ export default function BrandShowcase() {
   ];
 
   const listRef = useRef(null);
-  const canvasRef = useRef(null);
-  const pixiAppRef = useRef(null);
-  const textObjectsRef = useRef([]);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [hoveredIndex, setHoveredIndex] = useState(null);
   const [scrollY, setScrollY] = useState(0);
-  const [isMounted, setIsMounted] = useState(false);
-  const [isPixiReady, setIsPixiReady] = useState(false);
-  const maxScrollRef = useRef(0);
+  const [isMounted, setIsMounted] = useState(false); // This state is key
 
-  useEffect(() => {
-    if (typeof window === "undefined") return;
+ useEffect(() => {
+  setIsMounted(true);
 
-    setIsMounted(true);
+  const list = listRef.current;
+  if (!list) return;
 
-    const initializePixi = () => {
-      if (!canvasRef.current) {
-        console.warn("Canvas ref not available, retrying...");
-        setTimeout(initializePixi, 100);
-        return;
-      }
+  // Center the last item
+  const lastItem = list.lastElementChild;
+  if (lastItem) {
+    const containerHeight = list.offsetHeight;
+    const lastItemHeight = lastItem.offsetHeight;
+    list.style.paddingBottom = `${containerHeight / 2 - lastItemHeight / 2}px`;
+  }
 
-      const width = window.innerWidth > 0 ? window.innerWidth : 800;
-      const height = window.innerHeight > 0 ? window.innerHeight : 600;
+  list.scrollTop = 0;
 
-      try {
-        const canvas = document.createElement("canvas");
-        const gl = canvas.getContext("webgl") || canvas.getContext("experimental-webgl");
-        if (!gl) {
-          console.error("WebGL is not supported in this browser.");
-          return;
-        }
+  const handleScroll = () => setScrollY(list.scrollTop);
+  const handleMouseMove = (e) => setMousePosition({ x: e.clientX, y: e.clientY });
 
-        PIXI.utils.skipHello();
-        const app = new PIXI.Application({
-          view: canvasRef.current,
-          width,
-          height,
-          backgroundAlpha: 0,
-          resolution: window.devicePixelRatio || 1,
-          autoDensity: true,
-        });
-        pixiAppRef.current = app;
+  list.addEventListener("scroll", handleScroll);
+  window.addEventListener("mousemove", handleMouseMove);
 
-        const loader = new PIXI.Loader();
-        loader.add("displacement", "/pattern-clouds.jpg");
+  return () => {
+    list.removeEventListener("scroll", handleScroll);
+    window.removeEventListener("mousemove", handleMouseMove);
+  };
+}, []);
 
-        loader.load((loader, resources) => {
-          console.log("Displacement texture loaded successfully");
-          const displacementSprite = new PIXI.Sprite(resources.displacement.texture);
-          displacementSprite.texture.baseTexture.wrapMode = PIXI.WRAP_MODES.REPEAT;
-          displacementSprite.width = width;
-          displacementSprite.height = height;
-          displacementSprite.alpha = 0;
-          app.stage.addChild(displacementSprite);
 
-          const gap = width < 768 ? 60 : 100; // Adjust gap based on screen size
-          const textObjects = brands.map((brand, index) => {
-            const text = new PIXI.Text(brand.name.toUpperCase(), {
-              fontFamily: "BellotaText-Light, sans-serif",
-              fontSize: width < 768 ? 25 : 55,
-              fill: 0xffffff,
-              align: "center",
-              letterSpacing: 0.02,
-            });
-            text.anchor.set(0.5);
-            text.position.set(width / 2, 128 + index * gap); // Use dynamic gap
-            const displacementFilter = new DisplacementFilter(displacementSprite);
-            displacementFilter.scale.set(width < 768 ? 5 : 15);
-            text.filters = [displacementFilter];
-            app.stage.addChild(text);
-            return text;
-          });
-          textObjectsRef.current = textObjects;
-
-          gsap.to(displacementSprite, {
-            x: "+=100",
-            y: "+=100",
-            duration: 12,
-            ease: "sine.inOut",
-            repeat: -1,
-            yoyo: true,
-          });
-
-          setIsPixiReady(true);
-          app.renderer.render(app.stage);
-        });
-
-        loader.onError.add((error) => {
-          console.error("Failed to load displacement texture:", error);
-          const gap = width < 768 ? 60 : 100; // Adjust gap for fallback
-          const textObjects = brands.map((brand, index) => {
-            const text = new PIXI.Text(brand.name.toUpperCase(), {
-              fontFamily: "BellotaText-Light, sans-serif",
-              fontSize: width < 768 ? 25 : 55,
-              fill: 0xffffff,
-              align: "center",
-              letterSpacing: 0.02,
-            });
-            text.anchor.set(0.5);
-            text.position.set(width / 2, 128 + index * gap); // Use dynamic gap
-            app.stage.addChild(text);
-            return text;
-          });
-          textObjectsRef.current = textObjects;
-
-          setIsPixiReady(true);
-          app.renderer.render(app.stage);
-        });
-
-        const handleResize = () => {
-          const newWidth = window.innerWidth > 0 ? window.innerWidth : 800;
-          const newHeight = window.innerHeight > 0 ? window.innerHeight : 600;
-          const gap = newWidth < 768 ? 60 : 100; // Adjust gap on resize
-          app.renderer.resize(newWidth, newHeight);
-          if (textObjectsRef.current.length > 0 && textObjectsRef.current[0].filters && textObjectsRef.current[0].filters[0]) {
-            const displacementSprite = textObjectsRef.current[0].filters[0].sprite;
-            if (displacementSprite && displacementSprite.texture.baseTexture.valid) {
-              displacementSprite.width = newWidth;
-              displacementSprite.height = newHeight;
-            }
-          }
-          textObjectsRef.current.forEach((text, index) => {
-            if (text) {
-              text.style.fontSize = newWidth < 768 ? 25 : 55;
-              text.position.x = newWidth / 2;
-              text.position.y = 128 + index * gap - scrollY; // Update with dynamic gap
-              if (text.filters && text.filters[0]) {
-                text.filters[0].scale.set(newWidth < 768 ? 5 : 15);
-              }
-            }
-          });
-
-          const list = listRef.current;
-          if (list && list.lastElementChild) {
-            const containerHeight = newHeight;
-            const lastItemHeight = list.lastElementChild.offsetHeight;
-            const lastItemTop = 128 + (brands.length - 1) * gap; // Update with dynamic gap
-            maxScrollRef.current = lastItemTop - containerHeight / 2 + lastItemHeight / 2;
-            list.style.paddingBottom = `${containerHeight / 2 - lastItemHeight / 2}px`;
-            list.style.paddingTop = `${containerHeight / 2 - lastItemHeight / 2}px`;
-          }
-        };
-
-        const list = listRef.current;
-        if (list && list.lastElementChild) {
-          const containerHeight = height;
-          const lastItemHeight = list.lastElementChild.offsetHeight;
-          const lastItemTop = 128 + (brands.length - 1) * (width < 768 ? 60 : 100); // Use dynamic gap
-          maxScrollRef.current = lastItemTop - containerHeight / 2 + lastItemHeight / 2;
-          list.style.paddingBottom = `${containerHeight / 2 - lastItemHeight / 2}px`;
-          list.style.paddingTop = `${containerHeight / 2 - lastItemHeight / 2}px`;
-          list.scrollTop = 0;
-        }
-
-        const handleScroll = () => {
-          const list = listRef.current;
-          if (!list) return;
-          const currentScroll = list.scrollTop;
-
-          if (currentScroll > maxScrollRef.current) {
-            list.scrollTop = maxScrollRef.current;
-            setScrollY(maxScrollRef.current);
-          } else {
-            setScrollY(currentScroll);
-          }
-
-          const gap = window.innerWidth < 768 ? 60 : 100; // Adjust gap on scroll
-          textObjectsRef.current.forEach((text, index) => {
-            if (text) {
-              text.position.y = 128 + index * gap - currentScroll; // Update with dynamic gap
-            }
-          });
-        };
-
-        const handleMouseMove = (e) => {
-          setMousePosition({ x: e.clientX, y: e.clientY });
-        };
-
-        window.addEventListener("resize", handleResize);
-        if (list) list.addEventListener("scroll", handleScroll);
-        window.addEventListener("mousemove", handleMouseMove);
-
-        handleResize();
-
-        return () => {
-          window.removeEventListener("resize", handleResize);
-          if (list) list.removeEventListener("scroll", handleScroll);
-          window.removeEventListener("mousemove", handleMouseMove);
-          if (pixiAppRef.current) {
-            pixiAppRef.current.destroy(true, { children: true, texture: true, baseTexture: true });
-            pixiAppRef.current = null;
-          }
-        };
-      } catch (error) {
-        console.error("Failed to initialize PixiJS:", error);
-        setIsPixiReady(true);
-      }
-    };
-
-    const timeoutId = setTimeout(initializePixi, 0);
-
-    return () => clearTimeout(timeoutId);
-  }, []);
-
+  // ✅ THE FIX IS HERE
   const getItemStyle = (index) => {
-    if (!isMounted || !isPixiReady || !textObjectsRef.current[index]) {
+    // Before the component is mounted, return a default, static style.
+    // This ensures server and initial client renders are identical.
+    if (!isMounted) {
       return {
         fontFamily: "BellotaText-Light, sans-serif",
         letterSpacing: "0.02em",
         lineHeight: "1.2",
-        visibility: isPixiReady ? "hidden" : "visible",
+        filter: "brightness(0.8)",
+        textShadow: "0 2px 20px rgba(0, 0, 0, 0.8)",
       };
     }
 
+    // After mounting, apply the full dynamic styles.
     const isHovered = hoveredIndex === index;
-    const distanceFromHovered = hoveredIndex !== null ? Math.abs(index - hoveredIndex) : 0;
-    const text = textObjectsRef.current[index];
-
-    if (text) {
-      try {
-        text.scale.set(isHovered ? 1.05 : Math.max(0.95, 1 - distanceFromHovered * 0.02));
-        text.position.x = (window.innerWidth > 0 ? window.innerWidth : 800) / 2 + (isHovered ? 10 : 0);
-        text.rotation = 0;
-        text.style.letterSpacing = isHovered ? 0.08 : 0.02;
-        text.alpha = isHovered ? 1 : 0.8;
-      } catch (error) {
-        console.error(`Error updating text style for index ${index}:`, error);
-      }
-    }
+    const distanceFromHovered =
+      hoveredIndex !== null ? Math.abs(index - hoveredIndex) : 0;
 
     return {
       fontFamily: "BellotaText-Light, sans-serif",
       letterSpacing: isHovered ? "0.08em" : "0.02em",
       lineHeight: "1.2",
-      visibility: "hidden",
+      transform: `
+        translateZ(0) 
+        scale(${
+          isHovered ? 1.05 : Math.max(0.95, 1 - distanceFromHovered * 0.02)
+        })
+        translateX(${isHovered ? "10px" : "0px"})
+        rotateX(${Math.sin((scrollY + index * 100) * 0.01) * 2}deg)
+      `,
+      textShadow: isHovered
+        ? "0 0 30px rgba(255, 255, 255, 0.5), 0 0 60px rgba(255, 255, 255, 0.3)"
+        : "0 2px 20px rgba(0, 0, 0, 0.8)",
+      filter: `
+        brightness(${isHovered ? 1.4 : 0.8}) 
+        blur(${
+          distanceFromHovered > 0 && distanceFromHovered < 3
+            ? distanceFromHovered * 0.3
+            : 0
+        }px)
+      `,
     };
   };
 
+useEffect(() => {
+    
+    const textTurbulence = document.querySelector(
+      "#textWaterFilter feTurbulence"
+    );
+    const textDisplacementMap = document.querySelector(
+      "#textWaterFilter feDisplacementMap"
+    );
+
+    if (textTurbulence && textDisplacementMap) {
+      document.querySelectorAll("h1, h2, h3, p, a").forEach((el) => {
+        el.style.filter = "url(#textWaterFilter)";
+      });
+
+      gsap.set(textDisplacementMap, { attr: { scale: 10 } });
+
+      gsap.to(textTurbulence, {
+        attr: { baseFrequency: "0.02 0.10" },
+        duration: 15,
+        ease: "sine.inOut",
+        repeat: -1,
+        yoyo: true,
+      });
+    }
+  }, []);
+
   return (
-    <div className="relative w-full h-screen overflow-hidden bg-black">
-      <canvas ref={canvasRef} className="absolute inset-0 z-10 pointer-events-none" />
-      <div
-        className="absolute inset-0 z-5 pointer-events-none opacity-20"
-        style={{
-          background: `radial-gradient(600px circle at ${mousePosition.x}px ${mousePosition.y}px, 
+    <>
+        <svg className="absolute w-0 h-0 pointer-events-none">
+      
+        <filter id="textWaterFilter">
+          <feTurbulence
+            type="fractalNoise"
+            baseFrequency="0.01 0.01"
+            numOctaves="1"
+            result="noiseForText"
+          />
+          <feDisplacementMap
+            in="SourceGraphic"
+            in2="noiseForText"
+            scale="0"
+            xChannelSelector="R"
+            yChannelSelector="G"
+          />
+        </filter>
+      </svg>
+      <div className="relative w-full h-screen overflow-hidden bg-black">
+        {/* Animated gradient overlay */}
+        <div
+          className="absolute inset-0 z-[5] pointer-events-none opacity-20"
+          style={{
+            background: `radial-gradient(600px circle at ${mousePosition.x}px ${mousePosition.y}px, 
             rgba(255, 255, 255, 0.1) 0%, 
             rgba(255, 255, 255, 0.05) 25%, 
             transparent 50%)`,
-        }}
-      />
-      <div
-        ref={listRef}
-        className="font-bellota-light relative z-20 flex flex-col items-center uppercase justify-start gap-4 md:gap-6 py-32 overflow-y-auto no-scrollbar"
-        style={{
-          scrollBehavior: "smooth",
-          perspective: "1000px",
-          maxHeight: "100vh",
-        }}
-      >
-        {brands.map((brand, index) => (
-          <Link
-            key={`${brand.slug}-${index}`}
-            href={brand.slug}
-            className="group relative text-white text-3xl md:text-8xl font-stretch-95% text-center transition-all duration-500 ease-out cursor-pointer will-change-transform"
-            style={getItemStyle(index)}
-            onMouseEnter={() => setHoveredIndex(index)}
-            onMouseLeave={() => setHoveredIndex(null)}
-          >
-            <span className="relative z-10 block">{brand.name}</span>
-            <div
-              className="absolute inset-0 -z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+          }}
+        />
+
+       
+        {/* Brands List */}
+        <div
+          ref={listRef}
+          className="font-bellota-light relative z-10 flex flex-col items-center uppercase justify-start gap-8 py-32 h-full overflow-y-auto no-scrollbar"
+          style={{
+            scrollBehavior: "smooth",
+            perspective: "1000px",
+          }}
+        >
+          {brands.map((brand, index) => (
+            <Link
+              key={`${brand.slug}-${index}`}
+              href={brand.slug}
+              className="group relative text-white text-2xl md:text-7xl font-stretch-95% text-center transition-all duration-500 ease-out cursor-pointer will-change-transform"
               style={{
-                background: "linear-gradient(90deg, transparent, rgba(255,255,255,0.05), transparent)",
-                transform: "skewX(-15deg)",
+                ...getItemStyle(index),
+                filter: "url(#textWaterFilter)",
+              }} // add filter here
+              onMouseEnter={() => setHoveredIndex(index)}
+              onMouseLeave={() => setHoveredIndex(null)}
+            >
+              <span className="relative z-10 block">{brand.name}</span>
+
+              {/* Hover background effect */}
+              <div
+                className="absolute inset-0 -z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+                style={{
+                  background:
+                    "linear-gradient(90deg, transparent, rgba(255,255,255,0.05), transparent)",
+                  transform: "skewX(-15deg)",
+                }}
+              />
+
+              {/* Underline effect */}
+              <div
+                className="absolute bottom-0 left-0 h-[1px] bg-gradient-to-r from-transparent via-white to-transparent w-0 group-hover:w-full transition-all duration-700 ease-out"
+                style={{ transformOrigin: "left" }}
+              />
+            </Link>
+          ))}
+        </div>
+
+        {/* Top fade overlay */}
+        <div
+          className="absolute top-0 left-0 right-0 z-30 pointer-events-none transition-opacity duration-300"
+          style={{
+            height: "25vh",
+            background:
+              "linear-gradient(180deg, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.7) 30%, rgba(0,0,0,0.3) 60%, transparent 100%)",
+            backdropFilter: `blur(${Math.min(scrollY / 50, 8)}px)`,
+            opacity: Math.min(scrollY / 100, 0.95),
+          }}
+        />
+
+        {/* Bottom fade overlay */}
+        <div
+          className="absolute bottom-0 left-0 right-0 z-30 pointer-events-none transition-opacity duration-300"
+          style={{
+            height: "25vh",
+            background:
+              "linear-gradient(0deg, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.7) 30%, rgba(0,0,0,0.3) 60%, transparent 100%)",
+            backdropFilter: `blur(${Math.min(scrollY / 50, 8)}px)`,
+            opacity: Math.min(scrollY / 100, 0.95),
+          }}
+        />
+
+        {/* Scroll indicator */}
+        <div className="absolute right-8 top-1/2 transform -translate-y-1/2 z-20">
+          <div className="w-[1px] h-32 bg-gradient-to-b from-transparent via-white/30 to-transparent relative">
+            <div
+              className="absolute w-2 h-2 bg-white rounded-full left-1/2 transform -translate-x-1/2 transition-all duration-300"
+              style={{
+                top: `${Math.min(scrollY / 10, 120)}px`,
+                boxShadow: "0 0 10px rgba(255,255,255,0.5)",
               }}
             />
-            <div
-              className="absolute bottom-0 left-0 h-[1px] bg-gradient-to-r from-transparent via-white to-transparent w-0 group-hover:w-full transition-all duration-700 ease-out"
-              style={{ transformOrigin: "left" }}
-            />
-          </Link>
-        ))}
-      </div>
-      <div
-        className="absolute top-0 left-0 right-0 z-30 pointer-events-none transition-opacity duration-300"
-        style={{
-          height: "25vh",
-          background:
-            "linear-gradient(180deg, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.7) 30%, rgba(0,0,0,0.3) 60%, transparent 100%)",
-          backdropFilter: `blur(${Math.min(scrollY / 50, 8)}px)`,
-          opacity: Math.min(scrollY / 100, 0.95),
-        }}
-      />
-      <div
-        className="absolute bottom-0 left-0 right-0 z-30 pointer-events-none transition-opacity duration-300"
-        style={{
-          height: "25vh",
-          background:
-            "linear-gradient(0deg, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.7) 30%, rgba(0,0,0,0.3) 60%, transparent 100%)",
-          backdropFilter: `blur(${Math.min(scrollY / 50, 8)}px)`,
-          opacity: Math.min(scrollY / 100, 0.95),
-        }}
-      />
-      <div className="absolute right-8 top-1/2 transform -translate-y-1/2 z-20">
-        <div className="w-[1px] h-32 bg-gradient-to-b from-transparent via-white/30 to-transparent relative">
-          <div
-            className="absolute w-2 h-2 bg-white rounded-full left-1/2 transform -translate-x-1/2 transition-all duration-300"
-            style={{
-              top: `${Math.min(scrollY / 10, 120)}px`,
-              boxShadow: "0 0 10px rgba(255,255,255,0.5)",
-            }}
-          />
+          </div>
         </div>
+
+        <style jsx>{`
+          .no-scrollbar::-webkit-scrollbar {
+            display: none;
+          }
+          .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+          }
+
+          @keyframes float {
+            0%,
+            100% {
+              transform: translateY(0) translateX(0) rotate(0deg);
+              opacity: 0.2;
+            }
+            25% {
+              transform: translateY(-20px) translateX(10px) rotate(90deg);
+              opacity: 0.4;
+            }
+            50% {
+              transform: translateY(-40px) translateX(-5px) rotate(180deg);
+              opacity: 0.6;
+            }
+            75% {
+              transform: translateY(-20px) translateX(-10px) rotate(270deg);
+              opacity: 0.4;
+            }
+          }
+
+          .animate-float {
+            animation: float linear infinite;
+          }
+          .group:hover {
+            z-index: 30;
+          }
+          .will-change-transform {
+            will-change: transform;
+          }
+        `}</style>
       </div>
-      <style jsx>{`
-        .no-scrollbar::-webkit-scrollbar {
-          display: none;
-        }
-        .no-scrollbar {
-          -ms-overflow-style: none;
-          scrollbar-width: none;
-        }
-        @keyframes float {
-          0%,
-          100% {
-            transform: translateY(0) translateX(0) rotate(0deg);
-            opacity: 0.2;
-          }
-          25% {
-            transform: translateY(-20px) translateX(10px) rotate(90deg);
-            opacity: 0.4;
-          }
-          50% {
-            transform: translateY(-40px) translateX(-5px) rotate(180deg);
-            opacity: 0.6;
-          }
-          75% {
-            transform: translateY(-20px) translateX(-10px) rotate(270deg);
-            opacity: 0.4;
-          }
-        }
-        .animate-float {
-          animation: float linear infinite;
-        }
-        .group:hover {
-          z-index: 30;
-        }
-        .will-change-transform {
-          will-change: transform;
-        }
-      `}</style>
-    </div>
+    </>
   );
 }

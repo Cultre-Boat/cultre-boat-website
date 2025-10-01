@@ -184,7 +184,7 @@ export default function DesignPortfolio() {
                   alt="Traditional Fashion Design"
                   width={600}
                   height={400}
-                  className="w-full h-auto"
+                  className="w-full h-auto opacity-[1]"
                   onError={(e) => console.error(`Failed to load image: ${e.target.src}`)}
                 />
               </div>

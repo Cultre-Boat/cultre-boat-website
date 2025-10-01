@@ -5,7 +5,6 @@ import { gsap } from "gsap"; // Import GSAP
 import { createClient } from "@supabase/supabase-js";
 import MovingFog from "../components/MovingFog";
 import { FaFacebookF, FaInstagram, FaLinkedinIn } from "react-icons/fa";
-import FullScreenScreenWaterEffect from "../components/FullScreenWaterEffect";
 
 // Initialize Supabase
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;

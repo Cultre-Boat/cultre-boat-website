@@ -50,9 +50,7 @@ export default function BrandShowcase() {
   return (
     <div className="relative w-full h-screen overflow-hidden bg-black">
       {/* WaterEffect as a background */}
-      <div className="absolute inset-0 z-0">
-        <MovingFog />
-      </div>
+    
 
       {/* Brands List */}
       <div
