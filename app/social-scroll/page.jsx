@@ -59,17 +59,14 @@ export default function BrandShowcase() {
   const [hoveredIndex, setHoveredIndex] = useState(null);
   const [scrollY, setScrollY] = useState(0);
   const [isMounted, setIsMounted] = useState(false);
-  const [isPixiReady, setIsPixiReady] = useState(false); // New state to track PixiJS readiness
+  const [isPixiReady, setIsPixiReady] = useState(false);
   const maxScrollRef = useRef(0);
 
   useEffect(() => {
-    // Skip during SSR
     if (typeof window === "undefined") return;
 
-    // Set mounted state
     setIsMounted(true);
 
-    // Delay initialization to ensure DOM is ready
     const initializePixi = () => {
       if (!canvasRef.current) {
         console.warn("Canvas ref not available, retrying...");
@@ -81,7 +78,6 @@ export default function BrandShowcase() {
       const height = window.innerHeight > 0 ? window.innerHeight : 600;
 
       try {
-        // Check WebGL support
         const canvas = document.createElement("canvas");
         const gl = canvas.getContext("webgl") || canvas.getContext("experimental-webgl");
         if (!gl) {
@@ -89,7 +85,6 @@ export default function BrandShowcase() {
           return;
         }
 
-        // Initialize PixiJS
         PIXI.utils.skipHello();
         const app = new PIXI.Application({
           view: canvasRef.current,
@@ -101,7 +96,6 @@ export default function BrandShowcase() {
         });
         pixiAppRef.current = app;
 
-        // Preload texture using PIXI.Loader
         const loader = new PIXI.Loader();
         loader.add("displacement", "/pattern-clouds.jpg");
 
@@ -114,17 +108,17 @@ export default function BrandShowcase() {
           displacementSprite.alpha = 0;
           app.stage.addChild(displacementSprite);
 
-          // Create text objects
+          const gap = width < 768 ? 60 : 100; // Adjust gap based on screen size
           const textObjects = brands.map((brand, index) => {
             const text = new PIXI.Text(brand.name.toUpperCase(), {
               fontFamily: "BellotaText-Light, sans-serif",
-              fontSize: width < 768 ? 28 : 72,
+              fontSize: width < 768 ? 25 : 55,
               fill: 0xffffff,
               align: "center",
               letterSpacing: 0.02,
             });
             text.anchor.set(0.5);
-            text.position.set(width / 2, 128 + index * 80);
+            text.position.set(width / 2, 128 + index * gap); // Use dynamic gap
             const displacementFilter = new DisplacementFilter(displacementSprite);
             displacementFilter.scale.set(width < 768 ? 5 : 15);
             text.filters = [displacementFilter];
@@ -133,7 +127,6 @@ export default function BrandShowcase() {
           });
           textObjectsRef.current = textObjects;
 
-          // Animate displacement sprite
           gsap.to(displacementSprite, {
             x: "+=100",
             y: "+=100",
@@ -143,43 +136,36 @@ export default function BrandShowcase() {
             yoyo: true,
           });
 
-          // Mark PixiJS as ready
           setIsPixiReady(true);
-
-          // Force render
           app.renderer.render(app.stage);
         });
 
-        // Handle texture loading error
         loader.onError.add((error) => {
           console.error("Failed to load displacement texture:", error);
-          // Create text objects without displacement filter
+          const gap = width < 768 ? 60 : 100; // Adjust gap for fallback
           const textObjects = brands.map((brand, index) => {
             const text = new PIXI.Text(brand.name.toUpperCase(), {
               fontFamily: "BellotaText-Light, sans-serif",
-              fontSize: width < 768 ? 28 : 72,
+              fontSize: width < 768 ? 25 : 55,
               fill: 0xffffff,
               align: "center",
               letterSpacing: 0.02,
             });
             text.anchor.set(0.5);
-            text.position.set(width / 2, 128 + index * 80);
+            text.position.set(width / 2, 128 + index * gap); // Use dynamic gap
             app.stage.addChild(text);
             return text;
           });
           textObjectsRef.current = textObjects;
 
-          // Mark PixiJS as ready even on error
           setIsPixiReady(true);
-
-          // Force render
           app.renderer.render(app.stage);
         });
 
-        // Handle resize
         const handleResize = () => {
           const newWidth = window.innerWidth > 0 ? window.innerWidth : 800;
           const newHeight = window.innerHeight > 0 ? window.innerHeight : 600;
+          const gap = newWidth < 768 ? 60 : 100; // Adjust gap on resize
           app.renderer.resize(newWidth, newHeight);
           if (textObjectsRef.current.length > 0 && textObjectsRef.current[0].filters && textObjectsRef.current[0].filters[0]) {
             const displacementSprite = textObjectsRef.current[0].filters[0].sprite;
@@ -190,9 +176,9 @@ export default function BrandShowcase() {
           }
           textObjectsRef.current.forEach((text, index) => {
             if (text) {
-              text.style.fontSize = newWidth < 768 ? 28 : 72;
+              text.style.fontSize = newWidth < 768 ? 25 : 55;
               text.position.x = newWidth / 2;
-              text.position.y = 128 + index * 80 - scrollY;
+              text.position.y = 128 + index * gap - scrollY; // Update with dynamic gap
               if (text.filters && text.filters[0]) {
                 text.filters[0].scale.set(newWidth < 768 ? 5 : 15);
               }
@@ -203,19 +189,18 @@ export default function BrandShowcase() {
           if (list && list.lastElementChild) {
             const containerHeight = newHeight;
             const lastItemHeight = list.lastElementChild.offsetHeight;
-            const lastItemTop = 128 + (brands.length - 1) * 80;
+            const lastItemTop = 128 + (brands.length - 1) * gap; // Update with dynamic gap
             maxScrollRef.current = lastItemTop - containerHeight / 2 + lastItemHeight / 2;
             list.style.paddingBottom = `${containerHeight / 2 - lastItemHeight / 2}px`;
             list.style.paddingTop = `${containerHeight / 2 - lastItemHeight / 2}px`;
           }
         };
 
-        // Initialize list positioning
         const list = listRef.current;
         if (list && list.lastElementChild) {
           const containerHeight = height;
           const lastItemHeight = list.lastElementChild.offsetHeight;
-          const lastItemTop = 128 + (brands.length - 1) * 80;
+          const lastItemTop = 128 + (brands.length - 1) * (width < 768 ? 60 : 100); // Use dynamic gap
           maxScrollRef.current = lastItemTop - containerHeight / 2 + lastItemHeight / 2;
           list.style.paddingBottom = `${containerHeight / 2 - lastItemHeight / 2}px`;
           list.style.paddingTop = `${containerHeight / 2 - lastItemHeight / 2}px`;
@@ -234,9 +219,10 @@ export default function BrandShowcase() {
             setScrollY(currentScroll);
           }
 
+          const gap = window.innerWidth < 768 ? 60 : 100; // Adjust gap on scroll
           textObjectsRef.current.forEach((text, index) => {
             if (text) {
-              text.position.y = 128 + index * 80 - currentScroll;
+              text.position.y = 128 + index * gap - currentScroll; // Update with dynamic gap
             }
           });
         };
@@ -251,7 +237,6 @@ export default function BrandShowcase() {
 
         handleResize();
 
-        // Cleanup
         return () => {
           window.removeEventListener("resize", handleResize);
           if (list) list.removeEventListener("scroll", handleScroll);
@@ -263,11 +248,10 @@ export default function BrandShowcase() {
         };
       } catch (error) {
         console.error("Failed to initialize PixiJS:", error);
-        setIsPixiReady(true); // Fallback to show HTML if PixiJS fails
+        setIsPixiReady(true);
       }
     };
 
-    // Wait for DOM to be fully ready
     const timeoutId = setTimeout(initializePixi, 0);
 
     return () => clearTimeout(timeoutId);
@@ -279,7 +263,7 @@ export default function BrandShowcase() {
         fontFamily: "BellotaText-Light, sans-serif",
         letterSpacing: "0.02em",
         lineHeight: "1.2",
-        visibility: isPixiReady ? "hidden" : "visible", // Hide HTML text once PixiJS is ready
+        visibility: isPixiReady ? "hidden" : "visible",
       };
     }
 
@@ -321,7 +305,7 @@ export default function BrandShowcase() {
       />
       <div
         ref={listRef}
-        className="font-bellota-light relative z-20 flex flex-col items-center uppercase justify-start gap-8 py-32 overflow-y-auto no-scrollbar"
+        className="font-bellota-light relative z-20 flex flex-col items-center uppercase justify-start gap-4 md:gap-6 py-32 overflow-y-auto no-scrollbar"
         style={{
           scrollBehavior: "smooth",
           perspective: "1000px",
