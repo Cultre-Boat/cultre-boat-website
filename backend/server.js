@@ -1,3 +1,4 @@
+// server.js
 const express = require("express");
 const nodemailer = require("nodemailer");
 const cors = require("cors");
@@ -6,7 +7,7 @@ const supabase = require("./db");
 
 dotenv.config();
 const app = express();
-
+console.log("Loaded ENV keys:", Object.keys(process.env).filter(k => k.includes("SUPABASE")));
 app.use(cors());
 app.use(express.json());
 
@@ -23,23 +24,23 @@ app.post("/contact", async (req, res) => {
 
   try {
     // 1️⃣ Save to Supabase
-    const { data, error } = await supabase.from('contacts').insert([{
-  email: formData.email,
-  name: formData.name,
-  companyname: formData.companyName,
-  contactnumber: formData.contactNumber,
-  designation: formData.designation,
-  budget: formData.budget,
-  projectdescription: formData.projectDescription
-}]);
-
-
+    const { data, error } = await supabase.from("contacts").insert([
+      {
+        email,
+        name,
+        companyname: companyName,
+        contactnumber: contactNumber,
+        designation,
+        budget,
+        projectdescription: projectDescription,
+      },
+    ]);
 
     if (error) {
-  console.error("❌ Supabase insert error:", error.message);
-} else {
-  console.log("✅ Supabase insert success:", data);
-}
+      console.error("❌ Supabase insert error:", error.message);
+    } else {
+      console.log("✅ Supabase insert success:", data);
+    }
 
     // 2️⃣ Send Email
     const transporter = nodemailer.createTransport({
@@ -68,7 +69,9 @@ app.post("/contact", async (req, res) => {
     res.json({ success: true, message: "Message sent & saved successfully" });
   } catch (error) {
     console.error("Server error:", error);
-    res.status(500).json({ success: false, message: "Failed to process request" });
+    res
+      .status(500)
+      .json({ success: false, message: "Failed to process request" });
   }
 });
 
