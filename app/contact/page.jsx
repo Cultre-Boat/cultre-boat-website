@@ -137,10 +137,9 @@ export default function ContactForm() {
             <div className="mb-4">
               <h3 className="text-lg md:text-xl mb-3">Our Office</h3>
               <p className="text-sm md:text-base leading-relaxed">
-                First Floor, U-3A, Green Park Main,<br />
-                Block U, Green Park Extension,<br />
-                Green Park, New Delhi, Delhi 110016
-              </p>
+              X-45, Green Park Main,<br />
+              Green Park, New Delhi, Delhi 110016
+            </p>
             </div>
           </div>
 
@@ -241,7 +240,6 @@ export default function ContactForm() {
             <h3 className="text-lg mb-3">Our Office</h3>
             <p className="text-sm leading-relaxed">
               X-45, Green Park Main,<br />
-
               Green Park, New Delhi, Delhi 110016
             </p>
           </div>
