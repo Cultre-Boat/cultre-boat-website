@@ -8,7 +8,6 @@ import Logos from "../components/brand-logos";
 import Mailers from "../components/mailers";
 import LIZ from "../components/designLiz";
 import MovingFog from "../components/MovingFog";
-import FullScreenWaterEffect from "../components/FullScreenWaterEffect";
 import PixiWaterImages from "../components/PixiWaterImages";
 
 const PixiWaterText = ({ containerRef }) => {
@@ -156,7 +155,6 @@ export default function DesignPortfolio() {
 
   return (
     <>
-      <FullScreenWaterEffect />
       <PixiWaterText containerRef={contentRef} />
       <PixiWaterImages containerRef={contentRef} />
       <div ref={contentRef} className="text-white leading-relaxed">

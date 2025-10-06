@@ -4,6 +4,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import MovingFog from '../components/MovingFog';
 import { gsap } from "gsap";
+import FullScreenWaterEffect from '../components/FullScreenWaterEffect';
 
 // Note: The 'WaterEffect' component was imported but not used, so I've removed it.
 

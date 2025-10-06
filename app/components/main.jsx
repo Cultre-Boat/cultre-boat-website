@@ -6,7 +6,6 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import ScrollingText from "./ScrollingText";
 import PixiImage from "./PixiImage";
 import SimpleScroll from "./SimpleScroll";
-import FullScreenWaterEffect from "./FullScreenWaterEffect";
 
 gsap.registerPlugin(ScrollTrigger);
 

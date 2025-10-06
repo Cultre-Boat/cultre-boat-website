@@ -24,12 +24,13 @@ export default function RootLayout({ children }) {
       >
         <ClientLoadingWrapper>
           <FullScreenScreenWaterEffect/>
+          
           <Navbar />
           <CustomCursor />
           <Expand>{children}</Expand>
           {/* <VFXCanvas /> */}
         </ClientLoadingWrapper>
-      </body>
+      </body> 
     </html>
   );
 }

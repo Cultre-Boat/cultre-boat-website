@@ -40,7 +40,7 @@ const WaterEffect = () => {
     const water = new Water(waterGeometry, {
       textureWidth: 1024,
       textureHeight: 1024,
-      waterNormals: new THREE.TextureLoader().load('/water 0342.jpg', (texture) => {
+      waterNormals: new THREE.TextureLoader().load('/water0342.jpg', (texture) => {
         texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
       }),
       sunDirection: new THREE.Vector3(),

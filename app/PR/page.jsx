@@ -9,7 +9,7 @@ import Third from "../PR/second/third";
 import Influencers from "./second/influencers";
 import Stylist from "./second/stylist";
 import PixiWaterImages from "../../app/components/PixiWaterImages";
-
+import FullScreenWaterEffect from "../components/FullScreenWaterEffect";
 const PixiWaterText = ({ containerRef }) => {
   const pixiContainerRef = useRef(null);
 

@@ -3,7 +3,7 @@ import Link from "next/link";
 import { gsap } from "gsap";
 import { useEffect, useRef, useState } from "react";
 import MovingFog from "../components/MovingFog";
-
+import FullScreenWaterEffect from "../components/FullScreenWaterEffect";
 export default function BrandShowcase() {
   const brands = [
     {
@@ -159,7 +159,6 @@ useEffect(() => {
   return (
     <>
         <svg className="absolute w-0 h-0 pointer-events-none">
-      
         <filter id="textWaterFilter">
           <feTurbulence
             type="fractalNoise"

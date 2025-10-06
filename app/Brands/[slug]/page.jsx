@@ -4,7 +4,7 @@ import Image from 'next/image';
 import { IndustriesData } from "../Data.js";
 import * as PIXI from 'pixi.js';
 import { DisplacementFilter } from '@pixi/filter-displacement';
-
+import FullScreenWaterEffect from '@/app/components/FullScreenWaterEffect.jsx';
 export default function BrandShowcase({ params: paramsPromise }) {
   // Unwrap the params Promise using React.use()
   const params = React.use(paramsPromise);
@@ -172,6 +172,7 @@ export default function BrandShowcase({ params: paramsPromise }) {
   }, []);
 
   return (
+    <>
     <div className="mt-20 text-white min-h-screen p-4 sm:p-10" ref={containerRef}>
       {/* PIXI canvas container */}
       <div ref={pixiContainerRef} className="fixed top-0 left-0 w-full h-full pointer-events-none z-10" />
@@ -256,5 +257,6 @@ export default function BrandShowcase({ params: paramsPromise }) {
         </div>
       </div>
     </div>
+    </>
   );
 }

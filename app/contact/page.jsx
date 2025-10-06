@@ -219,7 +219,7 @@ export default function ContactForm() {
                 onChange={handleChange}
                 rows="4"
                 className="mt-1 block w-full px-3 py-2 md:px-4 md:py-2 text-sm md:text-base text-black bg-white border border-gray-600 focus:outline-none focus:border-blue-500"
-                required
+              
               />
             </div>
             <div className="flex justify-end">
@@ -240,8 +240,8 @@ export default function ContactForm() {
           <div className="mb-4">
             <h3 className="text-lg mb-3">Our Office</h3>
             <p className="text-sm leading-relaxed">
-              First Floor, U-3A, Green Park Main,<br />
-              Block U, Green Park Extension,<br />
+              X-45, Green Park Main,<br />
+
               Green Park, New Delhi, Delhi 110016
             </p>
           </div>
@@ -277,7 +277,7 @@ function InputField({ label, id, name, type, value, onChange }) {
         value={value}
         onChange={onChange}
         className="mt-1 block w-full px-3 py-2 md:px-4 md:py-2 text-sm md:text-base text-black bg-white border border-gray-600 focus:outline-none focus:border-blue-500"
-        required
+      
       />
     </div>
   );
