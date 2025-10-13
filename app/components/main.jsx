@@ -10,102 +10,95 @@ import SimpleScroll from "./SimpleScroll";
 gsap.registerPlugin(ScrollTrigger);
 
 // --- 1. DEFINE MOBILE-SPECIFIC IMAGES ---
-// Left column for mobile with a mix of food, model, and jewellery
 const mobileLeftImages = [
-  "/mobile/1.jpeg",   // food1
-  "/mobile/2.jpeg",  // model2
-  "/mobile/3.jpeg",   // food
-  "/mobile/4.jpeg",  // jewellery
-  "/mobile/5.jpeg",   // food
-  "/mobile/7.jpeg",  // model
-  "/mobile/6.jpeg",   // food
-  "/mobile/8.jpeg",   // food
-  "/mobile/9.jpeg",   // food
-  "/mobile/10.jpeg",  // model
-  "/mobile/1.jpeg",   // food1
-  "/mobile/2.jpeg",  // model2
-  "/mobile/3.jpeg",   // food
-  "/mobile/4.jpeg",  // jewellery
+  "/Image/Image/img1.webp",
+  "/Image/Image/img2.webp",
+  "/Image/Image/img3.webp",
+  "/Image/Image/img4.webp",
+  "/Image/Image/img5.webp",
+  "/Image/Image/img6.webp",
+  "/Image/Image/img7.webp",
+  "/Image/Image/img8.webp",
+  "/Image/Image/img9.webp",
+  "/Image/Image/img10.webp",
+  "/Image/Image/img11.webp",
+  "/Image/Image/img12.webp",
+  "/Image/Image/img13.webp",
+  "/Image/Image/img15.webp",
+  "/Image/Image/img31.webp",
 ];
 
-// Right column for mobile with the remaining mixed images
 const mobileRightImages = [
-  "/mobile/11.jpeg",   // food
-  "/mobile/15.jpeg",  // model
-  "/mobile/13.jpeg",   // food
-  "/mobile/14.jpeg",  // model
-  "/mobile/16.jpeg",   // food
-  "/mobile/12.jpeg",  // model
-  "/mobile/17.jpeg",   // food
-  "/mobile/19.jpeg",  // food
-  "/mobile/18.jpeg",  // food
-  "/mobile/20.jpeg",  // food
-  "/mobile/11.jpeg",   // food
-  "/mobile/15.jpeg",  // model
-  "/mobile/13.jpeg",   // food
-  "/mobile/14.jpeg",  // model
+  "/Image/Image/img30.webp",
+  "/Image/Image/img29.webp",
+  "/Image/Image/img28.webp",
+  "/Image/Image/img27.webp",
+  "/Image/Image/img26.webp",
+  "/Image/Image/img25.webp",
+  "/Image/Image/img24.webp",
+  "/Image/Image/img23.webp",
+  "/Image/Image/img22.webp",
+  "/Image/Image/img21.webp",
+  "/Image/Image/img20.webp",
+  "/Image/Image/img19.webp",
+  "/Image/Image/img18.webp",
+  "/Image/Image/img17.webp",
+  "/Image/Image/img16.webp",
 ];
-
 
 // --- 2. RENAME ORIGINAL DESKTOP IMAGES ---
-// These arrays will be used for the desktop view only
 const desktopLeftImages = [
-"/Image/1.png",   // food1
-  "/Image/2.webp",  // model2
-  "/Image/3.png",   // food
-  "/Image/4.png",  // jewellery
-  "/Image/5.webp",   // food
-  "/Image/7.webp",  // model
-  "/Image/6.png",   // food
-  "/Image/8.webp",   // food
-  "/Image/9.png",   // food
-  "/Image/10.png",  // model
-"/Image/1.png",   // food1
-  "/Image/2.webp",  // model2
-  "/Image/3.png",   // food
-  "/Image/4.png",  // jewellery
-  "/Image/5.webp",   // food
-  "/Image/7.webp",  // model
-  "/Image/6.png",   // food
-  "/Image/8.webp",   // food
-  "/Image/9.png",   // food
-  "/Image/10.png",  // model
+ "/Image/img1.webp",
+  "/Image/img2.png",
+  "/Image/img3.jpg",
+  "/Image/img4.png",
+  "/Image/img5.jpg",
+  "/Image/img6.png",
+  "/Image/img7.jpg",
+  "/Image/img8.webp",
+  "/Image/img9.jpg",
+  "/Image/img10.png",
+  "/Image/img11.jpg",
+  "/Image/img12.jpg",
+  "/Image/img13.jpg",
+  "/Image/img14.jpg",
+  "/Image/img15.png",
 ];
 
 const desktopRightImages = [
-  "/Image/11.webp",   // food
-  "/Image/15.webp",  // model
-  "/Image/13.png",   // food
-  "/Image/14.webp",  // model
-  "/Image/16.png",   // food
-  "/Image/12.png",  // model
-  "/Image/17.png",   // food
-  "/Image/19.png",  // food
-  "/Image/18.png",  // food
-  "/Image/20.png",  // food
-  "/Image/11.webp",   // food
-  "/Image/15.webp",  // model
-  "/Image/13.png",   // food
-  "/Image/14.webp",  // model
-  "/Image/16.png",   // food
-  "/Image/12.png",  // model
-  "/Image/17.png",   // food
-  "/Image/19.png",  // food
-  "/Image/18.png",  // food
-  "/Image/20.png",  // food
+  "/Image/img30.png",
+  "/Image/img29.png",
+  "/Image/img28.jpg",
+  "/Image/img27.jpg",
+  "/Image/img26.jpg",
+  "/Image/img25.webp",
+  "/Image/img24.webp",
+  "/Image/img23.jpg",
+  "/Image/img22.png",
+  "/Image/img21.png",
+  "/Image/img20.png",
+  "/Image/img19.jpg",
+  "/Image/img18.webp",
+  "/Image/img17.webp",
+  "/Image/img16.webp",
 ];
 
 function isMobileDevice() {
-  const userAgent = typeof window.navigator === "undefined" ? "" : navigator.userAgent;
-  return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(userAgent);
+  const userAgent =
+    typeof window.navigator === "undefined" ? "" : navigator.userAgent;
+  return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+    userAgent
+  );
 }
 
 export default function EnhancedReverseStartLayout() {
   const containerRef = useRef(null);
   const textRef = useRef(null);
-  const [maxScroll, setMaxScroll] = useState(0);
   const [isMobile, setIsMobile] = useState(false);
   const [componentHeight, setComponentHeight] = useState("auto");
+
+  // Use a large height for continuous scrolling
+  const largeScrollHeight = 100000; // Adjust for desired scroll distance
 
   useEffect(() => {
     setIsMobile(isMobileDevice());
@@ -115,13 +108,11 @@ export default function EnhancedReverseStartLayout() {
   }, []);
 
   useEffect(() => {
-    if (maxScroll > 0) {
-      setComponentHeight(maxScroll + window.innerHeight);
-    }
-  }, [maxScroll]);
+    setComponentHeight(largeScrollHeight);
+  }, []);
 
   useEffect(() => {
-    if (!containerRef.current || !textRef.current || maxScroll === 0) return;
+    if (!containerRef.current || !textRef.current) return;
 
     const ctx = gsap.context(() => {
       gsap.fromTo(
@@ -133,7 +124,7 @@ export default function EnhancedReverseStartLayout() {
           scrollTrigger: {
             trigger: containerRef.current,
             start: "top top",
-            end: `+=${maxScroll}`,
+            end: `+=${largeScrollHeight}`,
             scrub: 1.5,
             invalidateOnRefresh: true,
           },
@@ -142,38 +133,38 @@ export default function EnhancedReverseStartLayout() {
     }, containerRef);
 
     return () => ctx.revert();
-  }, [maxScroll]);
+  }, []);
 
-  // --- 3. CONDITIONALLY SELECT THE RIGHT IMAGE ARRAYS ---
   const leftImages = isMobile ? mobileLeftImages : desktopLeftImages;
   const rightImages = isMobile ? mobileRightImages : desktopRightImages;
 
   return (
-    <main className="pixi-page relative ">
+    <main className="pixi-page relative">
       {isMobile ? (
         <SimpleScroll
           containerRef={containerRef}
-          leftImages={mobileLeftImages} // Pass mobile or desktop images
-          rightImages={mobileRightImages} // Pass mobile or desktop images
-          onMaxScrollCalculated={setMaxScroll}
-          maxScroll={maxScroll}
+          leftImages={mobileLeftImages}
+          rightImages={mobileRightImages}
+          scrollHeight={largeScrollHeight}
         />
       ) : (
         <PixiImage
           containerRef={containerRef}
-          leftImages={desktopLeftImages} // Pass mobile or desktop images
-          rightImages={desktopRightImages} // Pass mobile or desktop images
-          onMaxScrollCalculated={setMaxScroll}
+          leftImages={desktopLeftImages}
+          rightImages={desktopRightImages}
+          scrollHeight={largeScrollHeight}
         />
       )}
       <div
         ref={containerRef}
-        style={{ height: componentHeight }}
+        style={{ height: largeScrollHeight }}
         className="relative w-full"
       >
         <ScrollingText ref={textRef} />
         <div className="fixed bottom-10 left-1/2 -translate-x-1/2 z-30 pointer-events-none">
-          <p className="text-white text-sm font-bold opacity-35">Scroll and Select</p>
+          <p className="text-white text-sm font-bold opacity-35">
+            Scroll and Select
+          </p>
         </div>
       </div>
     </main>

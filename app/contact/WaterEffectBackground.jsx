@@ -2,7 +2,6 @@
 
 import { useEffect, useRef } from "react";
 import * as PIXI from "pixi.js";
-import { DisplacementFilter } from "@pixi/filter-displacement";
 
 export default function WaterEffectBackground() {
   const pixiRef = useRef(null);
@@ -36,7 +35,7 @@ export default function WaterEffectBackground() {
     displacementSprite.height = height;
     displacementSprite.alpha = 0.9;
 
-    const displacementFilter = new DisplacementFilter(displacementSprite);
+    const displacementFilter = new PIXI.filters.DisplacementFilter(displacementSprite);
 
     app.stage.addChild(displacementSprite);
     app.stage.addChild(bgSprite);

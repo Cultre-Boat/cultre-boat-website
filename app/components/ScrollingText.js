@@ -19,6 +19,7 @@ const ScrollingText = forwardRef(
     useEffect(() => {
       if (!containerRef.current) return;
 
+      const isMobile = window.innerWidth <= 768; // Define mobile breakpoint
       const scene = sceneRef.current;
       const camera = new THREE.PerspectiveCamera(
         75,
@@ -26,7 +27,7 @@ const ScrollingText = forwardRef(
         1,
         5000
       );
-      camera.position.z = 300;
+      camera.position.z = isMobile ? 500 : 300;
       cameraRef.current = camera;
 
       const renderer = new CSS3DRenderer();
@@ -41,7 +42,7 @@ const ScrollingText = forwardRef(
         { text: "SOCIAL", href: "/social-scroll", ref: socialTextRef },
       ];
 
-      const radius = 600;
+const radius = isMobile ? 500 : 600;
       const objects = [];
       const angleStep = (2 * Math.PI) / elements.length; // Angle between elements
       const rotationSpeed = (2 * Math.PI) / 1000; // Full rotation per 1000px scroll
@@ -49,8 +50,7 @@ const ScrollingText = forwardRef(
       // Create only one set of elements
       elements.forEach((element, i) => {
         const div = document.createElement("div");
-        div.className =
-          "text-7xl md:text-9xl lg:text-9xl text-white/90 font-bellota-light transition-opacity duration-300";
+        div.className = `text-${isMobile ? "5xl" : "7xl"} md:text-9xl lg:text-9xl text-white/90 transition-opacity duration-300`;
         div.style.borderRadius = "10px";
         div.style.pointerEvents = "auto";
         div.style.cursor = "pointer";
@@ -125,7 +125,7 @@ const ScrollingText = forwardRef(
     return (
       <div
         ref={containerRef}
-        className="fixed top-0 left-0 w-screen h-screen pointer-events-none"
+        className="fixed top-0 left-0 w-screen h-screen pointer-events-none "
         style={{ perspective: "1000px", zIndex: 20, willChange: "transform" }}
       />
     );

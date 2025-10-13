@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useRef } from "react";
 import * as PIXI from "pixi.js";
-import { DisplacementFilter } from "@pixi/filter-displacement";
 import Hero from "../PR/hero";
 import Second from "../PR/second";
 import Third from "../PR/second/third";
@@ -41,13 +40,15 @@ const PixiWaterText = ({ containerRef }) => {
     const displacementSprite = PIXI.Sprite.from("/pattern-clouds.jpg");
     displacementSprite.texture.baseTexture.on("error", () => {
       console.error("Failed to load /pattern-clouds.jpg, using fallback");
-      displacementSprite.texture = PIXI.Texture.from("https://i.imgur.com/3PTiU4U.jpg");
+      displacementSprite.texture = PIXI.Texture.from(
+        "https://i.imgur.com/3PTiU4U.jpg"
+      );
     });
     displacementSprite.texture.baseTexture.wrapMode = PIXI.WRAP_MODES.REPEAT;
     displacementSprite.alpha = 0;
     displacementSprite.width = window.innerWidth;
     displacementSprite.height = window.innerHeight;
-    const displacementFilter = new DisplacementFilter(displacementSprite);
+    const displacementFilter = new PIXI.filters.DisplacementFilter(displacementSprite);
     displacementFilter.scale.set(10, 10);
 
     app.stage.addChild(displacementSprite);
@@ -107,12 +108,15 @@ const PixiWaterText = ({ containerRef }) => {
     };
   }, [containerRef]);
 
-  return <div ref={pixiContainerRef} className="fixed top-0 left-0 w-full h-full pointer-events-none z-[2]" />;
+  return (
+    <div
+      ref={pixiContainerRef}
+      className="fixed top-0 left-0 w-full h-full pointer-events-none z-[2]"
+    />
+  );
 };
 
-
 export default function PRPortfolio() {
-  
   const fashionImages = [
     { src: "/PR-images/1.webp", link: "#" },
     { src: "/PR-images/2.webp", link: "#" },
@@ -130,47 +134,53 @@ export default function PRPortfolio() {
     { src: "/PR-images/13.webp", link: "#" },
     { src: "/PR-images/14.webp", link: "#" },
     { src: "/PR-images/15.webp", link: "#" },
+    { src: "/PR-images/17.jpg", link: "#" },
+    { src: "/PR-images/18.jpg", link: "#" },
+    { src: "/PR-images/19.jpg", link: "#" },
   ];
 
   const contentRef = useRef(null);
-  
-    useEffect(() => {
-      if (!contentRef.current) return;
-  
-      // Hide text elements within contentRef, excluding no-water-effect
-      const textElements = contentRef.current.querySelectorAll(
-        "h1:not(.no-water-effect), h2:not(.no-water-effect), h3:not(.no-water-effect), p:not(.no-water-effect), a:not(.no-water-effect)"
-      );
+
+  useEffect(() => {
+    if (!contentRef.current) return;
+
+    // Hide text elements within contentRef, excluding no-water-effect
+    const textElements = contentRef.current.querySelectorAll(
+      "h1:not(.no-water-effect), h2:not(.no-water-effect), h3:not(.no-water-effect), p:not(.no-water-effect), a:not(.no-water-effect)"
+    );
+    textElements.forEach((el) => {
+      el.style.opacity = "0";
+    });
+
+    // Debug image loading
+    const images = contentRef.current.querySelectorAll("img");
+    images.forEach((img) => {
+      if (!img.complete || img.naturalWidth === 0) {
+        console.error(`Failed to load image: ${img.src}`);
+      }
+    });
+
+    return () => {
       textElements.forEach((el) => {
-        el.style.opacity = "0";
+        el.style.opacity = "1";
       });
-  
-      // Debug image loading
-      const images = contentRef.current.querySelectorAll("img");
-      images.forEach((img) => {
-        if (!img.complete || img.naturalWidth === 0) {
-          console.error(`Failed to load image: ${img.src}`);
-        }
-      });
-  
-      return () => {
-        textElements.forEach((el) => {
-          el.style.opacity = "1";
-        });
-      };
-    }, []);
+    };
+  }, []);
 
   return (
     <>
-     <PixiWaterImages containerRef={contentRef} />
+      <PixiWaterImages containerRef={contentRef} />
       <PixiWaterText containerRef={contentRef} />
       <div className="text-white min-h-screen p-8 px-0" ref={contentRef}>
         <Hero />
         <Second />
-        <div className="px-4 sm:px-4 md:px-6 lg:px-10 mt-25">
+        <div className="px-4 sm:px-4 md:px-6 lg:px-10 mt-5">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-10 mb-8">
             {fashionImages.map((image, index) => (
-              <div key={index} className="col-span-1 w-full flex justify-center">
+              <div
+                key={index}
+                className="col-span-1 w-full flex justify-center"
+              >
                 <img
                   src={image.src}
                   alt={`Fashion ${index + 1}`}

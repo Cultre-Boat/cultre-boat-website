@@ -3,8 +3,6 @@ import React, {useRef, useEffect} from 'react';
 import Image from 'next/image';
 import { IndustriesData } from "../Data.js";
 import * as PIXI from 'pixi.js';
-import { DisplacementFilter } from '@pixi/filter-displacement';
-import FullScreenWaterEffect from '@/app/components/FullScreenWaterEffect.jsx';
 export default function BrandShowcase({ params: paramsPromise }) {
   // Unwrap the params Promise using React.use()
   const params = React.use(paramsPromise);
@@ -58,7 +56,7 @@ export default function BrandShowcase({ params: paramsPromise }) {
     displacementSprite.alpha = 0;
     displacementSprite.width = window.innerWidth;
     displacementSprite.height = window.innerHeight;
-    const displacementFilter = new DisplacementFilter(displacementSprite);
+    const displacementFilter = new PIXI.filters.DisplacementFilter(displacementSprite);
     displacementFilter.padding = 30;
     if (window.innerWidth < 768) {
       displacementFilter.scale.set(10, 10); // Softer waves for mobile

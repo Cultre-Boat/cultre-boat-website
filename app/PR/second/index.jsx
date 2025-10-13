@@ -4,12 +4,12 @@ import React from "react";
 
 export default function Second() {
   return (
-    <div className="relative w-full bg-transparent h-auto md:h-screen overflow-hidden mb-10">
+    <div className="relative w-full bg-transparent h-auto md:h-screen overflow-hidden mb-5 font-bellota-light">
       {/* Main content container */}
       <div className="container mx-auto px-4 sm:px-8 md:px-20 relative z-10">
         
         {/* Heading on top, centered */}
-        <div className="flex justify-center mb-15">
+        <div className="flex justify-center mb-5">
           <h2 className="text-white text-2xl sm:text-3xl md:text-4xl  text-center">
             CONCEPT & DIRECTION
           </h2>

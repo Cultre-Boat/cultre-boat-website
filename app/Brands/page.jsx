@@ -2,7 +2,6 @@
 import Link from 'next/link';
 import { useEffect, useRef } from 'react';
 import * as PIXI from 'pixi.js';
-import { DisplacementFilter } from '@pixi/filter-displacement';
 
 export default function BrandShowcase() {
   const brands = [
@@ -60,7 +59,7 @@ export default function BrandShowcase() {
     displacementSprite.alpha = 0;
     displacementSprite.width = window.innerWidth;
     displacementSprite.height = window.innerHeight;
-    const displacementFilter = new DisplacementFilter(displacementSprite);
+    const displacementFilter = new PIXI.filters.DisplacementFilter(displacementSprite);
     displacementFilter.padding = 30;
     if (window.innerWidth < 768) {
       displacementFilter.scale.set(10, 10); // Softer waves for mobile

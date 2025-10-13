@@ -1,46 +1,52 @@
 "use client";
 
-import Image from 'next/image';
+import { useRef } from "react";
+import Image from "next/image";
 
 export default function Influencers() {
-    const productImages = [
-        { src: '/Influencers/1_28.webp', alt: 'Product 1' },
-        { src: '/Influencers/1_29.webp', alt: 'Product 2' },
-        { src: '/Influencers/1_30.webp', alt: 'Product 3' },
-        { src: '/Influencers/1_31.webp', alt: 'Product 4' },
-        { src: '/Influencers/1_32.webp', alt: 'Product 5' },
-        { src: '/Influencers/1_33.webp', alt: 'Product 6' },
-    ]
+  const contentRef = useRef(null);
 
-    return (
-        <>
-            <div className="text-white py-4 text-center mb-13 mt-13">
-                <h1 className="text-2xl md:text-3xl ">INFLUENCERS</h1>
-                {/* <p className="text-lg md:text-xl italic font-light mt-1">Impactful PR Approach</p> */}
-            </div>
-            <div className="relative w-full overflow-hidden bg-white"> 
-                <div className="flex w-full overflow-hidden">
-                    <div className="flex animate-marquee-left items-center py-2"> {/* Added vertical padding */}
-                        {[...productImages, ...productImages].map((img, index) => (
-                            <div
-                                key={index}
-                                className="mx-2 flex-shrink-0" // Adjusted spacing
-                            >
-                                <div className="relative w-[250px] h-[350px]"> {/* Taller container */}
-                                    <Image
-                                        src={img.src}
-                                        alt={img.alt}
-                                        fill // Fill the container
-                                        className="object-contain" // Ensures full image visibility
-                                        sizes="(max-width: 768px) 100vw, 50vw"
-                                        quality={100} // Best quality
-                                    />
-                                </div>
-                            </div>
-                        ))}
-                    </div>
+  const productImages = [
+    { src: "/Influencers/img1.webp", alt: "Product 1" },
+    { src: "/Influencers/img2.webp", alt: "Product 2" },
+    { src: "/Influencers/img3.webp", alt: "Product 3" },
+    { src: "/Influencers/imgn11.jpg", alt: "Product 11" },
+    { src: "/Influencers/img4.webp", alt: "Product 4" },
+    { src: "/Influencers/img5.webp", alt: "Product 5" },
+    { src: "/Influencers/img6.webp", alt: "Product 6" },
+    { src: "/Influencers/img7.jpg", alt: "Product 7" },
+    { src: "/Influencers/img8.jpg", alt: "Product 8" },
+    { src: "/Influencers/img9.jpg", alt: "Product 9" },
+    { src: "/Influencers/imgn10.jpg", alt: "Product 10" },
+  ];
+
+  return (
+    <>
+      <div className="text-white py-5 text-center font-bellota-light">
+        <h1 className="text-2xl md:text-3xl">INFLUENCERS</h1>
+      </div>
+
+      <div className="relative w-full overflow-hidden bg-white" ref={contentRef}>
+
+        <div className="flex w-full overflow-hidden relative z-10">
+          <div className="flex animate-marquee-left items-center py-1">
+            {[...productImages, ...productImages].map((img, index) => (
+              <div key={index} className="mx-3 flex-shrink-0">
+                <div className="relative w-[250px] h-[350px]">
+                   
+                  <Image
+                    src={img.src}
+                    alt={img.alt}
+                    fill
+                    className="object-contain no-water-effect"
+                    sizes="(max-width: 768px) 100vw, 50vw"
+                  />
                 </div>
-            </div>
-        </>
-    );
-};
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </>
+  );
+}

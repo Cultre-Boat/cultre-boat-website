@@ -4,7 +4,6 @@ import { useEffect, forwardRef } from "react";
 import * as PIXI from "pixi.js";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { DisplacementFilter } from "@pixi/filter-displacement";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -12,39 +11,57 @@ const PixiMobile = forwardRef(({ containerRef, leftImages, rightImages, onMaxScr
   useEffect(() => {
     if (!ref?.current || !containerRef.current) return;
 
-    const dpr = Math.min(window.devicePixelRatio || 1, 1); // cap DPR
+    // Optimize DPR for mobile - use actual DPR but cap at 2 for performance
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
 
     const app = new PIXI.Application({
       view: ref.current, // Use the forwarded ref directly
       resizeTo: window,
       backgroundColor: 0x000000,
       backgroundAlpha: 0, // transparent
-      antialias: false,
+      antialias: true, // Enable antialiasing for better quality
       resolution: dpr,
-      powerPreference: "low-power",
+      powerPreference: "high-performance", // Better performance on modern mobile devices
+      preserveDrawingBuffer: false, // Better memory management
     });
 
     const leftContainer = new PIXI.Container();
     const rightContainer = new PIXI.Container();
     app.stage.addChild(leftContainer, rightContainer);
 
-    const imageWidth = window.innerWidth * 0.47;
+    // Optimize image dimensions for better quality on mobile
+    const screenWidth = window.innerWidth;
+    const imageWidth = Math.min(screenWidth * 0.48, 400); // Cap at 400px for performance
     const imageHeight = imageWidth * (4 / 3);
-    const gap = window.innerHeight * 0.12;
+    const gap = Math.max(window.innerHeight * 0.08, 20); // Reduced gap for better performance
     
 
     leftImages.forEach((src, i) => {
-  const sprite = PIXI.Sprite.from(src);
-  sprite.texture.baseTexture.on("loaded", () => console.log(`Loaded: ${src}`));
-  sprite.texture.baseTexture.on("error", () => console.error(`Failed to load: ${src}`));
-  sprite.width = imageWidth;
-  sprite.height = imageHeight;
-  sprite.y = i * (imageHeight + gap);
-  leftContainer.addChild(sprite);
-});
+      const sprite = PIXI.Sprite.from(src);
+      sprite.texture.baseTexture.on("loaded", () => console.log(`Loaded: ${src}`));
+      sprite.texture.baseTexture.on("error", () => console.error(`Failed to load: ${src}`));
+      
+      // High-quality rendering settings
+      sprite.texture.baseTexture.scaleMode = PIXI.SCALE_MODES.LINEAR;
+      sprite.texture.baseTexture.mipmap = PIXI.MIPMAP_MODES.ON;
+      sprite.roundPixels = true;
+      sprite.anchor.set(0);
+      
+      sprite.width = imageWidth;
+      sprite.height = imageHeight;
+      sprite.y = i * (imageHeight + gap);
+      leftContainer.addChild(sprite);
+    });
 
     rightImages.forEach((src, i) => {
       const sprite = PIXI.Sprite.from(src);
+      
+      // High-quality rendering settings
+      sprite.texture.baseTexture.scaleMode = PIXI.SCALE_MODES.LINEAR;
+      sprite.texture.baseTexture.mipmap = PIXI.MIPMAP_MODES.ON;
+      sprite.roundPixels = true;
+      sprite.anchor.set(0);
+      
       sprite.width = imageWidth;
       sprite.height = imageHeight;
       sprite.y = i * (imageHeight + gap);
@@ -80,32 +97,39 @@ const PixiMobile = forwardRef(({ containerRef, leftImages, rightImages, onMaxScr
     });
 
     // --- MOBILE-OPTIMISED WATER ---
-    const dispTexture = PIXI.Texture.from("/pattern-clouds.jpg");
-    dispTexture.baseTexture.wrapMode = PIXI.WRAP_MODES.REPEAT;
-    const displacementSprite = new PIXI.Sprite(dispTexture);
-    displacementSprite.scale.set(0.4);
-    const displacementFilter = new DisplacementFilter(displacementSprite);
-    displacementFilter.scale.set(2); // gentle ripple
-    displacementFilter.padding = 0;
+    // Only apply displacement effects on larger screens for better performance
+    if (window.innerWidth >= 768) {
+      const dispTexture = PIXI.Texture.from("/pattern-clouds.jpg");
+      dispTexture.baseTexture.wrapMode = PIXI.WRAP_MODES.REPEAT;
+      const displacementSprite = new PIXI.Sprite(dispTexture);
+      displacementSprite.scale.set(0.4);
+      const displacementFilter = new PIXI.filters.DisplacementFilter(displacementSprite);
+      displacementFilter.scale.set(1.5); // Reduced intensity for better performance
+      displacementFilter.padding = 0;
 
-    app.stage.addChild(displacementSprite);
-    leftContainer.filters = [displacementFilter];
-    rightContainer.filters = [displacementFilter];
+      app.stage.addChild(displacementSprite);
+      leftContainer.filters = [displacementFilter];
+      rightContainer.filters = [displacementFilter];
+    }
 
-    app.ticker.maxFPS = 30; // lock fps
+    app.ticker.maxFPS = 60; // Increased FPS for smoother animation
     app.ticker.add(() => {
-      displacementSprite.x += 0.25;
-      displacementSprite.y += 0.25;
+      // Only animate displacement if it exists (larger screens)
+      if (window.innerWidth >= 768 && app.stage.children.includes(displacementSprite)) {
+        displacementSprite.x += 0.25;
+        displacementSprite.y += 0.25;
+      }
     });
 
     const onResize = () => {
-      const nw = window.innerWidth * 0.47;
+      const screenWidth = window.innerWidth;
+      const nw = Math.min(screenWidth * 0.48, 400);
       const nh = nw * (4 / 3);
-      const ng = window.innerHeight * 0.12;
+      const ng = Math.max(window.innerHeight * 0.08, 20);
       [...leftContainer.children, ...rightContainer.children].forEach((s, i) => {
         s.width = nw;
         s.height = nh;
-        s.y = Math.floor(i / leftImages.length) * (nh + ng); // quick remap
+        s.y = Math.floor(i / leftImages.length) * (nh + ng);
       });
       positionContainers();
       calculateMaxScroll();

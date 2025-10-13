@@ -16,7 +16,7 @@ const LoadingScreen = ({ onLoadingComplete }) => {
           setTimeout(() => {
             setIsComplete(true);
             if (onLoadingComplete) onLoadingComplete();
-          }, 500); // Short delay after reaching 100 before fading out
+          }, 1000); // Short delay after reaching 100 before fading out
           return 100;
         }
         return prev + 1;

@@ -2,14 +2,11 @@
 import Link from "next/link";
 import { gsap } from "gsap";
 import { useEffect, useRef, useState } from "react";
-import MovingFog from "../components/MovingFog";
-import FullScreenWaterEffect from "../components/FullScreenWaterEffect";
+import { isMobile } from "react-device-detect";
+
 export default function BrandShowcase() {
   const brands = [
-    {
-      name: "AMAYRA by Bagrecha Gems",
-      slug: "/Brands/amayra-by-bagrecha-gems",
-    },
+    { name: "AMAYRA by Bagrecha Gems", slug: "/Brands/amayra-by-bagrecha-gems" },
     { name: "Amiraah", slug: "/Brands/amiraah" },
     { name: "Blister Hand", slug: "/Brands/blister-hand" },
     { name: "BUTA", slug: "/Brands/buta" },
@@ -27,10 +24,7 @@ export default function BrandShowcase() {
     { name: "Kelby Huston", slug: "/Brands/kelby-huston" },
     { name: "kritika Dawar", slug: "/Brands/kritika-dawar" },
     { name: "LIZ PAUL", slug: "/Brands/liz-paul" },
-    {
-      name: "Luxury Ampersand Frolics Group",
-      slug: "/Brands/luxury-ampersand-frolics-group",
-    },
+    { name: "Luxury Ampersand Frolics Group", slug: "/Brands/luxury-ampersand-frolics-group" },
     { name: "MASALA SYNERGY", slug: "/Brands/masala-synergy" },
     { name: "nidhika shekhar", slug: "/Brands/nidhika-shekhar" },
     { name: "ODDCAT", slug: "/Brands/oddcat" },
@@ -54,41 +48,38 @@ export default function BrandShowcase() {
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [hoveredIndex, setHoveredIndex] = useState(null);
   const [scrollY, setScrollY] = useState(0);
-  const [isMounted, setIsMounted] = useState(false); // This state is key
+  const [isMounted, setIsMounted] = useState(false);
+  const [isClientMobile, setIsClientMobile] = useState(false);
 
- useEffect(() => {
-  setIsMounted(true);
+  useEffect(() => {
+    setIsMounted(true);
+    if (isMobile) setIsClientMobile(true);
 
-  const list = listRef.current;
-  if (!list) return;
+    const list = listRef.current;
+    if (!list) return;
 
-  // Center the last item
-  const lastItem = list.lastElementChild;
-  if (lastItem) {
-    const containerHeight = list.offsetHeight;
-    const lastItemHeight = lastItem.offsetHeight;
-    list.style.paddingBottom = `${containerHeight / 2 - lastItemHeight / 2}px`;
-  }
+    const lastItem = list.lastElementChild;
+    if (lastItem) {
+      const containerHeight = list.offsetHeight;
+      const lastItemHeight = lastItem.offsetHeight;
+      list.style.paddingBottom = `${containerHeight / 3 - lastItemHeight / 3}px`;
+    }
 
-  list.scrollTop = 0;
+    list.scrollTop = 0;
 
-  const handleScroll = () => setScrollY(list.scrollTop);
-  const handleMouseMove = (e) => setMousePosition({ x: e.clientX, y: e.clientY });
+    const handleScroll = () => setScrollY(list.scrollTop);
+    list.addEventListener("scroll", handleScroll);
 
-  list.addEventListener("scroll", handleScroll);
-  window.addEventListener("mousemove", handleMouseMove);
+    if (!isMobile) {
+      const handleMouseMove = (e) => setMousePosition({ x: e.clientX, y: e.clientY });
+      window.addEventListener("mousemove", handleMouseMove);
+      return () => window.removeEventListener("mousemove", handleMouseMove);
+    }
 
-  return () => {
-    list.removeEventListener("scroll", handleScroll);
-    window.removeEventListener("mousemove", handleMouseMove);
-  };
-}, []);
+    return () => list.removeEventListener("scroll", handleScroll);
+  }, []);
 
-
-  // ✅ THE FIX IS HERE
   const getItemStyle = (index) => {
-    // Before the component is mounted, return a default, static style.
-    // This ensures server and initial client renders are identical.
     if (!isMounted) {
       return {
         fontFamily: "BellotaText-Light, sans-serif",
@@ -99,7 +90,6 @@ export default function BrandShowcase() {
       };
     }
 
-    // After mounting, apply the full dynamic styles.
     const isHovered = hoveredIndex === index;
     const distanceFromHovered =
       hoveredIndex !== null ? Math.abs(index - hoveredIndex) : 0;
@@ -110,10 +100,8 @@ export default function BrandShowcase() {
       lineHeight: "1.2",
       transform: `
         translateZ(0) 
-        scale(${
-          isHovered ? 1.05 : Math.max(0.95, 1 - distanceFromHovered * 0.02)
-        })
-        translateX(${isHovered ? "10px" : "0px"})
+        scale(${isHovered ? 1.05 : Math.max(0.95, 1 - distanceFromHovered * 0.02)})
+        translateX(${isHovered ? "5px" : "0px"})
         rotateX(${Math.sin((scrollY + index * 100) * 0.01) * 2}deg)
       `,
       textShadow: isHovered
@@ -121,34 +109,25 @@ export default function BrandShowcase() {
         : "0 2px 20px rgba(0, 0, 0, 0.8)",
       filter: `
         brightness(${isHovered ? 1.4 : 0.8}) 
-        blur(${
-          distanceFromHovered > 0 && distanceFromHovered < 3
-            ? distanceFromHovered * 0.3
-            : 0
-        }px)
+        blur(${distanceFromHovered > 0 && distanceFromHovered < 3 ? distanceFromHovered * 0.3 : 0}px)
       `,
     };
   };
 
-useEffect(() => {
-    
-    const textTurbulence = document.querySelector(
-      "#textWaterFilter feTurbulence"
-    );
-    const textDisplacementMap = document.querySelector(
-      "#textWaterFilter feDisplacementMap"
-    );
+  useEffect(() => {
+    const textTurbulence = document.querySelector("#textWaterFilter feTurbulence");
+    const textDisplacementMap = document.querySelector("#textWaterFilter feDisplacementMap");
 
     if (textTurbulence && textDisplacementMap) {
-      document.querySelectorAll("h1, h2, h3, p, a").forEach((el) => {
+      document.querySelectorAll("h1, h2, h3, p, a, span, a").forEach((el) => {
         el.style.filter = "url(#textWaterFilter)";
       });
 
-      gsap.set(textDisplacementMap, { attr: { scale: 10 } });
+      gsap.set(textDisplacementMap, { attr: { scale: isMobile ? 4 : 10 } });
 
       gsap.to(textTurbulence, {
-        attr: { baseFrequency: "0.02 0.10" },
-        duration: 15,
+        attr: { baseFrequency: isMobile ? "0.02 0.10" : "0.02 0.10" },
+        duration: 20,
         ease: "sine.inOut",
         repeat: -1,
         yoyo: true,
@@ -158,40 +137,32 @@ useEffect(() => {
 
   return (
     <>
-        <svg className="absolute w-0 h-0 pointer-events-none">
+      <svg className="absolute w-0 h-0 pointer-events-none">
         <filter id="textWaterFilter">
-          <feTurbulence
-            type="fractalNoise"
-            baseFrequency="0.01 0.01"
-            numOctaves="1"
-            result="noiseForText"
-          />
-          <feDisplacementMap
-            in="SourceGraphic"
-            in2="noiseForText"
-            scale="0"
-            xChannelSelector="R"
-            yChannelSelector="G"
-          />
+          <feTurbulence type="fractalNoise" baseFrequency="0.01 0.01" numOctaves="1" result="noiseForText" />
+          <feDisplacementMap in="SourceGraphic" in2="noiseForText" scale="0" xChannelSelector="R" yChannelSelector="G" />
         </filter>
       </svg>
-      <div className="relative w-full h-screen overflow-hidden bg-black">
-        {/* Animated gradient overlay */}
+
+      <div className="relative w-full h-screen overflow-x-hidden overflow-y-hidden bg-black">
+        {/* 🔹 Radial gradient only after mount */}
         <div
-          className="absolute inset-0 z-[5] pointer-events-none opacity-20"
-          style={{
-            background: `radial-gradient(600px circle at ${mousePosition.x}px ${mousePosition.y}px, 
-            rgba(255, 255, 255, 0.1) 0%, 
-            rgba(255, 255, 255, 0.05) 25%, 
-            transparent 50%)`,
-          }}
+          className="absolute inset-0 z-[5] pointer-events-none opacity-20 gradient-overlay"
+          style={
+            isMounted && !isClientMobile
+              ? {
+                  background: `radial-gradient(300px circle at ${mousePosition.x}px ${mousePosition.y}px,
+                    rgba(255, 255, 255, 0.1) 0%, 
+                    rgba(255, 255, 255, 0.05) 25%, 
+                    transparent 50%)`,
+                }
+              : {}
+          }
         />
 
-       
-        {/* Brands List */}
         <div
           ref={listRef}
-          className="font-bellota-light relative z-10 flex flex-col items-center uppercase justify-start gap-8 py-32 h-full overflow-y-auto no-scrollbar"
+          className="font-bellota-light relative z-10 flex flex-col items-center uppercase justify-start gap-8 py-8 sm:py-32 h-full overflow-y-auto overflow-x-hidden no-scrollbar list-container"
           style={{
             scrollBehavior: "smooth",
             perspective: "1000px",
@@ -201,17 +172,15 @@ useEffect(() => {
             <Link
               key={`${brand.slug}-${index}`}
               href={brand.slug}
-              className="group relative text-white text-2xl md:text-7xl font-stretch-95% text-center transition-all duration-500 ease-out cursor-pointer will-change-transform"
+              className="group relative text-white text-3xl sm:text-xl md:text-5xl lg:text-7xl font-stretch-95% py-4 text-center transition-all duration-500 ease-out cursor-pointer will-change-transform max-w-[90vw]"
               style={{
                 ...getItemStyle(index),
                 filter: "url(#textWaterFilter)",
-              }} // add filter here
-              onMouseEnter={() => setHoveredIndex(index)}
-              onMouseLeave={() => setHoveredIndex(null)}
+              }}
+              onMouseEnter={isClientMobile ? null : () => setHoveredIndex(index)}
+              onMouseLeave={isClientMobile ? null : () => setHoveredIndex(null)}
             >
               <span className="relative z-10 block">{brand.name}</span>
-
-              {/* Hover background effect */}
               <div
                 className="absolute inset-0 -z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
                 style={{
@@ -220,8 +189,6 @@ useEffect(() => {
                   transform: "skewX(-15deg)",
                 }}
               />
-
-              {/* Underline effect */}
               <div
                 className="absolute bottom-0 left-0 h-[1px] bg-gradient-to-r from-transparent via-white to-transparent w-0 group-hover:w-full transition-all duration-700 ease-out"
                 style={{ transformOrigin: "left" }}
@@ -230,7 +197,7 @@ useEffect(() => {
           ))}
         </div>
 
-        {/* Top fade overlay */}
+        {/* Gradients top/bottom */}
         <div
           className="absolute top-0 left-0 right-0 z-30 pointer-events-none transition-opacity duration-300"
           style={{
@@ -241,8 +208,6 @@ useEffect(() => {
             opacity: Math.min(scrollY / 100, 0.95),
           }}
         />
-
-        {/* Bottom fade overlay */}
         <div
           className="absolute bottom-0 left-0 right-0 z-30 pointer-events-none transition-opacity duration-300"
           style={{
@@ -268,42 +233,16 @@ useEffect(() => {
         </div>
 
         <style jsx>{`
-          .no-scrollbar::-webkit-scrollbar {
-            display: none;
+          html, body {
+            overflow-x: hidden;
+            width: 100%;
+            max-width: 100vw;
           }
-          .no-scrollbar {
-            -ms-overflow-style: none;
-            scrollbar-width: none;
-          }
-
-          @keyframes float {
-            0%,
-            100% {
-              transform: translateY(0) translateX(0) rotate(0deg);
-              opacity: 0.2;
-            }
-            25% {
-              transform: translateY(-20px) translateX(10px) rotate(90deg);
-              opacity: 0.4;
-            }
-            50% {
-              transform: translateY(-40px) translateX(-5px) rotate(180deg);
-              opacity: 0.6;
-            }
-            75% {
-              transform: translateY(-20px) translateX(-10px) rotate(270deg);
-              opacity: 0.4;
-            }
-          }
-
-          .animate-float {
-            animation: float linear infinite;
-          }
-          .group:hover {
-            z-index: 30;
-          }
-          .will-change-transform {
-            will-change: transform;
+          .no-scrollbar::-webkit-scrollbar { display: none; }
+          .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+          @media (max-width: 640px) {
+            .gradient-overlay { display: none; }
+            .list-container { gap: 4px; padding-top: 100px; padding-bottom: -16px; }
           }
         `}</style>
       </div>

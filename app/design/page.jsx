@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useRef } from "react";
 import * as PIXI from "pixi.js";
-import { DisplacementFilter } from "@pixi/filter-displacement";
 import Last from "../components/design-last";
 import Logos from "../components/brand-logos";
 import Mailers from "../components/mailers";
@@ -41,13 +40,15 @@ const PixiWaterText = ({ containerRef }) => {
     const displacementSprite = PIXI.Sprite.from("/pattern-clouds.jpg");
     displacementSprite.texture.baseTexture.on("error", () => {
       console.error("Failed to load /pattern-clouds.jpg, using fallback");
-      displacementSprite.texture = PIXI.Texture.from("https://i.imgur.com/3PTiU4U.jpg");
+      displacementSprite.texture = PIXI.Texture.from(
+        "https://i.imgur.com/3PTiU4U.jpg"
+      );
     });
     displacementSprite.texture.baseTexture.wrapMode = PIXI.WRAP_MODES.REPEAT;
     displacementSprite.alpha = 0;
     displacementSprite.width = window.innerWidth;
     displacementSprite.height = window.innerHeight;
-    const displacementFilter = new DisplacementFilter(displacementSprite);
+    const displacementFilter = new PIXI.filters.DisplacementFilter(displacementSprite);
     displacementFilter.scale.set(10, 10);
 
     app.stage.addChild(displacementSprite);
@@ -107,7 +108,12 @@ const PixiWaterText = ({ containerRef }) => {
     };
   }, [containerRef]);
 
-  return <div ref={pixiContainerRef} className="fixed top-0 left-0 w-full h-full pointer-events-none z-[2]" />;
+  return (
+    <div
+      ref={pixiContainerRef}
+      className="fixed top-0 left-0 w-full h-full pointer-events-none z-[2]"
+    />
+  );
 };
 
 export default function DesignPortfolio() {
@@ -157,82 +163,94 @@ export default function DesignPortfolio() {
     <>
       <PixiWaterText containerRef={contentRef} />
       <PixiWaterImages containerRef={contentRef} />
-      <div ref={contentRef} className="text-white leading-relaxed">
-        <div className="max-w-6xl mx-auto px-4">
+      <div
+        ref={contentRef}
+        className="text-white leading-relaxed font-bellota-light"
+      >
+        <div className="max-w-6xl mx-auto px-4 lg:px-4 px-0">
           {/* Header Section */}
-          <section className="py-2 relative mt-25 text-center sm:text-left z-[10]">
+          <section className=" relative mt-20 text-center sm:text-left z-[10]">
             <div className="flex flex-col lg:flex-row items-center min-h-[400px] lg:min-h-[400px] gap-5 lg:gap-10 md:mt-0">
               <div className="flex-1 px-4 lg:px-5">
-                <p className="text-lg tracking-[2px] uppercase text-gray-500 my-5">
+                <p className="text-lg tracking-[2px] uppercase  my-5">
                   DECODING BRANDING
                 </p>
-                <h1 className="text-5xl sm:text-6xl lg:text-7xl xl:text-8xl font-light tracking-tight mb-5 leading-none">
+                <h1 className="text-6xl sm:text-6xl lg:text-7xl xl:text-8xl font-light tracking-tight mb-5 leading-none">
                   DESIGN
                 </h1>
-                <p className="text-base lg:text-lg text-gray-300 mt-2.5 mb-0">
+                <p className="text-xl lg:text-lg text-gray-300 mt-2.5 mb-0">
                   Brand Identity Design
                 </p>
-                <p className="text-base lg:text-lg text-gray-300 -mb-2.5">
+                <p className="text-xl lg:text-lg text-gray-300">
                   Tone Of Voice
                 </p>
               </div>
-              <div className="flex-1 relative w-full max-w-md lg:max-w-2xl mx-auto lg:mx-0 z-[10]">
+              <div className="flex-1 relative w-full max-w-full lg:max-w-2xl mx-auto lg:mx-0 z-[10]">
                 <img
                   src="/Design/Design-image1.webp"
                   alt="Traditional Fashion Design"
                   width={600}
                   height={400}
-                  className="w-full h-auto opacity-[1]"
-                  onError={(e) => console.error(`Failed to load image: ${e.target.src}`)}
+                  className="w-full h-auto opacity-[1] object-cover"
+                  onError={(e) =>
+                    console.error(`Failed to load image: ${e.target.src}`)
+                  }
                 />
               </div>
             </div>
           </section>
 
           {/* Projects Grid */}
-          <section className="py-2 mt-10 md:mt-0 text-center sm:text-left z-[10]">
-            <div className="flex flex-col lg:flex-row gap-0 lg:gap-24 justify-center mb-10 mx-auto">
-              <div className="relative overflow-hidden w-full lg:w-[650px] h-[335px] md:mt-5 -mb-6 md:mb-0 mx-auto lg:mx-0 z-[10]">
-                <span className="absolute left-0 z-[11] bg-black text-white py-2.5 px-2.5 rounded-tr-lg rounded-br-lg text-sm lg:text-base tracking-wider">
+          <section className="mt-10 md:mt-0 text-center sm:text-left z-[10]">
+            <div className="flex flex-col lg:flex-row gap-0 lg:gap-24 justify-center mb-2 mx-auto items-stretch">
+              {/* Left Image */}
+              <div className="relative overflow-hidden w-full lg:w-[650px] md:mb-0 mx-auto lg:mx-0 z-[10] flex items-stretch">
+                <span className="absolute left-0 z-[11] bg-black text-white px-2.5 rounded-tr-lg rounded-br-lg text-sm lg:text-base tracking-wider">
                   For GURORGANIC by Pernia Qureshi
                 </span>
                 <img
                   src="/Design/Design-image2.webp"
                   alt="Gurorganic Campaign"
-                  width={650}
-                  height={320}
-                  className="w-full h-auto object-contain"
-                  onError={(e) => console.error(`Failed to load image: ${e.target.src}`)}
+                  className="w-full h-full object-cover"
+                  onError={(e) =>
+                    console.error(`Failed to load image: ${e.target.src}`)
+                  }
                 />
               </div>
-              <div className="relative overflow-hidden w-full lg:w-[500px] mx-auto lg:mx-0 z-[10]">
+
+              {/* Right Image */}
+              <div className="relative overflow-hidden w-full lg:w-[500px] lg:mx-0 z-[10] mt-10 md:mt-0 flex items-stretch">
                 <img
-                  src="/Design/Design-image3-1.webp"
+                  src="/Design/Design-image3-1-1.png"
                   alt="Fashion Photography"
-                  width={500}
-                  height={350}
-                  className="w-full h-auto mt-5"
-                  onError={(e) => console.error(`Failed to load image: ${e.target.src}`)}
+                  className="w-full h-full object-cover"
+                  onError={(e) =>
+                    console.error(`Failed to load image: ${e.target.src}`)
+                  }
                 />
               </div>
             </div>
           </section>
 
           {/* Creative Direction Section with Video */}
-          <section className="py-2 text-center z-[10]">
-            <h2 className="text-xl lg:text-2xl font-light tracking-[2px] uppercase">
+          <section className="text-center z-[10]">
+            <h2 className="text-xl lg:text-2xl font-light tracking-[2px] uppercase md:mt-7">
               CREATIVE DIRECTION AND STRATEGY
             </h2>
-            <p className="text-xs lg:text-sm text-gray-500 italic mb-0 md:mb-14">
+            <p className="text-base lg:text-xl  italic mb-5 md:mb-7">
               Brand Positioning
             </p>
-            <div className="flex flex-col lg:flex-row gap-3 lg:gap-40 justify-center mx-4 mb-9 items-end">
-              <div className="relative overflow-hidden w-full max-w-[600px] mx-auto lg:mx-0 z-[10]">
+
+            <div className="flex flex-col lg:flex-row gap-3 lg:gap-40 justify-center items-stretch">
+              {/* Left video image */}
+              <div className="relative overflow-hidden w-full lg:max-w-[600px] mx-auto lg:mx-0 z-[10] flex items-stretch">
                 <button
                   onClick={() =>
-                    openVideoModal("https://www.youtube.com/watch?v=C-4C4VnyZco")
+                    openVideoModal(
+                      "https://www.youtube.com/watch?v=C-4C4VnyZco"
+                    )
                   }
-                  className="w-full focus:outline-none block"
+                  className="w-full focus:outline-none block relative"
                   aria-label="Play video"
                 >
                   <img
@@ -240,8 +258,10 @@ export default function DesignPortfolio() {
                     alt="Kalki Fashion"
                     width={600}
                     height={350}
-                    className="w-full h-auto object-contain grayscale hover:grayscale-0 transition-all duration-300"
-                    onError={(e) => console.error(`Failed to load image: ${e.target.src}`)}
+                    className="w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-300"
+                    onError={(e) =>
+                      console.error(`Failed to load image: ${e.target.src}`)
+                    }
                   />
                   <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
                     <div className="w-16 h-16 md:w-20 md:h-20 bg-white/30 rounded-full flex items-center justify-center backdrop-blur-sm">
@@ -268,14 +288,18 @@ export default function DesignPortfolio() {
                   </div>
                 </button>
               </div>
-              <div className="relative overflow-hidden w-full lg:w-[50%] max-w-[350px] mx-auto lg:mx-0 z-[10]">
+
+              {/* Right static image */}
+              <div className="relative overflow-hidden w-full lg:w-[50%] lg:max-w-[350px] mx-auto lg:mx-0 z-[10] flex items-stretch mt-5 md:mt-0">
                 <img
-                  src="/Design/Design-image5-1.webp"
+                  src="/Design/img28.webp"
                   alt="Product Photography"
                   width={600}
                   height={350}
-                  className="w-full h-auto object-contain"
-                  onError={(e) => console.error(`Failed to load image: ${e.target.src}`)}
+                  className="w-full h-full object-cover"
+                  onError={(e) =>
+                    console.error(`Failed to load image: ${e.target.src}`)
+                  }
                 />
               </div>
             </div>
@@ -326,90 +350,93 @@ export default function DesignPortfolio() {
           )}
 
           {/* Visual Vocabulary Section */}
-          <section className="py-2 text-center z-[10]">
-            <h2 className="text-xl lg:text-2xl font-light tracking-[2px] uppercase">
+          <section className="text-center z-[10]">
+            <h2 className="text-xl lg:text-2xl font-light tracking-[2px] uppercase mt-5 md:mt-7">
               VISUAL VOCABULARY
             </h2>
-            <p className="text-xs lg:text-sm text-gray-500 italic mb-14">
+            <p className="text-base lg:text-xl  italic mb-5 md:mb-7">
               Exhibition Guidelines
             </p>
-            <div className="flex flex-col lg:flex-row gap-5 lg:gap-24 justify-center mx-4 mb-9">
-              <div className="relative overflow-hidden w-[70%] lg:max-w-[400px] mx-auto lg:mx-0 z-[10]">
+            <div className="flex flex-col lg:flex-row gap-5 lg:gap-24 justify-center lg:mx-4 mb-0 md:mb-9">
+              <div className="relative overflow-hidden w-full lg:w-[70%] lg:max-w-[400px] mx-auto lg:mx-0 z-[10]">
                 <img
-                  src="/Design/image-2.webp"
+                  src="/Design/D_img1.jpg"
                   alt="Visual Vocabulary Design 1"
                   width={600}
                   height={450}
                   className="w-full h-full object-cover"
-                  onError={(e) => console.error(`Failed to load image: ${e.target.src}`)}
+                  onError={(e) =>
+                    console.error(`Failed to load image: ${e.target.src}`)
+                  }
                 />
               </div>
-              <div className="relative overflow-hidden w-[70%] lg:max-w-[400px] mx-auto lg:mx-0 z-[10]">
+              <div className="relative overflow-hidden w-full lg:w-[70%] lg:max-w-[400px] mx-auto lg:mx-0 z-[10]">
                 <img
-                  src="/Design/image-3.webp"
+                  src="/Design/D_img2.jpg"
                   alt="Visual Vocabulary Design 2"
                   width={600}
                   height={450}
                   className="w-full h-full object-cover"
-                  onError={(e) => console.error(`Failed to load image: ${e.target.src}`)}
+                  onError={(e) =>
+                    console.error(`Failed to load image: ${e.target.src}`)
+                  }
                 />
               </div>
             </div>
           </section>
 
           {/* Print Section */}
-          <section className="text-center py-2 z-[10]">
-            <h2 className="text-xl lg:text-2xl font-light tracking-[2px] uppercase">
+          <section className="text-center z-[10]">
+            <h2 className="text-xl lg:text-2xl font-light tracking-[2px] uppercase mt-5 md:mt-7">
               PRINT AND DIGITAL DESIGN
             </h2>
-            <p className="text-xs lg:text-sm text-gray-500 italic mb-14">
+            <p className="text-base lg:text-xl  italic mb-5 md:mb-7">
               Collaterals
             </p>
-            <div className="flex flex-col lg:flex-row gap-5 lg:gap-24 justify-center mx-4 mb-5">
-              <div className="relative overflow-hidden w-[60%] lg:max-w-[350px] mx-auto lg:mx-0 z-[10]">
+            <div className="flex flex-col lg:flex-row gap-5 lg:gap-24 justify-center lg:mx-4 mb-5">
+              <div className="relative overflow-hidden w-full lg:w-[100%] lg:max-w-[650px] mx-auto lg:mx-0 z-[10]">
                 <img
-                  src="/Design/image-4.webp"
+                  src="/Design/DSC_1196_1.jpg"
                   alt="Print Design 1"
                   width={600}
-                  height={450}
+                  height={400}
                   className="w-full h-full object-cover"
-                  onError={(e) => console.error(`Failed to load image: ${e.target.src}`)}
+                  onError={(e) =>
+                    console.error(`Failed to load image: ${e.target.src}`)
+                  }
                 />
               </div>
-              <div className="relative overflow-hidden w-[60%] lg:max-w-[350px] mx-auto lg:mx-0 z-[10]">
+              <div className="relative overflow-hidden w-full lg:w-[70%] lg:max-w-[380px] mx-auto lg:mx-0 z-[10]">
                 <img
                   src="/Design/image-5.webp"
                   alt="Print Design 2"
                   width={600}
-                  height={450}
+                  height={400}
                   className="w-full h-full object-cover"
-                  onError={(e) => console.error(`Failed to load image: ${e.target.src}`)}
+                  onError={(e) =>
+                    console.error(`Failed to load image: ${e.target.src}`)
+                  }
                 />
               </div>
             </div>
           </section>
 
           {/* Portfolio Collage Section */}
-          <section className="py-2 text-center z-[10]">
-            <div className="mb-12">
-              <hr className="w-3/5 h-px bg-gray-600 border-none mx-auto mb-10" />
-              <p className="text-base sm:text-lg md:text-xl lg:text-xl xl:text-2xl 2xl:text-3xl 3xl:text-4xl max-w-[75%] sm:max-w-[80%] md:max-w-[85%] lg:max-w-[50%] mx-auto leading-5 sm:leading-6 md:leading-7 mt-2 font-light break-words">
-  Explore our latest projects showcasing our design 
-</p>
-<p className="text-base sm:text-lg md:text-xl lg:text-xl xl:text-2xl 2xl:text-3xl 3xl:text-4xl max-w-[75%] sm:max-w-[80%] md:max-w-[85%] lg:max-w-[50%] mx-auto leading-5 sm:leading-6 md:leading-7 font-light break-words">
- capabilities across various mediums and industries.
-</p>
-
+          <section className="text-center z-[10]">
+            <div className="mb-6">
+              <hr className="w-3/5 h-px bg-gray-600 border-none mx-auto mb-8" />
             </div>
-            <div className="flex flex-col lg:flex-row gap-4 lg:gap-5 items-start justify-center px-4">
-              <div className="flex flex-col gap-4 w-full max-w-lg lg:max-w-xl mx-auto lg:mx-0 z-[10]">
+            <div className="flex flex-col lg:flex-row gap-4 lg:gap-5 items-start justify-center lg:px-4">
+              <div className="flex flex-col gap-4 w-full lg:max-w-lg lg:max-w-xl mx-auto lg:mx-0 z-[10]">
                 <img
                   src="/Mailer/1.webp"
                   alt="Portfolio Item 1"
                   width={570}
                   height={400}
                   className="w-full h-auto object-contain z-[10]"
-                  onError={(e) => console.error(`Failed to load image: ${e.target.src}`)}
+                  onError={(e) =>
+                    console.error(`Failed to load image: ${e.target.src}`)
+                  }
                 />
                 <img
                   src="/Mailer/4.webp"
@@ -417,7 +444,9 @@ export default function DesignPortfolio() {
                   width={570}
                   height={400}
                   className="w-full h-auto object-contain z-[10]"
-                  onError={(e) => console.error(`Failed to load image: ${e.target.src}`)}
+                  onError={(e) =>
+                    console.error(`Failed to load image: ${e.target.src}`)
+                  }
                 />
                 <img
                   src="/Mailer/6.webp"
@@ -425,17 +454,21 @@ export default function DesignPortfolio() {
                   width={570}
                   height={400}
                   className="w-full h-auto object-contain z-[10]"
-                  onError={(e) => console.error(`Failed to load image: ${e.target.src}`)}
+                  onError={(e) =>
+                    console.error(`Failed to load image: ${e.target.src}`)
+                  }
                 />
               </div>
-              <div className="flex flex-col gap-4 w-full max-w-lg lg:max-w-xl mx-auto lg:mx-0 z-[10]">
+              <div className="flex flex-col gap-4 w-full lg:max-w-lg lg:max-w-xl mx-auto lg:mx-0 z-[10]">
                 <img
                   src="/Mailer/2.webp"
                   alt="Portfolio Item 2"
                   width={570}
                   height={400}
                   className="w-full h-auto object-contain z-[10]"
-                  onError={(e) => console.error(`Failed to load image: ${e.target.src}`)}
+                  onError={(e) =>
+                    console.error(`Failed to load image: ${e.target.src}`)
+                  }
                 />
                 <img
                   src="/Mailer/5.webp"
@@ -443,7 +476,9 @@ export default function DesignPortfolio() {
                   width={570}
                   height={400}
                   className="w-full h-auto object-contain z-[10]"
-                  onError={(e) => console.error(`Failed to load image: ${e.target.src}`)}
+                  onError={(e) =>
+                    console.error(`Failed to load image: ${e.target.src}`)
+                  }
                 />
                 <img
                   src="/Mailer/7.webp"
@@ -451,7 +486,9 @@ export default function DesignPortfolio() {
                   width={570}
                   height={400}
                   className="w-full h-auto object-contain z-[10]"
-                  onError={(e) => console.error(`Failed to load image: ${e.target.src}`)}
+                  onError={(e) =>
+                    console.error(`Failed to load image: ${e.target.src}`)
+                  }
                 />
                 <img
                   src="/Mailer/Group.webp"
@@ -459,15 +496,17 @@ export default function DesignPortfolio() {
                   width={570}
                   height={400}
                   className="w-full h-auto object-contain z-[10]"
-                  onError={(e) => console.error(`Failed to load image: ${e.target.src}`)}
+                  onError={(e) =>
+                    console.error(`Failed to load image: ${e.target.src}`)
+                  }
                 />
               </div>
             </div>
-            <hr className="w-3/5 h-px bg-gray-600 border-none mx-auto mb-5 mt-15" />
+            <hr className="w-3/5 h-px bg-gray-600 border-none mx-auto mb-5 mt-10" />
           </section>
 
           {/* Logos Section */}
-          <section className="py-2 z-[10]">
+          <section className=" z-[10]">
             <Logos />
           </section>
         </div>

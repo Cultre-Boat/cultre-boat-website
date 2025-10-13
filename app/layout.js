@@ -7,6 +7,7 @@ import VFXCanvas from '../app/components/VFXWrapper';
 import Expand from '../app/components/expand';
 import ClientLoadingWrapper from '../app/components/clientloadingwrapper';
 import FullScreenScreenWaterEffect from "./components/FullScreenWaterEffect";
+import { ScrollbarProvider } from "./contexts/ScrollbarContext";
 
 
 export const metadata = {
@@ -19,17 +20,20 @@ export default function RootLayout({ children }) {
     <html lang="en" bbai-tooltip-injected="true" data-scroll-behavior="smooth">
         <link rel="preconnect" href="https://cdn.jsdelivr.net" />
       <body
-        className={`antialiased overflow-x-hidden font-bellota-light`}
+        // className={`antialiased overflow-x-hidden font-bebas-neue`}
+        className={`antialiased overflow-x-hidden font-bebas-neue`}
         cz-shortcut-listen="true"
       >
-        <ClientLoadingWrapper>
-          <FullScreenScreenWaterEffect/>
-          
-          <Navbar />
-          <CustomCursor />
-          <Expand>{children}</Expand>
-          {/* <VFXCanvas /> */}
-        </ClientLoadingWrapper>
+        <ScrollbarProvider>
+          <ClientLoadingWrapper>
+            <FullScreenScreenWaterEffect/>
+            
+            <Navbar />
+            <CustomCursor />
+            <Expand>{children}</Expand>
+            {/* <VFXCanvas /> */}
+          </ClientLoadingWrapper>
+        </ScrollbarProvider>
       </body> 
     </html>
   );

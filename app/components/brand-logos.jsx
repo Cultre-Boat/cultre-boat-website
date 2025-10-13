@@ -16,6 +16,7 @@ const images = [
   { src: "/brands/11.png", link: "https://example.com/11" },
   { src: "/brands/12.png", link: "https://example.com/12" },
   { src: "/brands/13.png", link: "https://example.com/13" },
+  { src: "/brands/14.jpg", link: "https://example.com/14" },
 ];
 
 export default function ScrollingLogos() {
@@ -33,7 +34,7 @@ export default function ScrollingLogos() {
 
   return (
     <>
-      <h1 className="text-center text-4xl mb-7 no-water-effect">LOGO</h1>
+      {/* <h1 className="text-center text-4xl mb-7 no-water-effect">LOGO</h1> */}
       <div className="relative w-full overflow-hidden py-8 z-[10]">
         <div className="flex w-full overflow-hidden">
           <div className="flex animate-marquee-left space-x-6">
@@ -45,12 +46,12 @@ export default function ScrollingLogos() {
                 rel="noopener noreferrer"
                 className="no-water-effect"
               >
-                <div className="w-40 h-40 bg-white rounded-lg shadow-lg flex items-center justify-center object-contain z-[10]">
+                <div className="w-35 h-35 bg-white  shadow-lg flex items-center justify-center object-contain z-[10]">
                   <img
                     src={img.src}
                     alt={`Logo ${index + 1}`}
-                    width={100}
-                    height={110}
+                    width={300}
+                    height={320}
                     
                     className="object-contain logo-image no-water-effect"
                     onLoad={() => console.log(`Loaded logo: ${img.src}`)}

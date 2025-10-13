@@ -2,7 +2,6 @@
 
 import { useEffect, useRef } from "react";
 import * as PIXI from "pixi.js";
-import { DisplacementFilter } from '@pixi/filter-displacement';
 export default function WaterText({ text }) {
   const containerRef = useRef(null);
 
@@ -34,7 +33,7 @@ export default function WaterText({ text }) {
     );
     displacementSprite.texture.baseTexture.wrapMode = PIXI.WRAP_MODES.REPEAT;
     displacementSprite.alpha = 0;
-    const displacementFilter = new DisplacementFilter(
+    const displacementFilter = new PIXI.filters.DisplacementFilter(
       displacementSprite
     );
 

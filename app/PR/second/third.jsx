@@ -4,17 +4,24 @@ import Image from "next/image";
 
 export default function Third() {
   const portfolioItems = [
-    { id: 1, image: "/PR4.svg", magazine: "ELLE", title: "SO EXTRA" },
-    { id: 2, image: "/PR3.svg", magazine: "ELLE", title: "COSMOPOLITAN" },
-    { id: 3, image: "/PR2.svg", magazine: "COSMOPOLITAN", title: "FEMINA" },
-    { id: 4, image: "/PR1.svg", magazine: "FEMINA", subtitle: "Pernia's Pop-Up Shop" },
+    { id: 1, image: "/third/PR4_1.jpg", magazine: "ELLE", title: "SO EXTRA" },
+    { id: 2, image: "/third/PR3_1.jpg", magazine: "ELLE", title: "COSMOPOLITAN" },
+    { id: 3, image: "/third/PR2_1.jpg", magazine: "COSMOPOLITAN", title: "FEMINA" },
+    { id: 4, image: "/third/PR1_1.jpg", magazine: "FEMINA", subtitle: "Pernia's Pop-Up Shop" },
+    { id: 5, image: "/third/PR5_1.jpg", magazine: "FEMINA", subtitle: "Pernia's Pop-Up Shop" },
+    { id: 6, image: "/third/PR6_1.jpg", magazine: "FEMINA", subtitle: "Pernia's Pop-Up Shop" },
+    { id: 7, image: "/third/PR7_1.jpg", magazine: "FEMINA", subtitle: "Pernia's Pop-Up Shop" },
+    { id: 8, image: "/third/PR8_1.jpg", magazine: "FEMINA", subtitle: "Pernia's Pop-Up Shop" },
+    { id: 9, image: "/third/PR9_1.jpg", magazine: "FEMINA", subtitle: "Pernia's Pop-Up Shop" },
+    { id: 11, image: "/third/PR11_1.jpg", magazine: "FEMINA", subtitle: "Pernia's Pop-Up Shop" },
+    { id: 12, image: "/third/PR12_1.jpg", magazine: "FEMINA", subtitle: "Pernia's Pop-Up Shop" },
   ];
 
   return (
-    <div className="w-full">
+    <div className="w-full font-bellota-light">
       {/* Header Section */}
-      <div className="text-white py-4 md:py-8 text-center">
-        <h1 className="text-2xl md:text-3xl ">Creative Consultancy</h1>
+      <div className="text-white py-0 md:py-0 text-center">
+        <h1 className="text-2xl md:text-3xl">Creative Consultancy</h1>
         <p className="text-lg md:text-xl italic font-light mt-1">
           Impactful PR Approach
         </p>
@@ -23,35 +30,43 @@ export default function Third() {
       {/* ================= Portfolio Section ================= */}
 
       {/* Mobile (Marquee effect) */}
-      <div className="bg-white mt-10 block md:hidden overflow-hidden">
-        <div className="flex animate-marquee-left gap-6">
+      <div className="bg-white mt-5 my-0 block md:hidden overflow-hidden h-[380px]">
+        <div className="flex animate-marquee-left gap-4">
           {portfolioItems.concat(portfolioItems).map((item, index) => (
             <div
-              key={index}
+              key={`${item.id}-${index}`}
               className="relative h-[350px] flex-shrink-0"
             >
-              <img
+              <Image
                 src={item.image || "/placeholder.svg"}
                 alt={`Portfolio item ${item.id}`}
-                className="h-full w-full object-cover"
+                width={0}
+                height={350}
+                sizes="100vw"
+                style={{ width: "auto", height: "100%", objectFit: "contain", marginTop:"13px" }}
+                className="no-water-effect"
               />
             </div>
           ))}
         </div>
       </div>
 
-      {/* Desktop (Static row) */}
-      <div className="bg-white mt-10 hidden md:flex">
-        <div className="max-w-8xl mx-auto flex flex-row justify-around items-center px-4 md:px-0 w-full">
-          {portfolioItems.map((item) => (
+      {/* Desktop (Marquee effect) */}
+      <div className="bg-white mt-5 hidden md:block overflow-hidden h-[380px]">
+        <div className="flex animate-marquee-left gap-3">
+          {portfolioItems.concat(portfolioItems).map((item, index) => (
             <div
-              key={item.id}
-              className="relative flex flex-col items-center w-1/4 px-2"
+              key={`${item.id}-${index}`}
+              className="relative h-[350px] flex-shrink-0"
             >
-              <img
+              <Image
                 src={item.image || "/placeholder.svg"}
                 alt={`Portfolio item ${item.id}`}
-                className="h-full w-full object-cover"
+                width={0}
+                height={350}
+                sizes="100vw"
+                style={{ width: "auto", height: "100%", objectFit: "contain", marginTop:"13px"}}
+                className="no-water-effect"
               />
             </div>
           ))}

@@ -2,7 +2,6 @@
 
 import { useEffect, useRef } from "react";
 import * as PIXI from "pixi.js";
-import { DisplacementFilter } from "@pixi/filter-displacement";
 
 export default function PixiWaterImages({ containerRef }) {
   const pixiContainerRef = useRef(null);
@@ -39,13 +38,13 @@ export default function PixiWaterImages({ containerRef }) {
     displacementSprite.alpha = 0;
     displacementSprite.width = window.innerWidth;
     displacementSprite.height = window.innerHeight;
-    const displacementFilter = new DisplacementFilter(displacementSprite);
-    
+    const displacementFilter = new PIXI.filters.DisplacementFilter(displacementSprite);
+
     if (window.innerWidth < 768) {
-  displacementFilter.scale.set(10, 10); // phone: softer waves
-} else {
-  displacementFilter.scale.set(15, 15); // desktop: stronger waves
-}
+      displacementFilter.scale.set(10, 10); // phone: softer waves
+    } else {
+      displacementFilter.scale.set(15, 15); // desktop: stronger waves
+    }
     displacementFilter.padding = 30; // Add padding to ensure the effect extends to edges
 
     app.stage.addChild(displacementSprite);
@@ -75,9 +74,8 @@ export default function PixiWaterImages({ containerRef }) {
       el.style.opacity = "0";
     });
 
-
-      const isSmallScreen = window.innerWidth < 768; // breakpoint for mobile
-    const speed = isSmallScreen ? 0.2 : 0.3; // slower on small screens
+    const isSmallScreen = window.innerWidth < 768; // breakpoint for mobile
+    const speed = isSmallScreen ? 0.4 : 0.3; // slower on small screens
 
     app.ticker.add(() => {
       displacementSprite.x += speed;
@@ -115,5 +113,10 @@ export default function PixiWaterImages({ containerRef }) {
     };
   }, [containerRef]);
 
-  return <div ref={pixiContainerRef} className="fixed top-0 left-0 w-full h-full pointer-events-none z-[1]" />;
+  return (
+    <div
+      ref={pixiContainerRef}
+      className="fixed top-0 left-0 w-full h-full pointer-events-none z-[1]"
+    />
+  );
 }

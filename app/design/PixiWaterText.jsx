@@ -2,7 +2,6 @@
 
 import { useEffect, useRef } from "react";
 import * as PIXI from "pixi.js";
-import { DisplacementFilter } from "@pixi/filter-displacement";
 import { debounce } from "lodash";
 
 const PixiWaterText = ({ containerRef }) => {
@@ -44,7 +43,7 @@ const PixiWaterText = ({ containerRef }) => {
     displacementSprite.alpha = 0;
     displacementSprite.width = window.innerWidth;
     displacementSprite.height = window.innerHeight;
-    const displacementFilter = new DisplacementFilter(displacementSprite);
+    const displacementFilter = new PIXI.filters.DisplacementFilter(displacementSprite);
     displacementFilter.scale.set(10, 10);
 
     app.stage.addChild(displacementSprite);

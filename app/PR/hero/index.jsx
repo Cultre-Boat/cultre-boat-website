@@ -28,7 +28,7 @@ export default function Hero() {
   };
 
   return (
-    <section className="w-full bg-transparent text-white mt-20 md:mt-20 mb-10 md:mb-15">
+    <section className="w-full bg-transparent text-white mt-10 md:mt-20 mb-5 md:mb-5 font-bellota-light">
       {/* ================= HERO TOP SECTION ================= */}
       <div className="flex flex-col md:flex-row items-center">
         {/* Left text section */}
@@ -42,9 +42,9 @@ export default function Hero() {
               <p className="text-lg md:text-2xl lg:text-3xl text-gray italic leading-relaxed font-light">
                 Editorial Calendar
               </p>
-              <p className="text-lg md:text-2xl lg:text-3xl text-gray italic leading-relaxed font-light">
+              {/* <p className="text-lg md:text-2xl lg:text-3xl text-gray italic leading-relaxed font-light">
                 Potential
-              </p>
+              </p> */}
               <p className="text-lg md:text-2xl lg:text-3xl text-gray italic leading-relaxed font-light">
                 Collaborations
               </p>
@@ -53,23 +53,24 @@ export default function Hero() {
         </div>
 
         {/* Right image/video section */}
-        <div className="w-full md:w-1/2 relative aspect-[16/9] max-w-[600px] mx-auto md:mx-0">
-          <button
+        <div className="w-full md:w-1/2 flex justify-center px-4 md:px-0">
+          <div className="w-full max-w-[500px] aspect-[16/9]">
+            {/* <button
             onClick={() =>
               openVideoModal("https://www.youtube.com/watch?v=dQw4w9WgXcQ")
             }
             className="w-full h-full focus:outline-none"
             aria-label="Play video"
-          >
+          > */}
             <Image
-              src="/PR-images/PR-main.webp"
+              src="/PR-images/N4.webp"
               alt="Cultural celebration with people in traditional attire"
               width={600}
               height={337.5} // Maintain 16:9 aspect ratio (600 / 16 * 9)
               className="object-cover hover:opacity-90 transition-opacity duration-300"
               priority
             />
-            <div className="absolute inset-0 flex items-center justify-center">
+            {/* <div className="absolute inset-0 flex items-center justify-center">
               <div className="w-16 h-16 md:w-20 md:h-20 bg-white/30 flex items-center justify-center backdrop-blur-md">
                 <svg
                   className="w-8 h-8 md:w-10 md:h-10 text-white"
@@ -91,13 +92,14 @@ export default function Hero() {
                   />
                 </svg>
               </div>
-            </div>
-          </button>
+            </div> */}
+            {/* </button> */}
+          </div>
         </div>
       </div>
 
       {/* ================= VIDEO MODAL ================= */}
-      {isVideoOpen && (
+      {/* {isVideoOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
           <div
             className="absolute inset-0 bg-black/80"
@@ -138,29 +140,32 @@ export default function Hero() {
             </div>
           </div>
         </div>
-      )}
+      )} */}
 
       {/* ================= BOTTOM SECTION ================= */}
-      <div className="w-full flex flex-col md:flex-row items-center justify-between px-6 md:px-20 mt-10 md:mt-12 gap-6 md:gap-12">
+      <div className="w-full flex flex-col md:flex-row justify-between px-6 md:px-20 mt-10 md:mt-12 gap-6 md:gap-12 md:h-[70vh]">
         {/* Left Image (News Screenshot) */}
-        <div className="w-full md:w-1/2 flex justify-center md:justify-start">
-          <Image
-            src="/PR-images/PR-first.webp"
-            alt="BuzzFeed article screenshot"
-            width={400}
-            height={600} // Adjusted height to maintain a more natural aspect ratio
-            className="object-contain max-h-[70vh]"
-          />
+        <div className="w-full md:w-1/2 h-full flex justify-center md:justify-start">
+          <div className="w-full h-[450px] relative max-w-[400px]">
+            <Image
+              src="/PR-images/PR-first.webp"
+              alt="BuzzFeed news article screenshot"
+              fill
+              className="object-contain"
+            />
+          </div>
         </div>
 
-        {/* Right Text (Tagline) */}
-        <div className="w-full md:w-1/2 flex flex-col justify-center text-center md:text-left">
-          <h2 className="text-lg sm:text-xl md:text-5xl lg:text-6xl text-white leading-snug sm:leading-tight mb-2">
-            Redefining Bridal
-          </h2>
-          <h2 className="text-lg sm:text-xl md:text-5xl lg:text-6xl text-white leading-snug sm:leading-tight text-pink-400">
-            Traditions
-          </h2>
+        {/* Right Image */}
+        <div className="w-full md:w-1/2 h-full flex justify-center md:justify-end">
+          <div className="w-full h-[450px] relative max-w-[800px]">
+            <Image
+              src="/PR-images/N5.webp"
+              alt="Secondary news image"
+              fill
+              className="object-contain"
+            />
+          </div>
         </div>
       </div>
     </section>

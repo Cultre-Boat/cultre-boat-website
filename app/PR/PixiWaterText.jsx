@@ -2,7 +2,6 @@
 
 import { useEffect, useRef } from "react";
 import * as PIXI from "pixi.js";
-import { DisplacementFilter } from "@pixi/filter-displacement";
 
 const PixiWaterText = ({ containerRef }) => {
   const pixiRef = useRef(null);
@@ -48,7 +47,7 @@ const PixiWaterText = ({ containerRef }) => {
       displacementSprite.texture.baseTexture.wrapMode = PIXI.WRAP_MODES.REPEAT;
       displacementSprite.width = window.innerWidth;
       displacementSprite.height = window.innerHeight;
-      const displacementFilter = new DisplacementFilter(displacementSprite);
+      const displacementFilter = new PIXI.filters.DisplacementFilter(displacementSprite);
       displacementFilter.scale.set(10, 10);
 
       app.stage.addChild(displacementSprite);
@@ -106,6 +105,8 @@ const PixiWaterText = ({ containerRef }) => {
       return () => {
         window.removeEventListener("resize", updatePositions);
         window.removeEventListener("scroll", updatePositions);
+        updatePositions(); // position text right away
+
         app.destroy(true, { children: true, texture: true, baseTexture: true });
         textElements.forEach((el) => (el.style.opacity = "1"));
       };

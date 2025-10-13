@@ -3,7 +3,7 @@
 @import "tailwindcss";
 
 :root {
-  --background: #000000; /* Solid black, no alpha */
+  --background: #0a1a1a; /* Solid black, no alpha */
   --foreground: #f0f0f0;
 }
 
@@ -16,7 +16,7 @@
 }
 
 :root {
-  --background: #000000; /* pure black */
+  --background: #2a2a2a; /* pure black */
   --foreground: #f0f0f0; /* light text */
 }
 
@@ -33,7 +33,7 @@ body, html {
 /* Keep your existing @keyframes, .animate-marquee-left, .animate-marquee-right */
 @keyframes marquee-left {
   from { transform: translateX(0); }
-  to { transform: translateX(-50%); } /* Moves half the duplicated list */
+  to { transform: translateX(-50%); } 
 }
 
 @keyframes marquee-right {
@@ -47,22 +47,47 @@ body, html {
   animation: marquee-left 30s linear infinite;
   display: flex;
   min-width: max-content;
+  will-change: transform;
 }
 
 .animate-marquee-right {
   animation: marquee-right 20s linear infinite;
   display: flex;
   min-width: max-content;
+  will-change: transform;
 }
 
+/* app/global.css */
 @font-face {
-  font-family: 'BellotaText-Light' !important;
-  src: url('/fonts/BellotaText-Light.ttf') format('truetype') ;
-  font-weight: 300;
+  font-family: 'BellotaText-Light';
+  src: url('/fonts/BellotaText-Light.ttf') format('truetype');
   font-style: normal;
   font-display: swap;
 }
 
+@font-face {
+  font-family: 'Bebas Neue';
+  src: url('/fonts/BebasNeue-Regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'SIMPLIFICA_Typeface';
+  src: url('/fonts/SIMPLIFICA_Typeface.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+.font-bebas-neue {
+  font-family: 'Bebas Neue', sans-serif;
+}
+
+.font-bellota-light {
+  font-family: 'BellotaText-Light', sans-serif;
+}
+.font-SIMPLIFICA_Typeface {
+  font-family: 'SIMPLIFICA_Typeface', sans-serif;
+}
 /* Ensure these are after the @font-face if you want BellotaText-Light to be default */
 html, body {
   cursor: none !important; /* Hide default cursor */
@@ -359,3 +384,34 @@ html, body {
   opacity: 0 !important;
 }
 
+/* Hide scrollbar only on main page */
+.hide-scrollbar::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
+}
+
+.hide-scrollbar {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+}
+
+/* Show scrollbar on other pages */
+body::-webkit-scrollbar {
+  width: 8px;
+}
+
+body::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.1);
+}
+
+body::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 4px;
+}
+
+body::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.5);
+}
+
+body {
+  overflow-y: scroll; /* keep vertical scroll working */
+}
