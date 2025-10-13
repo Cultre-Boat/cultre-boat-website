@@ -1,13 +1,15 @@
-// server.js
 const express = require("express");
 const nodemailer = require("nodemailer");
 const cors = require("cors");
-const dotenv = require("dotenv");
+const path = require("path");
+require("dotenv").config({ path: path.resolve(__dirname, ".env") });
 const supabase = require("./db");
 
-dotenv.config();
 const app = express();
+
+// Debug: Log environment variables
 console.log("Loaded ENV keys:", Object.keys(process.env).filter(k => k.includes("SUPABASE")));
+
 app.use(cors());
 app.use(express.json());
 
@@ -38,9 +40,9 @@ app.post("/contact", async (req, res) => {
 
     if (error) {
       console.error("❌ Supabase insert error:", error.message);
-    } else {
-      console.log("✅ Supabase insert success:", data);
+      return res.status(500).json({ success: false, message: error.message });
     }
+    console.log("✅ Supabase insert success:", data);
 
     // 2️⃣ Send Email
     const transporter = nodemailer.createTransport({
@@ -69,9 +71,7 @@ app.post("/contact", async (req, res) => {
     res.json({ success: true, message: "Message sent & saved successfully" });
   } catch (error) {
     console.error("Server error:", error);
-    res
-      .status(500)
-      .json({ success: false, message: "Failed to process request" });
+    res.status(500).json({ success: false, message: "Failed to process request" });
   }
 });
 
