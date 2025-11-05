@@ -27,22 +27,22 @@ export default function ScrollingLogos() {
   const logoWidth = 160; // Width of each logo including spacing
   const totalWidth = images.length * logoWidth;
 
-  const animate = () => {
-    setScrollPosition((prev) => {
-      const newPos = prev + 1.5;
-      return newPos >= totalWidth ? newPos - totalWidth : newPos;
-    });
-    animationRef.current = requestAnimationFrame(animate);
-  };
-
   useEffect(() => {
+    const animate = () => {
+      setScrollPosition((prev) => {
+        const newPos = prev + 1.5;
+        return newPos >= totalWidth ? newPos - totalWidth : newPos;
+      });
+      animationRef.current = requestAnimationFrame(animate);
+    };
+    
     animationRef.current = requestAnimationFrame(animate);
     return () => {
       if (animationRef.current) {
         cancelAnimationFrame(animationRef.current);
       }
     };
-  }, []);
+  }, [totalWidth]);
 
   useEffect(() => {
     const index = Math.floor((scrollPosition % totalWidth) / logoWidth) % images.length;

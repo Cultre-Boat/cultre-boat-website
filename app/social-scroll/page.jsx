@@ -144,7 +144,7 @@ export default function BrandShowcase() {
         </filter>
       </svg>
 
-      <div className="relative w-full h-screen overflow-x-hidden overflow-y-hidden bg-black">
+      <div className="relative w-full h-screen overflow-x-hidden overflow-y-hidden" style={{ backgroundColor: '#2a4862' }}>
         {/* 🔹 Radial gradient only after mount */}
         <div
           className="absolute inset-0 z-[5] pointer-events-none opacity-20 gradient-overlay"

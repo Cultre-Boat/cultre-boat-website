@@ -64,8 +64,8 @@ export default function PRPortfolio() {
         <Third />
         <Influencers />
         <Stylist />
+        <PixiWaterImages containerRef={contentRef} />
       </div>
-      <PixiWaterImages containerRef={contentRef} />
     </>
   );
 }

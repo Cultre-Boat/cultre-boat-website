@@ -29,7 +29,6 @@ export default function DesignPortfolio() {
 
   return (
     <>
-      <PixiWaterImages containerRef={contentRef} />
       <div
         ref={contentRef}
         className="text-white leading-relaxed font-bellota-light"
@@ -375,6 +374,7 @@ export default function DesignPortfolio() {
           </section>
         </div>
       </div>
+      <PixiWaterImages containerRef={contentRef} />
     </>
   );
 }
