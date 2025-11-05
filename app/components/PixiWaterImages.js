@@ -23,12 +23,28 @@ export default function PixiWaterImages({ containerRef }) {
     console.log('[PixiWaterImages] Container element:', containerRef.current);
     
     // Get image elements within containerRef, excluding no-water-effect
+    // This includes both <img> tags and Next.js Image components (which render as <img>)
     const imageElements = containerRef.current.querySelectorAll(
       "img:not(.no-water-effect)"
     );
     console.log('[PixiWaterImages] Found images:', imageElements.length);
+    console.log('[PixiWaterImages] Container ID:', containerRef.current.id);
+    
+    // Log first few image sources for debugging
+    if (imageElements.length > 0) {
+      console.log('[PixiWaterImages] Sample images:', 
+        Array.from(imageElements).slice(0, 5).map(img => ({
+          src: img.src.substring(img.src.lastIndexOf('/') + 1),
+          class: img.className,
+          width: img.width,
+          height: img.height
+        }))
+      );
+    }
+    
     if (imageElements.length === 0) {
       console.warn('[PixiWaterImages] No images found to apply water effect');
+      console.warn('[PixiWaterImages] Container HTML:', containerRef.current.innerHTML.substring(0, 500));
       return;
     }
 
@@ -68,8 +84,8 @@ export default function PixiWaterImages({ containerRef }) {
     
     // Create displacement filter for water effect
     const displacementFilter = new PIXI.filters.DisplacementFilter(displacementSprite);
-    const sx = isMobile ? 4 : 5; // Minimal water effect
-    const sy = isMobile ? 4 : 5;
+    const sx = isMobile ? 4 : 6; // Balanced desktop water effect
+    const sy = isMobile ? 4 : 6;
     displacementFilter.scale.set(sx, sy);
     displacementFilter.padding = 30;
     
@@ -221,7 +237,7 @@ export default function PixiWaterImages({ containerRef }) {
     const cleanupFunctions = [];
 
     const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    const speed = prefersReduced ? 0.03 : (isMobile ? 0.3 : 0.5); // Minimal animation speed
+    const speed = prefersReduced ? 0.03 : (isMobile ? 0.3 : 0.65); // Balanced animation speed
 
     const tick = () => {
       displacementSprite.x += speed;
