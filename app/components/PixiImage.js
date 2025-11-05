@@ -29,7 +29,7 @@ export default function CombinedWaterAndImagesEffect({ leftImages, rightImages, 
     const app = new PIXI.Application({
       view: canvasRef.current,
       resizeTo: window,
-      backgroundColor: 0x1A1A1A,
+      backgroundColor: 0x2a4862,
       backgroundAlpha: 1,
       resolution: Math.max(1, window.devicePixelRatio || 1),
       autoDensity: true,
@@ -127,8 +127,8 @@ export default function CombinedWaterAndImagesEffect({ leftImages, rightImages, 
     smokeSprite.texture.baseTexture.on("error", () => {
       smokeSprite.texture = PIXI.Texture.from(fallbackSmokeTexture);
     });
-    smokeSprite.width = window.innerWidth * 2;
-    smokeSprite.height = window.innerHeight * 2;
+    smokeSprite.width = window.innerWidth * 0.1;
+    smokeSprite.height = window.innerHeight * 0.1;
     smokeSprite.alpha = 0.4;
     smokeSprite.texture.baseTexture.wrapMode = PIXI.WRAP_MODES.REPEAT;
     smokeContainer.addChild(smokeSprite);
@@ -155,7 +155,7 @@ export default function CombinedWaterAndImagesEffect({ leftImages, rightImages, 
     displacementColorMatrix.contrast(1.2, false);
 
     const displacementFilter = new PIXI.filters.DisplacementFilter(displacementSprite);
-    displacementFilter.scale.set(10, 10); // Adjust for desired distortion strength on images
+    displacementFilter.scale.set(8, 8); // Adjust for desired distortion strength on images
 
     app.stage.addChild(displacementSprite); // Add to stage for global positioning
 

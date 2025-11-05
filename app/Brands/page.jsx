@@ -62,9 +62,9 @@ export default function BrandShowcase() {
     const displacementFilter = new PIXI.filters.DisplacementFilter(displacementSprite);
     displacementFilter.padding = 30;
     if (window.innerWidth < 768) {
-      displacementFilter.scale.set(10, 10); // Softer waves for mobile
+      displacementFilter.scale.set(3, 3); // Minimal waves for mobile
     } else {
-      displacementFilter.scale.set(15, 15); // Stronger waves for desktop
+      displacementFilter.scale.set(5, 5); // Reduced waves for desktop
     }
     app.stage.addChild(displacementSprite);
 
@@ -180,7 +180,7 @@ export default function BrandShowcase() {
       {/* Brands List */}
       <div
         ref={listRef}
-        className="font-bellota-light relative z-20 flex flex-col items-center uppercase justify-start gap-8 py-28 h-full overflow-y-auto no-scrollbar"
+        className="font-bellota-light relative z-20 flex flex-col items-center uppercase justify-start gap-6 py-20 h-full overflow-y-auto no-scrollbar"
       >
         {brands.map((brand, index) => (
           <div key={`${brand.slug}-${index}`} className="flex flex-col items-center gap-4">

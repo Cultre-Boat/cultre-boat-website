@@ -3,7 +3,7 @@
 @import "tailwindcss";
 
 :root {
-  --background: #0a1a1a; /* Solid black, no alpha */
+  --background: #2a4862;
   --foreground: #f0f0f0;
 }
 
@@ -16,8 +16,8 @@
 }
 
 :root {
-  --background: #2a2a2a; /* pure black */
-  --foreground: #f0f0f0; /* light text */
+  --background: #2a4862;
+  --foreground: #f0f0f0;
 }
 
 body, html {
@@ -363,7 +363,7 @@ html, body {
   position: relative;
   width: 100%;
   min-height: 100vh;
-  background: #000000; /* Explicitly set to solid black */
+  background: #2a4862;
   overflow-y: auto;
 }
 
@@ -415,3 +415,70 @@ body::-webkit-scrollbar-thumb:hover {
 body {
   overflow-y: scroll; /* keep vertical scroll working */
 }
+
+/* Mobile water effect - visible and smooth */
+.mobile-water-img {
+  position: relative;
+  filter: brightness(0.98) contrast(1.02);
+}
+
+.mobile-water-img::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: 
+    radial-gradient(ellipse at 30% 40%, rgba(255, 255, 255, 0.15) 0%, transparent 35%),
+    radial-gradient(ellipse at 70% 60%, rgba(200, 230, 255, 0.12) 0%, transparent 40%),
+    radial-gradient(ellipse at 50% 20%, rgba(255, 255, 255, 0.1) 0%, transparent 30%);
+  background-size: 300% 300%, 250% 250%, 200% 200%;
+  animation: mobile-water-flow 8s ease-in-out infinite;
+  pointer-events: none;
+  z-index: 1;
+  mix-blend-mode: overlay;
+}
+
+.mobile-water-img::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(45deg, 
+    transparent 30%, 
+    rgba(255, 255, 255, 0.08) 50%, 
+    transparent 70%);
+  background-size: 400% 400%;
+  animation: mobile-water-shimmer 6s linear infinite;
+  pointer-events: none;
+  z-index: 2;
+  mix-blend-mode: soft-light;
+}
+
+@keyframes mobile-water-flow {
+  0%, 100% {
+    background-position: 0% 0%, 100% 100%, 50% 50%;
+  }
+  25% {
+    background-position: 40% 30%, 60% 70%, 30% 60%;
+  }
+  50% {
+    background-position: 80% 60%, 20% 40%, 70% 30%;
+  }
+  75% {
+    background-position: 50% 90%, 50% 10%, 40% 50%;
+  }
+}
+
+@keyframes mobile-water-shimmer {
+  0% {
+    background-position: 0% 0%;
+  }
+  100% {
+    background-position: 100% 100%;
+  }
+}
+

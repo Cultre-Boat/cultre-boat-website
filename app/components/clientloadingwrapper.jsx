@@ -4,25 +4,16 @@ import { useEffect, useState } from 'react';
 import Loading from './loading';
 
 export default function ClientLoadingWrapper({ children }) {
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true); // Start with loading true
 
   useEffect(() => {
-    const navType = performance.getEntriesByType("navigation")[0]?.type;
-
-    // Show loading only on first load or reload
-    if (navType === "navigate" || navType === "reload") {
-      setLoading(true);
-    }
+    // Always show loading on mount, then hide after delay
+    const timer = setTimeout(() => {
+      setLoading(false);
+    }, 2000); // Show loader for 2 seconds
+    
+    return () => clearTimeout(timer);
   }, []);
-
-  useEffect(() => {
-    if (loading) {
-      const timer = setTimeout(() => {
-        setLoading(false);
-      }, 1500); // adjust based on how long you want the splash
-      return () => clearTimeout(timer);
-    }
-  }, [loading]);
 
   return (
     <>

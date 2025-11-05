@@ -34,17 +34,19 @@ const SimpleScroll = ({
     console.log('Device Pixel Ratio:', window.devicePixelRatio);
     console.log('Screen Size:', window.innerWidth, 'x', window.innerHeight);
 
-    // Initialize PIXI application with optimized settings for mobile
+    // Initialize PIXI application with maximum quality settings
+    const dpr = window.devicePixelRatio || 1;
     const app = new PIXI.Application({
       view: canvasRef.current,
-      resizeTo: window,
-      backgroundColor: 0x2a2a2a,
+      width: window.innerWidth,
+      height: window.innerHeight,
+      backgroundColor: 0x2a4862,
       backgroundAlpha: 1,
-      resolution: Math.max(1, window.devicePixelRatio || 1), // Ensures sharp rendering on high-DPI screens
+      resolution: Math.min(dpr, 2), // Cap at 2x for performance, but maintain quality
       autoDensity: true,
       antialias: true,
-      powerPreference: 'high-performance', // Better performance on mobile
-      preserveDrawingBuffer: false, // Better memory management
+      powerPreference: 'high-performance',
+      preserveDrawingBuffer: false,
     });
 
     // Create containers
@@ -57,40 +59,34 @@ const SimpleScroll = ({
     imagesContainer.addChild(leftContainer, rightContainer);
     app.stage.addChild(imagesContainer, smokeContainer);
 
-    // Set initial dimensions and gap
+    // Set initial dimensions and gap - render at native resolution
     const calculateDimensions = () => {
       const screenWidth = window.innerWidth;
-      const dpr = window.devicePixelRatio || 1;
-      // Use 48% of screen width for images to ensure better quality on high-DPI screens
-      const maxImageWidth = Math.min(screenWidth * 0.48, (screenWidth - 10) / 2);
-      imageWidthRef.current = Math.max(150, maxImageWidth); // Increased min width for better quality
+      const screenHeight = window.innerHeight;
+      // Use 46% of screen width for images with better gap
+      const maxImageWidth = Math.min(screenWidth * 0.46, (screenWidth - 20) / 2);
+      imageWidthRef.current = Math.max(140, maxImageWidth);
       imageHeightRef.current = imageWidthRef.current * (4 / 3); // Maintain 4:3 aspect ratio
-      gapRef.current = Math.max(10, screenWidth * 0.015); // Optimized gap
+      gapRef.current = Math.max(15, screenWidth * 0.025); // Better gap spacing
       singleLeftHeightRef.current = leftImages.length * (imageHeightRef.current + gapRef.current);
       singleRightHeightRef.current = rightImages.length * (imageHeightRef.current + gapRef.current);
-      initialRightRef.current = -(singleRightHeightRef.current - window.innerHeight);
-      console.log('DPR:', dpr, 'Image Width:', imageWidthRef.current, 'Image Height:', imageHeightRef.current);
+      initialRightRef.current = -(singleRightHeightRef.current - screenHeight);
+      console.log('Image Width:', imageWidthRef.current, 'Image Height:', imageHeightRef.current, 'Gap:', gapRef.current);
     };
     calculateDimensions();
 
-    // Load images with progressive loading for better mobile performance
+    // Load ALL images at once for instant display
     const loader = new PIXI.Loader();
     const resourceMap = new Map();
 
-    // Load priority images first (first 4 of each side)
-    const priorityLeftImages = leftImages.slice(0, 4);
-    const priorityRightImages = rightImages.slice(0, 4);
-    const remainingLeftImages = leftImages.slice(4);
-    const remainingRightImages = rightImages.slice(4);
-
-    // Add priority images
-    priorityLeftImages.forEach((src, i) => {
+    // Add all images to loader
+    leftImages.forEach((src, i) => {
       const uniqueName = `left_${i}_${src}`;
       loader.add(uniqueName, src);
       resourceMap.set(uniqueName, src);
     });
 
-    priorityRightImages.forEach((src, i) => {
+    rightImages.forEach((src, i) => {
       const uniqueName = `right_${i}_${src}`;
       loader.add(uniqueName, src);
       resourceMap.set(uniqueName, src);
@@ -123,67 +119,8 @@ const SimpleScroll = ({
         }
       });
 
-      // Load remaining images progressively after priority images are loaded
-      const loadRemainingImages = () => {
-        const remainingLoader = new PIXI.Loader();
-        
-        remainingLeftImages.forEach((src, i) => {
-          const uniqueName = `left_${i + 4}_${src}`;
-          remainingLoader.add(uniqueName, src);
-          resourceMap.set(uniqueName, src);
-        });
-
-        remainingRightImages.forEach((src, i) => {
-          const uniqueName = `right_${i + 4}_${src}`;
-          remainingLoader.add(uniqueName, src);
-          resourceMap.set(uniqueName, src);
-        });
-
-        remainingLoader.load((loader, remainingResources) => {
-          console.log('Remaining images loaded');
-          // Add remaining images to containers
-          remainingLeftImages.forEach((src, i) => {
-            const uniqueName = `left_${i + 4}_${src}`;
-            const texture = remainingResources[uniqueName]?.texture;
-            if (!texture || !texture.valid) return;
-            
-            const sprite = PIXI.Sprite.from(texture);
-            sprite.width = imageWidthRef.current;
-            sprite.height = imageHeightRef.current;
-            sprite.texture.baseTexture.scaleMode = PIXI.SCALE_MODES.LINEAR;
-            sprite.texture.baseTexture.mipmap = PIXI.MIPMAP_MODES.ON;
-            sprite.roundPixels = true;
-            sprite.anchor.set(0);
-            leftContainer.addChild(sprite);
-          });
-
-          remainingRightImages.forEach((src, i) => {
-            const uniqueName = `right_${i + 4}_${src}`;
-            const texture = remainingResources[uniqueName]?.texture;
-            if (!texture || !texture.valid) return;
-            
-            const sprite = PIXI.Sprite.from(texture);
-            sprite.width = imageWidthRef.current;
-            sprite.height = imageHeightRef.current;
-            sprite.texture.baseTexture.scaleMode = PIXI.SCALE_MODES.LINEAR;
-            sprite.texture.baseTexture.mipmap = PIXI.MIPMAP_MODES.ON;
-            sprite.roundPixels = true;
-            sprite.anchor.set(0);
-            rightContainer.addChild(sprite);
-          });
-
-          // Recalculate dimensions after all images are loaded
-          calculateDimensions();
-          positionContainers();
-          updatePositions(currentOffsetRef.current);
-        });
-      };
-
-      // Load remaining images after a short delay
-      setTimeout(loadRemainingImages, 500);
-
-      // Create sprites with optimized quality settings (only for priority images)
-      priorityLeftImages.forEach((src, i) => {
+      // Create sprites with NEAREST neighbor for pixel-perfect rendering
+      leftImages.forEach((src, i) => {
         const uniqueName = `left_${i}_${src}`;
         const texture = resources[uniqueName]?.texture;
         if (!texture || !texture.valid) {
@@ -191,18 +128,24 @@ const SimpleScroll = ({
           return;
         }
         const sprite = PIXI.Sprite.from(texture);
+        
+        // Keep original texture size, let PIXI scale naturally
+        const originalWidth = texture.baseTexture.width;
+        const originalHeight = texture.baseTexture.height;
+        const aspectRatio = originalHeight / originalWidth;
+        
         sprite.width = imageWidthRef.current;
-        sprite.height = imageHeightRef.current;
-        // High-quality rendering settings for mobile
-        sprite.texture.baseTexture.scaleMode = PIXI.SCALE_MODES.LINEAR;
-        sprite.texture.baseTexture.mipmap = PIXI.MIPMAP_MODES.ON;
-        sprite.roundPixels = true; // Prevents sub-pixel rendering artifacts
-        sprite.anchor.set(0); // Ensure proper positioning
+        sprite.height = imageWidthRef.current * aspectRatio;
+        
+        // Use NEAREST for no interpolation (sharper on mobile)
+        sprite.texture.baseTexture.scaleMode = PIXI.SCALE_MODES.NEAREST;
+        sprite.roundPixels = true;
+        sprite.anchor.set(0);
         leftContainer.addChild(sprite);
-        console.log(`Left Image ${i}: original texture = ${sprite.texture.baseTexture.width}x${sprite.texture.baseTexture.height}, rendered = ${sprite.width}x${sprite.height}`);
+        console.log(`Left ${i}: ${originalWidth}x${originalHeight} -> ${sprite.width}x${sprite.height}`);
       });
 
-      priorityRightImages.forEach((src, i) => {
+      rightImages.forEach((src, i) => {
         const uniqueName = `right_${i}_${src}`;
         const texture = resources[uniqueName]?.texture;
         if (!texture || !texture.valid) {
@@ -210,32 +153,63 @@ const SimpleScroll = ({
           return;
         }
         const sprite = PIXI.Sprite.from(texture);
+        
+        // Keep original texture size, let PIXI scale naturally
+        const originalWidth = texture.baseTexture.width;
+        const originalHeight = texture.baseTexture.height;
+        const aspectRatio = originalHeight / originalWidth;
+        
         sprite.width = imageWidthRef.current;
-        sprite.height = imageHeightRef.current;
-        // High-quality rendering settings for mobile
-        sprite.texture.baseTexture.scaleMode = PIXI.SCALE_MODES.LINEAR;
-        sprite.texture.baseTexture.mipmap = PIXI.MIPMAP_MODES.ON;
-        sprite.roundPixels = true; // Prevents sub-pixel rendering artifacts
-        sprite.anchor.set(0); // Ensure proper positioning
+        sprite.height = imageWidthRef.current * aspectRatio;
+        
+        // Use NEAREST for no interpolation (sharper on mobile)
+        sprite.texture.baseTexture.scaleMode = PIXI.SCALE_MODES.NEAREST;
+        sprite.roundPixels = true;
+        sprite.anchor.set(0);
         rightContainer.addChild(sprite);
-        console.log(`Right Image ${i}: original texture = ${sprite.texture.baseTexture.width}x${sprite.texture.baseTexture.height}, rendered = ${sprite.width}x${sprite.height}`);
+        console.log(`Right ${i}: ${originalWidth}x${originalHeight} -> ${sprite.width}x${sprite.height}`);
       });
+      
+      // Recalculate heights based on actual sprite dimensions after they're created
+      let actualLeftHeight = 0;
+      leftContainer.children.forEach((sprite) => {
+        actualLeftHeight += sprite.height + gapRef.current;
+      });
+      
+      let actualRightHeight = 0;
+      rightContainer.children.forEach((sprite) => {
+        actualRightHeight += sprite.height + gapRef.current;
+      });
+      
+      singleLeftHeightRef.current = actualLeftHeight;
+      singleRightHeightRef.current = actualRightHeight;
+      initialRightRef.current = -(actualRightHeight - window.innerHeight);
+      
+      console.log('Actual Heights - Left:', actualLeftHeight, 'Right:', actualRightHeight, 'Initial Right Y:', initialRightRef.current);
 
       const positionContainers = () => {
         const screenWidth = window.innerWidth;
-        calculateDimensions(); // Recalculate dimensions for accurate positioning
-        leftContainer.x = 0; // Start at left edge
-        rightContainer.x = imageWidthRef.current + gapRef.current; // Position right container with dynamic gap
-        console.log('Image Width:', imageWidthRef.current, 'Left X:', leftContainer.x, 'Right X:', rightContainer.x, 'Screen Width:', screenWidth, 'Gap:', gapRef.current);
+        
+        // Center the two columns on screen
+        const totalWidth = imageWidthRef.current * 2 + gapRef.current;
+        const startX = (screenWidth - totalWidth) / 2;
+        
+        leftContainer.x = startX;
+        rightContainer.x = startX + imageWidthRef.current + gapRef.current;
+        
+        console.log('Screen:', screenWidth, 'Image Width:', imageWidthRef.current, 'Gap:', gapRef.current, 'Left X:', leftContainer.x, 'Right X:', rightContainer.x);
       };
+      
+      // Position containers AFTER heights are calculated
       positionContainers();
 
       const updatePositions = (offset) => {
         const leftLoopHeight = singleLeftHeightRef.current;
         leftContainer.children.forEach((sprite, i) => {
-          const baseY = i * (imageHeightRef.current + gapRef.current);
+          const spriteHeight = sprite.height;
+          const baseY = i * (spriteHeight + gapRef.current);
           let y = baseY - (offset % leftLoopHeight);
-          if (y < -imageHeightRef.current) y += leftLoopHeight;
+          if (y < -spriteHeight) y += leftLoopHeight;
           if (y > leftLoopHeight) y -= leftLoopHeight;
           sprite.y = y;
         });
@@ -243,9 +217,10 @@ const SimpleScroll = ({
         const rightLoopHeight = singleRightHeightRef.current;
         const initialRight = initialRightRef.current;
         rightContainer.children.forEach((sprite, i) => {
-          const baseY = i * (imageHeightRef.current + gapRef.current);
+          const spriteHeight = sprite.height;
+          const baseY = i * (spriteHeight + gapRef.current);
           let y = baseY + (offset % rightLoopHeight) + initialRight;
-          if (y < -imageHeightRef.current) y += rightLoopHeight;
+          if (y < -spriteHeight) y += rightLoopHeight;
           if (y > rightLoopHeight) y -= rightLoopHeight;
           sprite.y = y;
         });
@@ -273,67 +248,8 @@ const SimpleScroll = ({
         });
       }, containerRef);
 
-      let smokeSprite = null;
-      let displacementSprite = null;
-
-      const smokeTexture = resources.smokeTexture?.texture || resources.fallbackSmokeTexture?.texture;
-      if (!smokeTexture || !smokeTexture.valid) {
-        console.error(`Smoke texture not loaded, skipping smoke sprite`);
-      } else {
-        smokeSprite = PIXI.Sprite.from(smokeTexture);
-        smokeSprite.texture.baseTexture.scaleMode = PIXI.SCALE_MODES.LINEAR;
-        smokeSprite.texture.baseTexture.mipmap = PIXI.MIPMAP_MODES.ON;
-        // Reduced smoke size for better mobile performance (2x instead of 4x)
-        smokeSprite.width = window.innerWidth * 2;
-        smokeSprite.height = window.innerHeight * 2;
-        smokeSprite.alpha = 0.35; // Slightly reduced for better performance
-        smokeSprite.texture.baseTexture.wrapMode = PIXI.WRAP_MODES.REPEAT;
-        smokeContainer.addChild(smokeSprite);
-
-        const colorMatrix = new PIXI.filters.ColorMatrixFilter();
-        smokeSprite.filters = [colorMatrix];
-      }
-
-      const displacementTexture = resources.displacementMap?.texture || resources.fallbackDisplacementMap?.texture;
-      if (!displacementTexture || !displacementTexture.valid) {
-        console.error(`Displacement texture not loaded, skipping displacement filter`);
-      } else {
-        displacementSprite = PIXI.Sprite.from(displacementTexture);
-        displacementSprite.texture.baseTexture.scaleMode = PIXI.SCALE_MODES.LINEAR;
-        displacementSprite.texture.baseTexture.mipmap = PIXI.MIPMAP_MODES.ON;
-        displacementSprite.texture.baseTexture.wrapMode = PIXI.WRAP_MODES.REPEAT;
-        displacementSprite.scale.set(0.4);
-        displacementSprite.alpha = 0; // Invisible, only used for displacement
-        displacementSprite.width = window.innerWidth;
-        displacementSprite.height = window.innerHeight;
-
-        const displacementColorMatrix = new PIXI.filters.ColorMatrixFilter();
-        displacementSprite.filters = [displacementColorMatrix];
-
-        // Reduced displacement intensity for better mobile performance
-        const displacementFilter = new PIXI.filters.DisplacementFilter(displacementSprite);
-        const isMobile = window.innerWidth < 768;
-        displacementFilter.scale.set(isMobile ? 4 : 8, isMobile ? 4 : 8);
-
-        app.stage.addChild(displacementSprite);
-        smokeContainer.filters = [displacementFilter];
-        imagesContainer.filters = [displacementFilter];
-      }
-
-      // Optimized animation loop for better mobile performance
-      app.ticker.add(() => {
-        if (texturesLoaded.current && smokeSprite && displacementSprite) {
-          // Slightly slower animation for better performance and quality on mobile
-          displacementSprite.x -= 0.4;
-          displacementSprite.y -= 0.4;
-          smokeSprite.x -= 0.4;
-          smokeSprite.y -= 0.2;
-          if (displacementSprite.x < -window.innerWidth) displacementSprite.x += window.innerWidth;
-          if (displacementSprite.y < -window.innerHeight) displacementSprite.y += window.innerHeight;
-          if (smokeSprite.x < -window.innerWidth) smokeSprite.x += window.innerWidth;
-          if (smokeSprite.y < -window.innerHeight) smokeSprite.y += window.innerHeight;
-        }
-      });
+      // Water effect disabled on mobile for crisp images
+      console.log('Water effect disabled on mobile - clean image rendering');
 
       const handleResize = () => {
   if (typeof window === 'undefined') return;
@@ -349,26 +265,18 @@ const SimpleScroll = ({
     s.width  = imageWidthRef.current;
     s.height = imageHeightRef.current;
   });
-  if (smokeSprite) {
-    // Reduced smoke size for better performance (2x instead of 4x)
-    smokeSprite.width  = window.innerWidth  * 2;
-    smokeSprite.height = window.innerHeight * 2;
-  }
-  if (displacementSprite) {
-    displacementSprite.width  = window.innerWidth;
-    displacementSprite.height = window.innerHeight;
-  }
+  // Water effect removed for mobile
 
   positionContainers();
   updatePositions(currentOffsetRef.current);
 
-  /* ---- single, correct hi-res resize ---- */
-  const dpr  = Math.max(1, window.devicePixelRatio || 1);
+  /* ---- resize with capped DPR for quality/performance balance ---- */
+  const dpr  = Math.min(window.devicePixelRatio || 1, 2); // Cap at 2x
   const cssW = window.innerWidth;
   const cssH = window.innerHeight;
 
-  app.renderer.resize(cssW * dpr, cssH * dpr);   // back-buffer in real pixels
-  app.renderer.view.style.width  = cssW + 'px';  // CSS size stays viewport
+  app.renderer.resize(cssW, cssH);   // Use CSS dimensions, resolution is already set in app config
+  app.renderer.view.style.width  = cssW + 'px';
   app.renderer.view.style.height = cssH + 'px';
 };
 

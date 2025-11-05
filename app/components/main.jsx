@@ -11,76 +11,76 @@ gsap.registerPlugin(ScrollTrigger);
 
 // --- 1. DEFINE MOBILE-SPECIFIC IMAGES ---
 const mobileLeftImages = [
-  "/Image/Image/img1.webp",
-  "/Image/Image/img2.webp",
-  "/Image/Image/img3.webp",
-  "/Image/Image/img4.webp",
-  "/Image/Image/img5.webp",
-  "/Image/Image/img6.webp",
-  "/Image/Image/img7.webp",
-  "/Image/Image/img8.webp",
-  "/Image/Image/img9.webp",
-  "/Image/Image/img10.webp",
-  "/Image/Image/img11.webp",
-  "/Image/Image/img12.webp",
-  "/Image/Image/img13.webp",
-  "/Image/Image/img15.webp",
-  "/Image/Image/img31.webp",
+  "/Image/webp/img1.webp",
+  "/Image/webp/img2.webp",
+  "/Image/webp/img3.webp",
+  "/Image/webp/img4.webp",
+  "/Image/webp/img5.webp",
+  "/Image/webp/img6.webp",
+  "/Image/webp/img7.webp",
+  "/Image/webp/img8.webp",
+  "/Image/webp/img9.webp",
+  "/Image/webp/img10.webp",
+  // "/Image/webp/img11.webp",
+  // "/Image/webp/img12.webp",
+  // "/Image/webp/img13.webp",
+  // "/Image/webp/img15.webp",
+  // "/Image/webp/img31.webp",
 ];
 
 const mobileRightImages = [
-  "/Image/Image/img30.webp",
-  "/Image/Image/img29.webp",
-  "/Image/Image/img1.webp",
-  "/Image/Image/img27.webp",
-  "/Image/Image/img26.webp",
-  "/Image/Image/img25.webp",
-  "/Image/Image/img24.webp",
-  "/Image/Image/img23.webp",
-  "/Image/Image/img22.webp",
-  "/Image/Image/img21.webp",
-  "/Image/Image/img20.webp",
-  "/Image/Image/img19.webp",
-  "/Image/Image/img18.webp",
-  "/Image/Image/img17.webp",
-  "/Image/Image/img16.webp",
+  "/Image/webp/img30.webp",
+  "/Image/webp/img29.webp",
+  "/Image/webp/img1.webp",
+  "/Image/webp/img27.webp",
+  "/Image/webp/img26.webp",
+  "/Image/webp/img25.webp",
+  "/Image/webp/img24.webp",
+  "/Image/webp/img23.webp",
+  "/Image/webp/img22.webp",
+  "/Image/webp/img21.webp",
+  // "/Image/webp/img20.webp",
+  // "/Image/webp/img19.webp",
+  // "/Image/webp/img18.webp",
+  // "/Image/webp/img17.webp",
+  // "/Image/webp/img16.webp",
 ];
 
 // --- 2. RENAME ORIGINAL DESKTOP IMAGES ---
 const desktopLeftImages = [
- "/Image/Image/img1.webp",
-  "/Image/Image/img2.webp",
-  "/Image/Image/img3.webp",
-  "/Image/Image/img4.webp",
-  "/Image/Image/img5.webp",
-  "/Image/Image/img6.webp",
-  "/Image/Image/img7.webp",
-  "/Image/Image/img8.webp",
-  "/Image/Image/img9.webp",
-  "/Image/Image/img10.webp",
-  "/Image/Image/img11.webp",
-  "/Image/Image/img12.webp",
-  "/Image/Image/img13.webp",
-  "/Image/Image/img15.webp",
-  "/Image/Image/img31.webp",
+"/Image/webp/img1.webp",
+  "/Image/webp/img2.webp",
+  "/Image/webp/img3.webp",
+  "/Image/webp/img4.webp",
+  "/Image/webp/img5.webp",
+  "/Image/webp/img6.webp",
+  "/Image/webp/img7.webp",
+  "/Image/webp/img8.webp",
+  "/Image/webp/img9.webp",
+  "/Image/webp/img10.webp",
+  "/Image/webp/img11.webp",
+  "/Image/webp/img12.webp",
+  "/Image/webp/img13.webp",
+  "/Image/webp/img15.webp",
+  "/Image/webp/img31.webp",
 ];
 
 const desktopRightImages = [
-"/Image/Image/img30.webp",
-  "/Image/Image/img29.webp",
-  "/Image/Image/img1.webp",
-  "/Image/Image/img27.webp",
-  "/Image/Image/img26.webp",
-  "/Image/Image/img25.webp",
-  "/Image/Image/img24.webp",
-  "/Image/Image/img23.webp",
-  "/Image/Image/img22.webp",
-  "/Image/Image/img21.webp",
-  "/Image/Image/img20.webp",
-  "/Image/Image/img19.webp",
-  "/Image/Image/img18.webp",
-  "/Image/Image/img17.webp",
-  "/Image/Image/img16.webp",
+  "/Image/webp/img30.webp",
+  "/Image/webp/img29.webp",
+  "/Image/webp/img1.webp",
+  "/Image/webp/img27.webp",
+  "/Image/webp/img26.webp",
+  "/Image/webp/img25.webp",
+  "/Image/webp/img24.webp",
+  "/Image/webp/img23.webp",
+  "/Image/webp/img22.webp",
+  "/Image/webp/img21.webp",
+  "/Image/webp/img20.webp",
+  "/Image/webp/img19.webp",
+  "/Image/webp/img18.webp",
+  "/Image/webp/img17.webp",
+  "/Image/webp/img16.webp",
 ];
 
 function isMobileDevice() {
@@ -96,6 +96,7 @@ export default function EnhancedReverseStartLayout() {
   const textRef = useRef(null);
   const [isMobile, setIsMobile] = useState(false);
   const [componentHeight, setComponentHeight] = useState("auto");
+  const [mountWaterEffect, setMountWaterEffect] = useState(false);
 
   // Use a large height for continuous scrolling
   const largeScrollHeight = 100000; // Adjust for desired scroll distance
@@ -112,8 +113,16 @@ export default function EnhancedReverseStartLayout() {
   }, []);
 
   useEffect(() => {
-    if (!containerRef.current || !textRef.current) return;
+    // Ensure the container DOM node exists before mounting water effect on mobile
+    if (isMobile && containerRef.current && !mountWaterEffect) {
+      setMountWaterEffect(true);
+    }
+  }, [isMobile, containerRef, mountWaterEffect]);
 
+  useEffect(() => {
+    if (!containerRef.current || !textRef.current) return;
+    
+    // Text scroll animation for both mobile and desktop
     const ctx = gsap.context(() => {
       gsap.fromTo(
         textRef.current,

@@ -69,7 +69,7 @@ export default function Navbar() {
 
       {/* Menu Overlay */}
       <div
-        className={`fixed top-0 left-0 w-full h-screen bg-[#1a1a1a] flex flex-col items-center justify-center opacity-0 invisible transition-all duration-1000 z-40 ${
+        className={`fixed top-0 left-0 w-full h-screen bg-[#2a4862] flex flex-col items-center justify-center opacity-0 invisible transition-all duration-1000 z-40 ${
           menuOpen ? "opacity-100 visible" : ""
         }`}
       >

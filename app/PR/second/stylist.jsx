@@ -1,46 +1,129 @@
 "use client";
 
-import Image from 'next/image';
+import { useState, useEffect, useRef } from "react";
+import Image from "next/image";
 
 export default function Stylist() {
-    const productImages = [
-        { src: '/stylist/img1.webp', alt: 'Stylist 1'},
-        { src: '/stylist/img2.webp', alt: 'Stylist 2'},
-        { src: '/stylist/img3.webp', alt: 'Stylist 3'},
-        { src: '/stylist/img4.webp', alt: 'Stylist 4'},
-        { src: '/stylist/img5.webp', alt: 'Stylist 5'},
-        { src: '/stylist/img6.webp', alt: 'Stylist 6'},
-    ]
-    
-    return (
-        <>
-        <div className="text-white py-5 text-center mt-0 mb-0 font-bellota-light">
-        <h1 className="text-2xl md:text-3xl ">STYLISTS</h1>
-        {/* <p className="text-lg md:text-xl italic font-light mt-1">Impactful PR Approach</p> */}
-    </div>
-        <div className="relative w-full overflow-hidden bg-white">
-            <div className="flex w-full overflow-hidden">
-                <div className="flex animate-marquee-left items-center py-1">
-                    {[...productImages, ...productImages].map((img, index) => ( 
-                        <div 
-                            key={index}
-                            className="mx-3 flex-shrink-0"
-                        >
-                            <div className="relative w-[250px] h-[350px]">
-                                <Image 
-                                    src={img.src} 
-                                    alt={img.alt} 
-                                    fill
-                                    className="object-contain no-water-effect"
-                                    sizes="(max-width: 768px) 100vw, 50vw"
-                                    // quality={100}
-                                />
-                            </div>
-                        </div>
-                    ))}
+  const productImages = [
+    { src: "/stylist/webp/img1.webp", alt: "Stylist 1" },
+    { src: "/stylist/webp/img2.webp", alt: "Stylist 2" },
+    { src: "/stylist/webp/img3.webp", alt: "Stylist 3" },
+    { src: "/stylist/webp/img4.webp", alt: "Stylist 4" },
+    { src: "/stylist/webp/img5.webp", alt: "Stylist 5" },
+    { src: "/stylist/webp/img6.webp", alt: "Stylist 6" },
+  ];
+
+  const [scrollPosition, _setScrollPosition] = useState(0);
+  const [activeIndex, setActiveIndex] = useState(0);
+  const [speed, setSpeed] = useState(1.5);
+  const scrollRef = useRef(null);
+  const animationRef = useRef(null);
+  const posRef = useRef(0);
+  const logoWidth = 256;
+  const totalWidth = productImages.length * logoWidth;
+
+  const animate = () => {
+    const current = posRef.current + speed;
+    posRef.current = current >= totalWidth ? current - totalWidth : current;
+    if (scrollRef.current) {
+      scrollRef.current.style.transform = `translateX(-${posRef.current}px)`;
+    }
+    animationRef.current = requestAnimationFrame(animate);
+  };
+
+  useEffect(() => {
+    // Adjust speed for mobile devices
+    const handleResize = () => {
+      if (window.innerWidth <= 768) {
+        setSpeed(0.8);
+      } else {
+        setSpeed(0.4);
+      }
+    };
+
+    handleResize(); // set initial speed
+    window.addEventListener("resize", handleResize);
+
+    const onVisibility = () => {
+      if (document.hidden) {
+        if (animationRef.current) cancelAnimationFrame(animationRef.current);
+        animationRef.current = null;
+      } else if (!animationRef.current) {
+        animationRef.current = requestAnimationFrame(animate);
+      }
+    };
+    document.addEventListener('visibilitychange', onVisibility);
+    animationRef.current = requestAnimationFrame(animate);
+
+    return () => {
+      window.removeEventListener("resize", handleResize);
+      document.removeEventListener('visibilitychange', onVisibility);
+      if (animationRef.current) cancelAnimationFrame(animationRef.current);
+    };
+  }, [speed]);
+
+  useEffect(() => {
+    const id = setInterval(() => {
+      const index = Math.floor((posRef.current % totalWidth) / logoWidth) % productImages.length;
+      setActiveIndex(index);
+    }, 250);
+    return () => clearInterval(id);
+  }, []);
+
+  const scrollToIndex = (index) => {
+    const targetPosition = index * logoWidth;
+    posRef.current = targetPosition;
+    if (scrollRef.current) {
+      scrollRef.current.style.transform = `translateX(-${posRef.current}px)`;
+    }
+  };
+
+  const repeatedImages = [...productImages, ...productImages, ...productImages];
+
+  return (
+    <>
+      <div className="text-white py-5 text-center mt-0 mb-0 font-bellota-light">
+        <h1 className="text-2xl md:text-3xl no-water-effect">STYLISTS</h1>
+      </div>
+
+      <div className="relative w-full py-2 bg-white">
+        <div className="relative overflow-hidden">
+          <div
+            ref={scrollRef}
+            className="flex"
+            style={{ willChange: "transform" }}
+          >
+            {repeatedImages.map((img, index) => (
+              <div key={index} className="mx-3 flex-shrink-0">
+                <div className="relative w-[250px] h-[350px]">
+                  <Image
+                    src={img.src}
+                    alt={img.alt}
+                    fill
+                    className="object-contain no-water-effect"
+                    sizes="(max-width: 768px) 100vw, 50vw"
+                  />
                 </div>
-            </div>
+              </div>
+            ))}
+          </div>
         </div>
-        </>
-    );
-};
+      </div>
+
+      <div className="flex justify-center gap-2 mt-6">
+        {productImages.map((_, index) => (
+          <button
+            key={index}
+            onClick={() => scrollToIndex(index)}
+            className={`transition-all duration-300 rounded-full no-water-effect ${
+              activeIndex === index
+                ? "bg-blue-600 w-8 h-3"
+                : "bg-gray-300 hover:bg-gray-400 w-3 h-3"
+            }`}
+            aria-label={`Go to image ${index + 1}`}
+          />
+        ))}
+      </div>
+    </>
+  );
+}

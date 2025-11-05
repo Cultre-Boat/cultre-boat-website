@@ -1,7 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
-import * as PIXI from "pixi.js";
+import { useState, useRef } from "react";
 import Last from "../components/design-last";
 import Logos from "../components/brand-logos";
 import Mailers from "../components/mailers";
@@ -9,143 +8,12 @@ import LIZ from "../components/designLiz";
 import MovingFog from "../components/MovingFog";
 import PixiWaterImages from "../components/PixiWaterImages";
 
-const PixiWaterText = ({ containerRef }) => {
-  const pixiContainerRef = useRef(null);
-
-  useEffect(() => {
-    if (!pixiContainerRef.current || !containerRef.current) return;
-
-    // Get text elements within containerRef, excluding no-water-effect
-    const textElements = containerRef.current.querySelectorAll(
-      "h1:not(.no-water-effect), h2:not(.no-water-effect), h3:not(.no-water-effect), p:not(.no-water-effect), a:not(.no-water-effect)"
-    );
-    if (textElements.length === 0) return;
-
-    // Initialize PIXI application
-    const app = new PIXI.Application({
-      width: window.innerWidth,
-      height: window.innerHeight,
-      backgroundColor: 0x000000,
-      backgroundAlpha: 0,
-      resolution: window.devicePixelRatio || 1,
-      autoDensity: true,
-    });
-    pixiContainerRef.current.appendChild(app.view);
-    app.view.style.position = "absolute";
-    app.view.style.top = "0";
-    app.view.style.left = "0";
-    app.view.style.pointerEvents = "none";
-
-    // Displacement sprite with fallback
-    const displacementSprite = PIXI.Sprite.from("/pattern-clouds.jpg");
-    displacementSprite.texture.baseTexture.on("error", () => {
-      console.error("Failed to load /pattern-clouds.jpg, using fallback");
-      displacementSprite.texture = PIXI.Texture.from(
-        "https://i.imgur.com/3PTiU4U.jpg"
-      );
-    });
-    displacementSprite.texture.baseTexture.wrapMode = PIXI.WRAP_MODES.REPEAT;
-    displacementSprite.alpha = 0;
-    displacementSprite.width = window.innerWidth;
-    displacementSprite.height = window.innerHeight;
-    const displacementFilter = new PIXI.filters.DisplacementFilter(displacementSprite);
-    displacementFilter.scale.set(10, 10);
-
-    app.stage.addChild(displacementSprite);
-
-    // Create PIXI text for each DOM text element
-    const textSprites = [];
-    textElements.forEach((el) => {
-      const text = el.textContent;
-      const style = window.getComputedStyle(el);
-      const rect = el.getBoundingClientRect();
-
-      const textSprite = new PIXI.Text(text, {
-        fontFamily: style.fontFamily,
-        fontSize: parseFloat(style.fontSize),
-        fontWeight: style.fontWeight,
-        fill: style.color,
-        align: "left",
-      });
-
-      textSprite.x = rect.left + rect.width / 2;
-      textSprite.y = rect.top + rect.height / 2;
-      textSprite.anchor.set(0.5);
-      textSprite.filters = [displacementFilter];
-
-      app.stage.addChild(textSprite);
-      textSprites.push({ sprite: textSprite, element: el });
-    });
-
-    // Animate displacement
-    app.ticker.add(() => {
-      displacementSprite.x += 1;
-      displacementSprite.y += 1;
-    });
-
-    // Update positions on resize and scroll
-    const updatePositions = () => {
-      textSprites.forEach(({ sprite, element }) => {
-        const rect = element.getBoundingClientRect();
-        sprite.x = rect.left + rect.width / 2;
-        sprite.y = rect.top + rect.height / 2;
-        sprite.visible = rect.top >= 0 && rect.bottom <= window.innerHeight;
-      });
-      app.renderer.resize(window.innerWidth, window.innerHeight);
-      displacementSprite.width = window.innerWidth;
-      displacementSprite.height = window.innerHeight;
-    };
-
-    window.addEventListener("resize", updatePositions);
-    window.addEventListener("scroll", updatePositions);
-
-    // Cleanup
-    return () => {
-      window.removeEventListener("resize", updatePositions);
-      window.removeEventListener("scroll", updatePositions);
-      app.destroy(true, { children: true, texture: true, baseTexture: true });
-      if (pixiContainerRef.current) pixiContainerRef.current.innerHTML = "";
-    };
-  }, [containerRef]);
-
-  return (
-    <div
-      ref={pixiContainerRef}
-      className="fixed top-0 left-0 w-full h-full pointer-events-none z-[2]"
-    />
-  );
-};
-
 export default function DesignPortfolio() {
   const [videoUrl, setVideoUrl] = useState(null);
   const [isVideoOpen, setIsVideoOpen] = useState(false);
   const contentRef = useRef(null);
 
-  useEffect(() => {
-    if (!contentRef.current) return;
-
-    // Hide text elements within contentRef, excluding no-water-effect
-    const textElements = contentRef.current.querySelectorAll(
-      "h1:not(.no-water-effect), h2:not(.no-water-effect), h3:not(.no-water-effect), p:not(.no-water-effect), a:not(.no-water-effect)"
-    );
-    textElements.forEach((el) => {
-      el.style.opacity = "0";
-    });
-
-    // Debug image loading
-    const images = contentRef.current.querySelectorAll("img");
-    images.forEach((img) => {
-      if (!img.complete || img.naturalWidth === 0) {
-        console.error(`Failed to load image: ${img.src}`);
-      }
-    });
-
-    return () => {
-      textElements.forEach((el) => {
-        el.style.opacity = "1";
-      });
-    };
-  }, []);
+  // Ensure text is visible immediately; any effects render as overlays without hiding originals.
 
   const openVideoModal = (url) => {
     setVideoUrl(url);
@@ -161,7 +29,6 @@ export default function DesignPortfolio() {
 
   return (
     <>
-      <PixiWaterText containerRef={contentRef} />
       <PixiWaterImages containerRef={contentRef} />
       <div
         ref={contentRef}
@@ -187,7 +54,7 @@ export default function DesignPortfolio() {
               </div>
               <div className="flex-1 relative w-full max-w-full lg:max-w-2xl mx-auto lg:mx-0 z-[10]">
                 <img
-                  src="/Design/Design-image1.webp"
+                  src="/Design//webp/Design-image1.webp"
                   alt="Traditional Fashion Design"
                   width={600}
                   height={400}
@@ -205,11 +72,8 @@ export default function DesignPortfolio() {
             <div className="flex flex-col lg:flex-row gap-0 lg:gap-24 justify-center mb-2 mx-auto items-stretch">
               {/* Left Image */}
               <div className="relative overflow-hidden w-full lg:w-[650px] md:mb-0 mx-auto lg:mx-0 z-[10] flex items-stretch">
-                <span className="absolute left-0 z-[11] bg-black text-white px-2.5 rounded-tr-lg rounded-br-lg text-sm lg:text-base tracking-wider">
-                  For GURORGANIC by Pernia Qureshi
-                </span>
                 <img
-                  src="/Design/Design-image2.webp"
+                  src="/Design/webp/Design-image2.webp"
                   alt="Gurorganic Campaign"
                   className="w-full h-full object-cover"
                   onError={(e) =>
@@ -221,7 +85,7 @@ export default function DesignPortfolio() {
               {/* Right Image */}
               <div className="relative overflow-hidden w-full lg:w-[500px] lg:mx-0 z-[10] mt-10 md:mt-0 flex items-stretch">
                 <img
-                  src="/Design/Design-image3-1-1.png"
+                  src="/Design/webp/Design-image3-1.webp"
                   alt="Fashion Photography"
                   className="w-full h-full object-cover"
                   onError={(e) =>
@@ -254,7 +118,7 @@ export default function DesignPortfolio() {
                   aria-label="Play video"
                 >
                   <img
-                    src="/Design/Design-image4-1.webp"
+                    src="/Design/webp/Design-image4-1.webp"
                     alt="Kalki Fashion"
                     width={600}
                     height={350}
@@ -292,7 +156,7 @@ export default function DesignPortfolio() {
               {/* Right static image */}
               <div className="relative overflow-hidden w-full lg:w-[50%] lg:max-w-[350px] mx-auto lg:mx-0 z-[10] flex items-stretch mt-5 md:mt-0">
                 <img
-                  src="/Design/img28.webp"
+                  src="/Design/webp/img28.webp"
                   alt="Product Photography"
                   width={600}
                   height={350}
@@ -360,7 +224,7 @@ export default function DesignPortfolio() {
             <div className="flex flex-col lg:flex-row gap-5 lg:gap-24 justify-center lg:mx-4 mb-0 md:mb-9">
               <div className="relative overflow-hidden w-full lg:w-[70%] lg:max-w-[400px] mx-auto lg:mx-0 z-[10]">
                 <img
-                  src="/Design/D_img1.jpg"
+                  src="/Design/webp/D_img1.webp"
                   alt="Visual Vocabulary Design 1"
                   width={600}
                   height={450}
@@ -372,7 +236,7 @@ export default function DesignPortfolio() {
               </div>
               <div className="relative overflow-hidden w-full lg:w-[70%] lg:max-w-[400px] mx-auto lg:mx-0 z-[10]">
                 <img
-                  src="/Design/D_img2.jpg"
+                  src="/Design/webp/D_img2.webp"
                   alt="Visual Vocabulary Design 2"
                   width={600}
                   height={450}
@@ -396,7 +260,7 @@ export default function DesignPortfolio() {
             <div className="flex flex-col lg:flex-row gap-5 lg:gap-24 justify-center lg:mx-4 mb-5">
               <div className="relative overflow-hidden w-full lg:w-[100%] lg:max-w-[650px] mx-auto lg:mx-0 z-[10]">
                 <img
-                  src="/Design/DSC_1196_1.jpg"
+                  src="/Design/webp/DSC_1196_1.webp"
                   alt="Print Design 1"
                   width={600}
                   height={400}
@@ -408,7 +272,7 @@ export default function DesignPortfolio() {
               </div>
               <div className="relative overflow-hidden w-full lg:w-[70%] lg:max-w-[380px] mx-auto lg:mx-0 z-[10]">
                 <img
-                  src="/Design/image-5.webp"
+                  src="/Design/webp/image-5.webp"
                   alt="Print Design 2"
                   width={600}
                   height={400}
@@ -424,12 +288,12 @@ export default function DesignPortfolio() {
           {/* Portfolio Collage Section */}
           <section className="text-center z-[10]">
             <div className="mb-6">
-              <hr className="w-3/5 h-px bg-gray-600 border-none mx-auto mb-8" />
+              <hr className="w-3/5 h-px bg-gray-600 border-none mx-auto mb-10 mt-10" />
             </div>
             <div className="flex flex-col lg:flex-row gap-4 lg:gap-5 items-start justify-center lg:px-4">
               <div className="flex flex-col gap-4 w-full lg:max-w-lg lg:max-w-xl mx-auto lg:mx-0 z-[10]">
                 <img
-                  src="/Mailer/1.webp"
+                  src="/Mailer/webp/1.webp"
                   alt="Portfolio Item 1"
                   width={570}
                   height={400}
@@ -439,7 +303,7 @@ export default function DesignPortfolio() {
                   }
                 />
                 <img
-                  src="/Mailer/4.webp"
+                  src="/Mailer/webp/4.webp"
                   alt="Portfolio Item 4"
                   width={570}
                   height={400}
@@ -449,7 +313,7 @@ export default function DesignPortfolio() {
                   }
                 />
                 <img
-                  src="/Mailer/6.webp"
+                  src="/Mailer/webp/6.webp"
                   alt="Portfolio Item 6"
                   width={570}
                   height={400}
@@ -461,7 +325,7 @@ export default function DesignPortfolio() {
               </div>
               <div className="flex flex-col gap-4 w-full lg:max-w-lg lg:max-w-xl mx-auto lg:mx-0 z-[10]">
                 <img
-                  src="/Mailer/2.webp"
+                  src="/Mailer/webp/2.webp"
                   alt="Portfolio Item 2"
                   width={570}
                   height={400}
@@ -471,7 +335,7 @@ export default function DesignPortfolio() {
                   }
                 />
                 <img
-                  src="/Mailer/5.webp"
+                  src="/Mailer/webp/5.webp"
                   alt="Portfolio Item 5"
                   width={570}
                   height={400}
@@ -481,7 +345,7 @@ export default function DesignPortfolio() {
                   }
                 />
                 <img
-                  src="/Mailer/7.webp"
+                  src="/Mailer/webp/7.webp"
                   alt="Portfolio Item 7"
                   width={570}
                   height={400}
@@ -491,7 +355,7 @@ export default function DesignPortfolio() {
                   }
                 />
                 <img
-                  src="/Mailer/Group.webp"
+                  src="/Mailer/webp/Group.webp"
                   alt="Portfolio Item 3"
                   width={570}
                   height={400}
@@ -502,7 +366,7 @@ export default function DesignPortfolio() {
                 />
               </div>
             </div>
-            <hr className="w-3/5 h-px bg-gray-600 border-none mx-auto mb-5 mt-10" />
+            {/* <hr className="w-3/5 h-px bg-gray-600 border-none mx-auto mb-5 mt-10" /> */}
           </section>
 
           {/* Logos Section */}

@@ -3,7 +3,6 @@ import "./globals.css";
 import Navbar from "../app/components/navbar";
 import CustomCursor from "../app/components/custom-cursor";
 import { bellotaText } from './fonts';
-import VFXCanvas from '../app/components/VFXWrapper';
 import Expand from '../app/components/expand';
 import ClientLoadingWrapper from '../app/components/clientloadingwrapper';
 import FullScreenScreenWaterEffect from "./components/FullScreenWaterEffect";
@@ -26,12 +25,9 @@ export default function RootLayout({ children }) {
       >
         <ScrollbarProvider>
           <ClientLoadingWrapper>
-            <FullScreenScreenWaterEffect/>
-            
             <Navbar />
             <CustomCursor />
             <Expand>{children}</Expand>
-            {/* <VFXCanvas /> */}
           </ClientLoadingWrapper>
         </ScrollbarProvider>
       </body> 

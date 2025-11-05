@@ -43,9 +43,9 @@ export default function TransitionEffect({ children }) {
       {/* Page content */}
       <motion.div
         key={pathname}
-        initial={{ opacity: 0 }}
+        initial={{ opacity: 1 }}
         animate={{ opacity: 1 }}
-        transition={{ duration: 1.5, ease: [0.22, 1, 0.36, 1] }}
+        transition={{ duration: 0.3 }}
       >
         {currentChildren}
       </motion.div>

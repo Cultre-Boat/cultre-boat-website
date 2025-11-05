@@ -59,9 +59,9 @@ export default function BrandShowcase({ params: paramsPromise }) {
     const displacementFilter = new PIXI.filters.DisplacementFilter(displacementSprite);
     displacementFilter.padding = 30;
     if (window.innerWidth < 768) {
-      displacementFilter.scale.set(10, 10); // Softer waves for mobile
+      displacementFilter.scale.set(2, 2); // Minimal waves for mobile
     } else {
-      displacementFilter.scale.set(15, 15); // Stronger waves for desktop
+      displacementFilter.scale.set(3, 3); // Subtle waves for desktop
     }
     app.stage.addChild(displacementSprite);
 
@@ -171,17 +171,17 @@ export default function BrandShowcase({ params: paramsPromise }) {
 
   return (
     <>
-    <div className="mt-20 text-white min-h-screen p-4 sm:p-10" ref={containerRef}>
+    <div className="mt-16 text-white min-h-screen p-4 sm:p-6" ref={containerRef}>
       {/* PIXI canvas container */}
       <div ref={pixiContainerRef} className="fixed top-0 left-0 w-full h-full pointer-events-none z-10" />
 
-      <div className="mb-10 sm:mb-20 z-20 relative">
+      <div className="mb-8 sm:mb-12 z-20 relative">
         {/* Main Heading and Description */}
         <h1 className="text-3xl sm:text-5xl font-bold">{brand.name}</h1>
         <p className="text-base sm:text-lg mt-2 text-gray-400">{brand.description}</p>
 
         {/* Grid Layout for Image and Bullet Points */}
-        <div className="grid grid-cols-1 sm:grid-cols-12 gap-4 sm:gap-8 mt-6 sm:mt-8">
+        <div className="grid grid-cols-1 sm:grid-cols-12 gap-4 sm:gap-6 mt-5 sm:mt-6">
           {/* Main Image */}
           <div className="col-span-1 sm:col-span-7">
             <img
@@ -200,7 +200,7 @@ export default function BrandShowcase({ params: paramsPromise }) {
         </div>
 
         {/* Overview Section */}
-        <div className="grid grid-cols-1 sm:grid-cols-12 gap-6 sm:gap-8 mt-8 sm:mt-10">
+        <div className="grid grid-cols-1 sm:grid-cols-12 gap-5 sm:gap-6 mt-6 sm:mt-8">
           <div className="col-span-1 sm:col-span-4">
             <h2 className="text-2xl sm:text-3xl font-semibold">{brand.overview.title}</h2>
             {brand.overview.points.map((point, index) => (
@@ -221,7 +221,7 @@ export default function BrandShowcase({ params: paramsPromise }) {
           </div>
         </div>
 
-        <div className="relative flex flex-col md:flex-row items-center justify-between text-white p-4 sm:p-8 md:p-16 gap-6 sm:gap-8 md:gap-16 mt-8 sm:mt-16">
+        <div className="relative flex flex-col md:flex-row items-center justify-between text-white p-4 sm:p-6 md:p-10 gap-5 sm:gap-6 md:gap-10 mt-6 sm:mt-10">
           <div className="relative flex items-start justify-center w-full">
             {/* Main central image - taller image */}
             <div className="relative w-full h-60 sm:h-96 md:h-[650px] z-10">

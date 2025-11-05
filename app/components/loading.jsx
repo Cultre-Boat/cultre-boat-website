@@ -30,7 +30,8 @@ const LoadingScreen = ({ onLoadingComplete }) => {
 
   return (
     <motion.div
-      className="fixed inset-0 bg-black z-50 flex flex-col items-center justify-center"
+      className="fixed inset-0 z-50 flex flex-col items-center justify-center"
+      style={{ backgroundColor: '#2a4862' }}
       initial={{ opacity: 1 }}
       animate={{ opacity: isComplete ? 0 : 1 }}
       exit={{ opacity: 0 }}

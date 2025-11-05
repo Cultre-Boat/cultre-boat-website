@@ -9,18 +9,18 @@ export default function Second() {
       <div className="container mx-auto px-4 sm:px-8 md:px-20 relative z-10">
         
         {/* Heading on top, centered */}
-        <div className="flex justify-center mb-5">
+        <div className="flex justify-center mb-5 md:my-10">
           <h2 className="text-white text-2xl sm:text-3xl md:text-4xl  text-center">
             CONCEPT & DIRECTION
           </h2>
         </div>
 
         {/* Images row */}
-        <div className="flex flex-col md:flex-row items-start gap-6">
+        <div className="flex flex-col md:flex-row items-start gap-6 md:mt-5">
           {/* Left image */}
           <div className="w-full md:w-1/2 h-[500px] md:h-[600px]">
             <img
-              src="/PR-section2-image1.png"
+              src="/PR-images/webp/PR-section2-img1.webp"
               alt="Woman in red holding product"
               className="w-full h-full object-cover"
             />
@@ -29,7 +29,7 @@ export default function Second() {
           {/* Right image with overlay */}
           <div className="w-full md:w-1/2 relative h-[500px] md:h-[600px]">
             <img
-              src="/PR-section2-image2.png"
+              src="/PR-images/webp/PR-section2-img2.webp"
               alt="Woman in patterned outfit"
               className="w-full h-full object-cover"
             />

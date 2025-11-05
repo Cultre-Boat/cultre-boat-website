@@ -27,7 +27,7 @@ const ScrollingText = forwardRef(
         1,
         5000
       );
-      camera.position.z = isMobile ? 500 : 300;
+      camera.position.z = isMobile ? 350 : 300; // Closer camera on mobile to make text smaller
       cameraRef.current = camera;
 
       const renderer = new CSS3DRenderer();
@@ -42,7 +42,7 @@ const ScrollingText = forwardRef(
         { text: "SOCIAL", href: "/social-scroll", ref: socialTextRef },
       ];
 
-const radius = isMobile ? 500 : 600;
+const radius = isMobile ? 300 : 600; // Reduced radius on mobile for closer word spacing
       const objects = [];
       const angleStep = (2 * Math.PI) / elements.length; // Angle between elements
       const rotationSpeed = (2 * Math.PI) / 1000; // Full rotation per 1000px scroll
@@ -50,7 +50,7 @@ const radius = isMobile ? 500 : 600;
       // Create only one set of elements
       elements.forEach((element, i) => {
         const div = document.createElement("div");
-        div.className = `text-${isMobile ? "5xl" : "7xl"} md:text-9xl lg:text-9xl text-white/90 transition-opacity duration-300`;
+        div.className = `text-${isMobile ? "4xl" : "7xl"} md:text-9xl lg:text-9xl text-white/90 transition-opacity duration-300`;
         div.style.borderRadius = "10px";
         div.style.pointerEvents = "auto";
         div.style.cursor = "pointer";
@@ -97,8 +97,31 @@ const radius = isMobile ? 500 : 600;
       const animate = () => {
         const scrollY = window.scrollY;
         scene.rotation.y = scrollY * rotationSpeed;
+        
+        // Hide text that's not facing the camera (on mobile only)
+        if (isMobile) {
+          objects.forEach((object) => {
+            // Get the object's world position
+            const worldPos = new THREE.Vector3();
+            object.getWorldPosition(worldPos);
+            
+            // Calculate angle between object and camera
+            const cameraDir = new THREE.Vector3(0, 0, -1).applyQuaternion(camera.quaternion);
+            const objDir = worldPos.clone().normalize();
+            const dot = cameraDir.dot(objDir);
+            
+            // Show only if facing camera (dot > 0.3 means roughly facing forward)
+            if (dot > 0.3) {
+              object.element.style.opacity = '0.9';
+              object.element.style.display = 'block';
+            } else {
+              object.element.style.opacity = '0';
+              object.element.style.display = 'none';
+            }
+          });
+        }
+        
         renderer.render(scene, camera);
-
         animationFrameId.current = requestAnimationFrame(animate);
       };
       animate();
