@@ -20,6 +20,8 @@ export default function PixiWaterImages({ containerRef }) {
     const isMobile = window.matchMedia('(max-width: 767px)').matches;
 
     console.log('[PixiWaterImages] Starting initialization...');
+    console.log('[PixiWaterImages] Device: ', isMobile ? 'MOBILE' : 'DESKTOP');
+    console.log('[PixiWaterImages] Screen size:', window.innerWidth, 'x', window.innerHeight);
     console.log('[PixiWaterImages] Container element:', containerRef.current);
     
     // Get image elements within containerRef, excluding no-water-effect
@@ -49,47 +51,69 @@ export default function PixiWaterImages({ containerRef }) {
     }
 
     // Initialize PIXI application immediately (useLayoutEffect runs after DOM paint)
-    const app = new PIXI.Application({
-      width: window.innerWidth,
-      height: window.innerHeight,
-      backgroundAlpha: 0,
-      resolution: window.devicePixelRatio || 1,
-      autoDensity: true,
-    });
-    app.ticker.maxFPS = isMobile ? 15 : 30;
-    pixiContainerRef.current.appendChild(app.view);
-    app.view.style.position = "absolute";
-    app.view.style.top = "0";
-    app.view.style.left = "0";
-    app.view.style.pointerEvents = "none";
+    let app;
+    try {
+      app = new PIXI.Application({
+        width: window.innerWidth,
+        height: window.innerHeight,
+        backgroundAlpha: 0,
+        resolution: window.devicePixelRatio || 1,
+        autoDensity: true,
+        powerPreference: isMobile ? 'low-power' : 'high-performance',
+      });
+      app.ticker.maxFPS = isMobile ? 30 : 60;
+      pixiContainerRef.current.appendChild(app.view);
+      app.view.style.position = "absolute";
+      app.view.style.top = "0";
+      app.view.style.left = "0";
+      app.view.style.pointerEvents = "none";
+      console.log('[PixiWaterImages] PIXI app created successfully');
+    } catch (error) {
+      console.error('[PixiWaterImages] Failed to create PIXI application:', error);
+      return;
+    }
 
     // Displacement sprite for water effect
-    const displacementTexture = PIXI.Texture.from("/water3.jpg");
-    const displacementSprite = new PIXI.Sprite(displacementTexture);
-    
-    // Log when texture loads
-    displacementTexture.baseTexture.on('loaded', () => {
-      console.log('[PixiWaterImages] Water texture loaded successfully!');
-    });
-    displacementTexture.baseTexture.on('error', (err) => {
-      console.error('[PixiWaterImages] Failed to load water texture:', err);
-    });
-    
-    displacementSprite.texture.baseTexture.wrapMode = PIXI.WRAP_MODES.REPEAT;
-    displacementSprite.scale.set(0.5);
-    displacementSprite.alpha = 0;
-    displacementSprite.width = window.innerWidth;
-    displacementSprite.height = window.innerHeight;
-    app.stage.addChild(displacementSprite);
+    let displacementTexture, displacementSprite, displacementFilter;
+    try {
+      displacementTexture = PIXI.Texture.from("/water3.jpg");
+      displacementSprite = new PIXI.Sprite(displacementTexture);
+      
+      // Log when texture loads
+      displacementTexture.baseTexture.on('loaded', () => {
+        console.log('[PixiWaterImages] Water texture loaded successfully!');
+      });
+      displacementTexture.baseTexture.on('error', (err) => {
+        console.error('[PixiWaterImages] Failed to load water texture:', err);
+      });
+      
+      displacementSprite.texture.baseTexture.wrapMode = PIXI.WRAP_MODES.REPEAT;
+      displacementSprite.scale.set(0.5);
+      displacementSprite.alpha = 0;
+      displacementSprite.width = window.innerWidth;
+      displacementSprite.height = window.innerHeight;
+      app.stage.addChild(displacementSprite);
+      console.log('[PixiWaterImages] Displacement sprite created');
+    } catch (error) {
+      console.error('[PixiWaterImages] Failed to create displacement sprite:', error);
+      app.destroy(true, { children: true, texture: true, baseTexture: true });
+      return;
+    }
     
     // Create displacement filter for water effect
-    const displacementFilter = new PIXI.filters.DisplacementFilter(displacementSprite);
-    const sx = isMobile ? 4 : 6; // Balanced desktop water effect
-    const sy = isMobile ? 4 : 6;
-    displacementFilter.scale.set(sx, sy);
-    displacementFilter.padding = 30;
+    try {
+      displacementFilter = new PIXI.filters.DisplacementFilter(displacementSprite);
+      const sx = isMobile ? 4 : 6; // Balanced desktop water effect
+      const sy = isMobile ? 4 : 6;
+      displacementFilter.scale.set(sx, sy);
+      displacementFilter.padding = 30;
+      console.log('[PixiWaterImages] Displacement filter created with scale:', sx, sy);
+    } catch (error) {
+      console.error('[PixiWaterImages] Failed to create displacement filter:', error);
+      app.destroy(true, { children: true, texture: true, baseTexture: true });
+      return;
+    }
     
-    console.log('[PixiWaterImages] Water effect initialized with scale:', sx, sy);
     console.log('[PixiWaterImages] Found', imageElements.length, 'images to apply water effect');
     console.log('[PixiWaterImages] Canvas size:', app.view.width, 'x', app.view.height);
 
