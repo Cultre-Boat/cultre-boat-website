@@ -43,7 +43,7 @@ export default function PRPortfolio() {
         <Hero />
         <Second />
         <div className="px-4 sm:px-4 md:px-6 lg:px-10 mt-5 md:mt-10">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-10 mb-8 mt-40">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-10 mb-8 mt:2 md:mt-40">
             {fashionImages.map((image, index) => (
               <div
                 key={index}
