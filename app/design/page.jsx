@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import Last from "../components/design-last";
 import Logos from "../components/brand-logos";
 import Mailers from "../components/mailers";
@@ -11,7 +11,29 @@ import PixiWaterImages from "../components/PixiWaterImages";
 export default function DesignPortfolio() {
   const [videoUrl, setVideoUrl] = useState(null);
   const [isVideoOpen, setIsVideoOpen] = useState(false);
+  const [waterIntensity, setWaterIntensity] = useState(0.5);
+  const [isMobile, setIsMobile] = useState(false);
   const contentRef = useRef(null);
+
+  // Water effect - active on both mobile and desktop with different intensities
+  useEffect(() => {
+    const handleResize = () => {
+      const mobile = window.innerWidth < 768;
+      setIsMobile(mobile);
+      
+      if (mobile) {
+        // Mobile: Higher intensity for clear visibility
+        setWaterIntensity(0.75); // Strong on mobile (75%)
+      } else {
+        // Desktop: Normal water effect
+        setWaterIntensity(0.5); // Normal on desktop (50%)
+      }
+    };
+    
+    handleResize(); // Set initial value
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   // Ensure text is visible immediately; any effects render as overlays without hiding originals.
 
@@ -29,25 +51,27 @@ export default function DesignPortfolio() {
 
   return (
     <>
-      <div
-        ref={contentRef}
-        className="text-white leading-relaxed font-bellota-light"
-      >
-        <div className="max-w-6xl mx-auto px-4 lg:px-4 px-0">
+      <div className="relative">
+        <div
+          id="design-content"
+          ref={contentRef}
+          className="text-white leading-relaxed font-bellota-light"
+        >
+          <div className="max-w-6xl mx-auto px-4 lg:px-4 px-0">
           {/* Header Section */}
-          <section className=" relative mt-20 text-center sm:text-left z-[10]">
+          <section className="relative mt-20 text-center z-[10]">
             <div className="flex flex-col lg:flex-row items-center min-h-[400px] lg:min-h-[400px] gap-5 lg:gap-10 md:mt-0">
-              <div className="flex-1 px-4 lg:px-5">
-                <p className="text-lg tracking-[2px] uppercase  my-5">
+              <div className="flex-1 px-6 md:px-8 lg:px-5 text-stable no-water-effect text-center w-full">
+                <p className="text-lg md:text-xl tracking-[2px] uppercase my-2 text-white no-water-effect px-4">
                   DECODING BRANDING
                 </p>
-                <h1 className="text-6xl sm:text-6xl lg:text-7xl xl:text-8xl font-light tracking-tight mb-5 leading-none">
+                <h1 className="text-6xl sm:text-7xl lg:text-8xl xl:text-9xl font-thin tracking-tight mb-2 leading-none text-white no-water-effect px-4" style={{ fontWeight: 200 }}>
                   DESIGN
                 </h1>
-                <p className="text-xl lg:text-lg text-gray-300 mt-2.5 mb-0">
+                <p className="text-xl lg:text-2xl text-white mt-2 mb-1 no-water-effect px-4 font-light" style={{ fontWeight: 300 }}>
                   Brand Identity Design
                 </p>
-                <p className="text-xl lg:text-lg text-gray-300">
+                <p className="text-xl lg:text-2xl text-white no-water-effect px-4 font-light" style={{ fontWeight: 300 }}>
                   Tone Of Voice
                 </p>
               </div>
@@ -67,7 +91,7 @@ export default function DesignPortfolio() {
           </section>
 
           {/* Projects Grid */}
-          <section className="mt-10 md:mt-0 text-center sm:text-left z-[10]">
+          <section className="mt-10 md:mt-0 text-center z-[10]">
             <div className="flex flex-col lg:flex-row gap-0 lg:gap-24 justify-center mb-2 mx-auto items-stretch">
               {/* Left Image */}
               <div className="relative overflow-hidden w-full lg:w-[650px] md:mb-0 mx-auto lg:mx-0 z-[10] flex items-stretch">
@@ -96,13 +120,15 @@ export default function DesignPortfolio() {
           </section>
 
           {/* Creative Direction Section with Video */}
-          <section className="text-center z-[10]">
-            <h2 className="text-xl lg:text-2xl font-light tracking-[2px] uppercase md:mt-7">
-              CREATIVE DIRECTION AND STRATEGY
-            </h2>
-            <p className="text-base lg:text-xl  italic mb-5 md:mb-7">
-              Brand Positioning
-            </p>
+          <section className="text-center z-[10] mt-10 md:mt-16 px-4 md:px-6">
+            <div className="text-stable no-water-effect">
+              <h2 className="text-2xl lg:text-3xl font-light tracking-[2px] uppercase text-white no-water-effect px-4 mb-0 leading-none">
+                CREATIVE DIRECTION AND STRATEGY
+              </h2>
+              <p className="text-lg lg:text-2xl italic text-white no-water-effect px-4 font-light mb-3 md:mb-4 mt-0 leading-tight" style={{ fontWeight: 300 }}>
+                Brand Positioning
+              </p>
+            </div>
 
             <div className="flex flex-col lg:flex-row gap-3 lg:gap-40 justify-center items-stretch">
               {/* Left video image */}
@@ -213,13 +239,15 @@ export default function DesignPortfolio() {
           )}
 
           {/* Visual Vocabulary Section */}
-          <section className="text-center z-[10]">
-            <h2 className="text-xl lg:text-2xl font-light tracking-[2px] uppercase mt-5 md:mt-7">
-              VISUAL VOCABULARY
-            </h2>
-            <p className="text-base lg:text-xl  italic mb-5 md:mb-7">
-              Exhibition Guidelines
-            </p>
+          <section className="text-center z-[10] mt-10 md:mt-16 px-4 md:px-6">
+            <div className="text-stable no-water-effect">
+              <h2 className="text-2xl lg:text-3xl font-light tracking-[2px] uppercase text-white no-water-effect px-4 mb-0 leading-none">
+                VISUAL VOCABULARY
+              </h2>
+              <p className="text-lg lg:text-2xl italic text-white no-water-effect px-4 font-light mb-3 md:mb-4 mt-0 leading-tight" style={{ fontWeight: 300 }}>
+                Exhibition Guidelines
+              </p>
+            </div>
             <div className="flex flex-col lg:flex-row gap-5 lg:gap-24 justify-center lg:mx-4 mb-0 md:mb-9">
               <div className="relative overflow-hidden w-full lg:w-[70%] lg:max-w-[400px] mx-auto lg:mx-0 z-[10]">
                 <img
@@ -249,33 +277,35 @@ export default function DesignPortfolio() {
           </section>
 
           {/* Print Section */}
-          <section className="text-center z-[10]">
-            <h2 className="text-xl lg:text-2xl font-light tracking-[2px] uppercase mt-5 md:mt-7">
-              PRINT AND DIGITAL DESIGN
-            </h2>
-            <p className="text-base lg:text-xl  italic mb-5 md:mb-7">
-              Collaterals
-            </p>
-            <div className="flex flex-col lg:flex-row gap-5 lg:gap-24 justify-center lg:mx-4 mb-5">
-              <div className="relative overflow-hidden w-full lg:w-[100%] lg:max-w-[650px] mx-auto lg:mx-0 z-[10]">
+          <section className="text-center z-[10] mt-10 md:mt-16 px-4 md:px-6">
+            <div className="text-stable no-water-effect">
+              <h2 className="text-2xl lg:text-3xl font-light tracking-[2px] uppercase text-white no-water-effect px-4 mb-0 leading-none">
+                PRINT AND DIGITAL DESIGN
+              </h2>
+              <p className="text-lg lg:text-2xl italic text-white no-water-effect px-4 font-light mb-3 md:mb-4 mt-0 leading-tight" style={{ fontWeight: 300 }}>
+                Collaterals
+              </p>
+            </div>
+            <div className="flex flex-col lg:flex-row gap-5 lg:gap-24 justify-center lg:mx-4 mb-5 items-start">
+              <div className="relative w-full lg:w-auto lg:max-w-[500px] mx-auto lg:mx-0 z-[10]">
                 <img
-                  src="/Design/webp/DSC_1196_1.webp"
+                  src="/Design/webp/print_1.webp"
                   alt="Print Design 1"
-                  width={600}
-                  height={400}
-                  className="w-full h-full object-cover"
+                  width={500}
+                  height={700}
+                  className="w-full h-auto object-contain"
                   onError={(e) =>
                     console.error(`Failed to load image: ${e.target.src}`)
                   }
                 />
               </div>
-              <div className="relative overflow-hidden w-full lg:w-[70%] lg:max-w-[380px] mx-auto lg:mx-0 z-[10]">
+              <div className="relative w-full lg:w-auto lg:max-w-[500px] mx-auto lg:mx-0 z-[10]">
                 <img
-                  src="/Design/webp/image-5.webp"
+                  src="/Design/webp/print_2.webp"
                   alt="Print Design 2"
-                  width={600}
-                  height={400}
-                  className="w-full h-full object-cover"
+                  width={500}
+                  height={700}
+                  className="w-full h-auto object-contain"
                   onError={(e) =>
                     console.error(`Failed to load image: ${e.target.src}`)
                   }
@@ -372,9 +402,16 @@ export default function DesignPortfolio() {
           <section className=" z-[10]">
             <Logos />
           </section>
+          </div>
         </div>
+        
+        {/* Water effect - Text AND images rendered together in Pixi */}
+        <PixiWaterImages containerRef={contentRef} intensity={waterIntensity} />
       </div>
-      <PixiWaterImages containerRef={contentRef} />
+      
+      {/* Both mobile and desktop: Text and images in same Pixi canvas with uniform water effect
+          Mobile: 75% intensity (baseScale 5 × 0.75 = 3.75) - MORE visible than desktop!
+          Desktop: 50% intensity (baseScale 6 × 0.5 = 3.0) */}
     </>
   );
 }

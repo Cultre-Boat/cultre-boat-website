@@ -3,20 +3,20 @@
 import { useState, useEffect, useRef } from "react";
 
 const images = [
-  { src: "/brands/new/1.png", link: "https://example.com/1" },
-  { src: "/brands/new/2.png", link: "https://example.com/2" },
-  { src: "/brands/new/3.png", link: "https://example.com/3" },
-  { src: "/brands/new/4.png", link: "https://example.com/4" },
-  { src: "/brands/new/5.png", link: "https://example.com/5" },
-  { src: "/brands/new/6.png", link: "https://example.com/6" },
-  { src: "/brands/new/7.png", link: "https://example.com/7" },
-  { src: "/brands/new/8.png", link: "https://example.com/8" },
-  { src: "/brands/new/9.png", link: "https://example.com/9" },
-  { src: "/brands/new/10.png", link: "https://example.com/10" },
-  { src: "/brands/new/11.png", link: "https://example.com/11" },
-  { src: "/brands/new/12.png", link: "https://example.com/12" },
-  { src: "/brands/new/13.png", link: "https://example.com/13" },
-  { src: "/brands/new/14.png", link: "https://example.com/14" },
+  { src: "/brands/png/1.png", link: "https://example.com/1" },
+  { src: "/brands/png/2.png", link: "https://example.com/2" },
+  { src: "/brands/png/3.png", link: "https://example.com/3" },
+  { src: "/brands/png/4.png", link: "https://example.com/4" },
+  { src: "/brands/png/5.png", link: "https://example.com/5" },
+  { src: "/brands/png/6.png", link: "https://example.com/6" },
+  { src: "/brands/png/7.png", link: "https://example.com/7" },
+  { src: "/brands/png/8.png", link: "https://example.com/8" },
+  { src: "/brands/png/9.png", link: "https://example.com/9" },
+  { src: "/brands/png/10.png", link: "https://example.com/10" },
+  { src: "/brands/png/11.png", link: "https://example.com/11" },
+  { src: "/brands/png/12.png", link: "https://example.com/12" },
+  { src: "/brands/png/13.png", link: "https://example.com/13" },
+  { src: "/brands/png/14.png", link: "https://example.com/14" },
 ];
 
 export default function ScrollingLogos() {
@@ -76,12 +76,12 @@ export default function ScrollingLogos() {
               rel="noopener noreferrer"
               className="flex-shrink-0 no-water-effect"
             >
-              <div className="flex items-center justify-center px-3 no-water-effect">
-                <div className="w-[140px] h-[120px] bg-white rounded-xl shadow-lg flex items-center justify-center p-3 hover:shadow-2xl transition-all duration-300">
+              <div className="flex items-center justify-center px-0 no-water-effect">
+                <div className="w-[170px] h-[150px] flex items-center justify-center p-3 hover:shadow-2xl transition-all duration-300">
                   <img
                     src={img.src}
                     alt={`Logo ${(index % images.length) + 1}`}
-                    className="w-[130px] h-[110px] object-contain no-water-effect"
+                    className="w-[170px] h-[150px] object-contain no-water-effect"
                   />
                 </div>
               </div>

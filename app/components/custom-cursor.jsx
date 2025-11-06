@@ -11,9 +11,9 @@ export default function CustomCursor() {
   const trailPosRef = useRef({ x: 0, y: 0 });
   const prevPosRef = useRef({ x: 0, y: 0 }); // Track previous mouse position
   const animationFrameRef = useRef(null);
-  const lastSmokeTimeRef = useRef(0); // Track last smoke creation time
+  const lastShadowTimeRef = useRef(0); // Track last shadow creation time
   const idCounterRef = useRef(0); // Unique ID counter
-  const [smokeEffects, setSmokeEffects] = useState([]);
+  const [shadowEffects, setShadowEffects] = useState([]);
 
   useEffect(() => {
     const checkIfMobile = () => {
@@ -59,15 +59,15 @@ export default function CustomCursor() {
         }px, ${trailPosRef.current.y - 32}px)`;
       }
 
-      // Only add smoke if mouse position has changed and throttled
+      // Only add shadow if mouse position has changed and throttled
       if (
         posRef.current.x !== prevPosRef.current.x ||
         posRef.current.y !== prevPosRef.current.y
       ) {
         const now = performance.now();
-        if (now - lastSmokeTimeRef.current >= 100) {
-          // Throttle to every 50ms for trail
-          setSmokeEffects((prev) => [
+        if (now - lastShadowTimeRef.current >= 120) {
+          // Throttle to every 120ms for less scattered trail
+          setShadowEffects((prev) => [
             ...prev,
             {
               id: idCounterRef.current++, // Unique ID
@@ -76,12 +76,12 @@ export default function CustomCursor() {
             },
           ]);
 
-          // Remove smoke after 1.5 seconds
+          // Remove shadow after 1.2 seconds for tighter trail
           setTimeout(() => {
-            setSmokeEffects((prev) => prev.slice(1));
-          }, 1500);
+            setShadowEffects((prev) => prev.slice(1));
+          }, 1200);
 
-          lastSmokeTimeRef.current = now;
+          lastShadowTimeRef.current = now;
         }
 
         // Update previous position
@@ -110,7 +110,7 @@ export default function CustomCursor() {
         className="fixed top-0 left-0 w-2 h-2 bg-white rounded-full pointer-events-none z-50 transition-transform duration-75 ease-out"
       ></div>
 
-      {/* Larger blue trailing circle */}
+      {/* Larger trailing circle */}
       <div
         ref={trailRef}
         className="fixed top-0 left-0 w-20 h-20 border-2 border-blue-500 rounded-full pointer-events-none z-40 transition-transform duration-300 ease-out"
@@ -120,23 +120,23 @@ export default function CustomCursor() {
         }}
       ></div>
 
-      {/* Smoke trail effects */}
+      {/* Concentrated shadow trail effects */}
       <AnimatePresence>
-        {smokeEffects.map((smoke) => (
+        {shadowEffects.map((shadow) => (
           <motion.div
-            key={smoke.id}
-            className="fixed w-48 h-48 rounded-full pointer-events-none z-30"
+            key={shadow.id}
+            className="fixed w-32 h-32 rounded-full pointer-events-none z-30"
             style={{
-              left: smoke.x - 40, // Center the 40px smoke (40/2 = 20)
-              top: smoke.y - 40,
+              left: shadow.x - 30,
+              top: shadow.y - 30,
               background:
-                "radial-gradient(circle, rgba(255,255,255,0.7) 0%, rgba(200,200,255,0) 90%)", // brighter center, bluish scattering
-              filter: "blur(12px)",
+                "radial-gradient(circle, rgba(255,255,255,0.5) 0%, rgba(200,200,255,0.1) 50%, transparent 70%)",
+              filter: "blur(8px)",
             }}
-            initial={{ opacity: 0.4, scale: 0.8 }}
-            animate={{ opacity: 0, scale: 1.6 }}
+            initial={{ opacity: 0.3, scale: 0.6 }}
+            animate={{ opacity: 0, scale: 1.2 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 1.5, ease: "easeOut" }}
+            transition={{ duration: 1.2, ease: "easeOut" }}
           />
         ))}
       </AnimatePresence>

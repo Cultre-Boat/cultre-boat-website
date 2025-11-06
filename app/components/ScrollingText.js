@@ -112,11 +112,19 @@ const radius = isMobile ? 300 : 600; // Reduced radius on mobile for closer word
             
             // Show only if facing camera (dot > 0.3 means roughly facing forward)
             if (dot > 0.3) {
-              object.element.style.opacity = '0.9';
               object.element.style.display = 'block';
+              object.element.style.opacity = '0.9';
+              
+              // CURVED PATH EFFECT: Bigger on sides, smaller at center
+              const normalizedDot = (dot - 0.3) / 0.7; // Map 0.3-1.0 to 0-1
+              const scaleFactor = 1.2 - normalizedDot * 0.6; // 1.2 at sides → 0.8 at center
+              
+              // Use THREE.js scale (not CSS transform to avoid conflicts)
+              object.scale.set(scaleFactor, scaleFactor, 1);
             } else {
               object.element.style.opacity = '0';
               object.element.style.display = 'none';
+              object.scale.set(1, 1, 1); // Reset scale
             }
           });
         }

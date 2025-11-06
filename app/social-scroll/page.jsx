@@ -1,10 +1,26 @@
 "use client";
-import Link from "next/link";
 import { gsap } from "gsap";
 import { useEffect, useRef, useState } from "react";
 import { isMobile } from "react-device-detect";
+import BrandModal from "../components/BrandModal";
+import { IndustriesData } from "../Brands/Data";
 
 export default function BrandShowcase() {
+  const [selectedBrand, setSelectedBrand] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const openBrandModal = (slug) => {
+    setSelectedBrand(slug);
+    setIsModalOpen(true);
+    document.body.style.overflow = "hidden";
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setSelectedBrand(null);
+    document.body.style.overflow = "auto";
+  };
+
   const brands = [
     { name: "AMAYRA by Bagrecha Gems", slug: "/Brands/amayra-by-bagrecha-gems" },
     { name: "Amiraah", slug: "/Brands/amiraah" },
@@ -114,36 +130,10 @@ export default function BrandShowcase() {
     };
   };
 
-  useEffect(() => {
-    const textTurbulence = document.querySelector("#textWaterFilter feTurbulence");
-    const textDisplacementMap = document.querySelector("#textWaterFilter feDisplacementMap");
-
-    if (textTurbulence && textDisplacementMap) {
-      document.querySelectorAll("h1, h2, h3, p, a, span, a").forEach((el) => {
-        el.style.filter = "url(#textWaterFilter)";
-      });
-
-      gsap.set(textDisplacementMap, { attr: { scale: isMobile ? 4 : 10 } });
-
-      gsap.to(textTurbulence, {
-        attr: { baseFrequency: isMobile ? "0.02 0.10" : "0.02 0.10" },
-        duration: 20,
-        ease: "sine.inOut",
-        repeat: -1,
-        yoyo: true,
-      });
-    }
-  }, []);
+  // Water effect removed for better performance and image quality
 
   return (
     <>
-      <svg className="absolute w-0 h-0 pointer-events-none">
-        <filter id="textWaterFilter">
-          <feTurbulence type="fractalNoise" baseFrequency="0.01 0.01" numOctaves="1" result="noiseForText" />
-          <feDisplacementMap in="SourceGraphic" in2="noiseForText" scale="0" xChannelSelector="R" yChannelSelector="G" />
-        </filter>
-      </svg>
-
       <div className="relative w-full h-screen overflow-x-hidden overflow-y-hidden" style={{ backgroundColor: '#2a4862' }}>
         {/* 🔹 Radial gradient only after mount */}
         <div
@@ -168,56 +158,37 @@ export default function BrandShowcase() {
             perspective: "1000px",
           }}
         >
-          {brands.map((brand, index) => (
-            <Link
-              key={`${brand.slug}-${index}`}
-              href={brand.slug}
-              className="group relative text-white text-3xl sm:text-xl md:text-5xl lg:text-7xl font-stretch-95% py-4 text-center transition-all duration-500 ease-out cursor-pointer will-change-transform max-w-[90vw]"
-              style={{
-                ...getItemStyle(index),
-                filter: "url(#textWaterFilter)",
-              }}
-              onMouseEnter={isClientMobile ? null : () => setHoveredIndex(index)}
-              onMouseLeave={isClientMobile ? null : () => setHoveredIndex(null)}
-            >
-              <span className="relative z-10 block">{brand.name}</span>
-              <div
-                className="absolute inset-0 -z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
-                style={{
-                  background:
-                    "linear-gradient(90deg, transparent, rgba(255,255,255,0.05), transparent)",
-                  transform: "skewX(-15deg)",
-                }}
-              />
-              <div
-                className="absolute bottom-0 left-0 h-[1px] bg-gradient-to-r from-transparent via-white to-transparent w-0 group-hover:w-full transition-all duration-700 ease-out"
-                style={{ transformOrigin: "left" }}
-              />
-            </Link>
-          ))}
+          {brands.map((brand, index) => {
+            const brandSlug = brand.slug.replace('/Brands/', '');
+            const brandData = IndustriesData[brandSlug];
+            
+            return (
+              <button
+                key={`${brand.slug}-${index}`}
+                onClick={() => openBrandModal(brandSlug)}
+                className="group relative text-white text-3xl sm:text-xl md:text-5xl lg:text-7xl font-stretch-95% py-4 text-center transition-all duration-500 ease-out cursor-pointer will-change-transform max-w-[90vw] w-full"
+                style={getItemStyle(index)}
+                onMouseEnter={isClientMobile ? null : () => setHoveredIndex(index)}
+                onMouseLeave={isClientMobile ? null : () => setHoveredIndex(null)}
+              >
+                <span className="relative z-10 block">{brand.name}</span>
+                <div
+                  className="absolute inset-0 -z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+                  style={{
+                    background:
+                      "linear-gradient(90deg, transparent, rgba(255,255,255,0.05), transparent)",
+                    transform: "skewX(-15deg)",
+                  }}
+                />
+                <div
+                  className="absolute bottom-0 left-0 h-[1px] bg-gradient-to-r from-transparent via-white to-transparent w-0 group-hover:w-full transition-all duration-700 ease-out"
+                  style={{ transformOrigin: "left" }}
+                />
+              </button>
+            );
+          })}
         </div>
 
-        {/* Gradients top/bottom */}
-        <div
-          className="absolute top-0 left-0 right-0 z-30 pointer-events-none transition-opacity duration-300"
-          style={{
-            height: "25vh",
-            background:
-              "linear-gradient(180deg, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.7) 30%, rgba(0,0,0,0.3) 60%, transparent 100%)",
-            backdropFilter: `blur(${Math.min(scrollY / 50, 8)}px)`,
-            opacity: Math.min(scrollY / 100, 0.95),
-          }}
-        />
-        <div
-          className="absolute bottom-0 left-0 right-0 z-30 pointer-events-none transition-opacity duration-300"
-          style={{
-            height: "25vh",
-            background:
-              "linear-gradient(0deg, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.7) 30%, rgba(0,0,0,0.3) 60%, transparent 100%)",
-            backdropFilter: `blur(${Math.min(scrollY / 50, 8)}px)`,
-            opacity: Math.min(scrollY / 100, 0.95),
-          }}
-        />
 
         {/* Scroll indicator */}
         <div className="absolute right-8 top-1/2 transform -translate-y-1/2 z-20">
@@ -232,7 +203,7 @@ export default function BrandShowcase() {
           </div>
         </div>
 
-        <style jsx>{`
+        <style jsx global>{`
           html, body {
             overflow-x: hidden;
             width: 100%;
@@ -246,6 +217,20 @@ export default function BrandShowcase() {
           }
         `}</style>
       </div>
+
+      {/* Brand Modal */}
+      {selectedBrand && IndustriesData[selectedBrand] && (
+        <BrandModal
+          isOpen={isModalOpen}
+          onClose={closeModal}
+          brandName={IndustriesData[selectedBrand].name}
+          brandSlug={selectedBrand}
+          images={[
+            ...IndustriesData[selectedBrand].images,
+            ...(IndustriesData[selectedBrand].additionalImages || [])
+          ]}
+        />
+      )}
     </>
   );
 }

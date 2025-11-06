@@ -2,7 +2,7 @@
 import React, {useRef, useEffect} from 'react';
 import Image from 'next/image';
 import { IndustriesData } from "../Data.js";
-import * as PIXI from 'pixi.js';
+
 export default function BrandShowcase({ params: paramsPromise }) {
   // Unwrap the params Promise using React.use()
   const params = React.use(paramsPromise);
@@ -27,155 +27,11 @@ export default function BrandShowcase({ params: paramsPromise }) {
   ];
 
   const containerRef = useRef(null);
-  const pixiContainerRef = useRef(null);
-
-  useEffect(() => {
-    const container = containerRef.current;
-    if (!container || !pixiContainerRef.current) return;
-
-    // Initialize PIXI application
-    const app = new PIXI.Application({
-      width: window.innerWidth,
-      height: window.innerHeight,
-      backgroundAlpha: 0,
-      resolution: window.devicePixelRatio || 1,
-      autoDensity: true,
-    });
-    pixiContainerRef.current.appendChild(app.view);
-    app.view.style.position = 'absolute';
-    app.view.style.top = '0';
-    app.view.style.left = '0';
-    app.view.style.pointerEvents = 'none';
-
-    // Displacement sprite
-    const displacementSprite = PIXI.Sprite.from(
-      'https://raw.githubusercontent.com/Pierrinho/elephant/master/pattern-clouds.jpg'
-    );
-    displacementSprite.texture.baseTexture.wrapMode = PIXI.WRAP_MODES.REPEAT;
-    displacementSprite.scale.set(0.4);
-    displacementSprite.alpha = 0;
-    displacementSprite.width = window.innerWidth;
-    displacementSprite.height = window.innerHeight;
-    const displacementFilter = new PIXI.filters.DisplacementFilter(displacementSprite);
-    displacementFilter.padding = 30;
-    if (window.innerWidth < 768) {
-      displacementFilter.scale.set(2, 2); // Minimal waves for mobile
-    } else {
-      displacementFilter.scale.set(3, 3); // Subtle waves for desktop
-    }
-    app.stage.addChild(displacementSprite);
-
-    // Create PIXI sprites and text
-    const elements = [];
-    const updateElements = () => {
-      // Clear previous sprites except displacementSprite
-      app.stage.children = [displacementSprite];
-
-      // Target text elements (h1, p, h2, h3)
-      const textElements = container.querySelectorAll('h1, p, h2, h3');
-      const imageElements = container.querySelectorAll('img, .next-image');
-
-      elements.length = 0;
-
-      // Process images
-      imageElements.forEach((el, index) => {
-        const src = el.src || el.dataset.src; // Handle Next.js Image (dataset.src for lazy-loaded images)
-        if (!src) return;
-
-        const rect = el.getBoundingClientRect();
-        const sprite = PIXI.Sprite.from(src);
-        sprite.width = rect.width;
-        sprite.height = rect.height;
-        sprite.x = rect.left + rect.width / 2;
-        sprite.y = rect.top + rect.height / 2;
-        sprite.anchor.set(0.5);
-        sprite.filters = [displacementFilter];
-        sprite.visible = rect.top < window.innerHeight && rect.bottom > 0;
-
-        app.stage.addChild(sprite);
-        elements.push({ sprite, element: el, type: 'image' });
-        el.style.opacity = '0';
-      });
-
-      // Process text
-      textElements.forEach((el, index) => {
-        const rect = el.getBoundingClientRect();
-        const textContent = el.textContent;
-        const computedStyle = window.getComputedStyle(el);
-
-        const fontSize = parseFloat(computedStyle.fontSize);
-        const fontFamily = computedStyle.fontFamily;
-        const lineHeight = parseFloat(computedStyle.lineHeight) || fontSize * 1.2;
-        const letterSpacing = parseFloat(computedStyle.letterSpacing) || 0;
-
-        const text = new PIXI.Text(textContent, {
-          fontFamily: fontFamily,
-          fontSize: fontSize,
-          fill: computedStyle.color === 'rgb(255, 255, 255)' ? 0xffffff : 0xaaaaaa, // Handle white and gray-400
-          align: 'left',
-          letterSpacing: letterSpacing,
-          lineHeight: lineHeight,
-        });
-        text.x = rect.left + rect.width / 2;
-        text.y = rect.top + rect.height / 2;
-        text.anchor.set(0.5);
-        text.filters = [displacementFilter];
-        text.visible = rect.top < window.innerHeight && rect.bottom > 0;
-
-        app.stage.addChild(text);
-        elements.push({ sprite: text, element: el, type: 'text' });
-        el.style.opacity = '0';
-      });
-    };
-
-    // Animation loop
-    const isSmallScreen = window.innerWidth < 768;
-    const speed = isSmallScreen ? 0.2 : 0.3;
-    app.ticker.add(() => {
-      displacementSprite.x += speed;
-      displacementSprite.y += speed;
-    });
-
-    // Update positions on scroll and resize
-    const updatePositions = () => {
-      elements.forEach(({ sprite, element, type }) => {
-        const rect = element.getBoundingClientRect();
-        sprite.width = type === 'image' ? rect.width : sprite.width;
-        sprite.height = type === 'image' ? rect.height : sprite.height;
-        sprite.x = rect.left + rect.width / 2;
-        sprite.y = rect.top + rect.height / 2;
-        sprite.visible = rect.top < window.innerHeight && rect.bottom > 0;
-      });
-      app.renderer.resize(window.innerWidth, window.innerHeight);
-      displacementSprite.width = window.innerWidth;
-      displacementSprite.height = window.innerHeight;
-    };
-
-    // Initial update
-    updateElements();
-    window.addEventListener('resize', updatePositions);
-    window.addEventListener('scroll', updatePositions);
-
-    // Cleanup
-    return () => {
-      const textElements = container.querySelectorAll('h1, p, h2, h3');
-      const imageElements = container.querySelectorAll('img, .next-image');
-      textElements.forEach((el) => (el.style.opacity = '1'));
-      imageElements.forEach((el) => (el.style.opacity = '1'));
-      window.removeEventListener('resize', updatePositions);
-      window.removeEventListener('scroll', updatePositions);
-      app.destroy(true, { children: true, texture: true, baseTexture: true });
-      if (pixiContainerRef.current) pixiContainerRef.current.innerHTML = '';
-    };
-  }, []);
 
   return (
     <>
     <div className="mt-16 text-white min-h-screen p-4 sm:p-6" ref={containerRef}>
-      {/* PIXI canvas container */}
-      <div ref={pixiContainerRef} className="fixed top-0 left-0 w-full h-full pointer-events-none z-10" />
-
-      <div className="mb-8 sm:mb-12 z-20 relative">
+      <div className="mb-8 sm:mb-12 relative">
         {/* Main Heading and Description */}
         <h1 className="text-3xl sm:text-5xl font-bold">{brand.name}</h1>
         <p className="text-base sm:text-lg mt-2 text-gray-400">{brand.description}</p>
@@ -229,9 +85,8 @@ export default function BrandShowcase({ params: paramsPromise }) {
                 src={additionalImages[0] || brand.images[0]}
                 alt={`${brand.name} Main Image`}
                 layout="fill"
-                className="next-image object-contain rounded-lg"
+                className="object-contain rounded-lg"
                 objectFit="cover"
-                data-src={additionalImages[0] || brand.images[0]} // For PIXI to access src
               />
             </div>
           </div>

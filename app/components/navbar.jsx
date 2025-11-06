@@ -37,7 +37,7 @@ export default function Navbar() {
               height={14}
               alt="Last icon"
               className="scale-110"
-              style={{ filter: "none", marginLeft: "10px" }}
+              style={{ filter: "none", marginLeft: "13px" }}
             />
           </a>
         </div>

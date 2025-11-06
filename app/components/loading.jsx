@@ -44,30 +44,32 @@ const LoadingScreen = ({ onLoadingComplete }) => {
           transition={{ duration: 0.5 }}
           className="text-white text-6xl font-bold mb-16"
         >
-          <div className="text-white font-bold h-10 justify-center items-center flex flex-row gap-5">
-            <a href="/" className="flex flex-row gap-5 items-center">
-              <img
-                src="/Vector 4.png"
-                width={34}
-                height={17}
-                alt="First icon"
-                className=""
-              />
-              <img
-                src="/Group 2.png"
-                width={26}
-                height={16}
-                alt="Second icon"
-                className="scale-125 -left-1 relative ml-3"
-              />
-              <img
-                src="/Vector 3.png"
-                width={30}
-                height={15}
-                alt="Last icon"
-                className="scale-110  ml-3"
-              />
-            </a>
+          <div className="text-white font-bold h-10 justify-center items-center flex flex-row gap-4 -ml-5">
+          <a href="/" className="flex flex-row gap-7 items-center">
+            <img
+              src="/Vector 4.png"
+              width={32}
+              height={16}
+              alt="First icon"
+              style={{ filter: "none" }}
+            />
+            <img
+              src="/Group 2.png"
+              width={25}
+              height={15}
+              alt="Second icon"
+              className="scale-125 -left-1 relative"
+              style={{ filter: "none", marginLeft: "10px" }}
+            />
+            <img
+              src="/Vector 3.png"
+              width={28}
+              height={14}
+              alt="Last icon"
+              className="scale-110"
+              style={{ filter: "none", marginLeft: "13px" }}
+            />
+          </a>
           </div>
         </motion.div>
 

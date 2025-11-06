@@ -3,7 +3,7 @@
 import { useLayoutEffect, useRef } from "react";
 import * as PIXI from "pixi.js";
 
-export default function PixiWaterImages({ containerRef }) {
+export default function PixiWaterImages({ containerRef, intensity = 1 }) {
   const pixiContainerRef = useRef(null);
 
   useLayoutEffect(() => {
@@ -24,13 +24,30 @@ export default function PixiWaterImages({ containerRef }) {
     console.log('[PixiWaterImages] Screen size:', window.innerWidth, 'x', window.innerHeight);
     console.log('[PixiWaterImages] Container element:', containerRef.current);
     
-    // Get image elements within containerRef, excluding no-water-effect
-    // This includes both <img> tags and Next.js Image components (which render as <img>)
-    const imageElements = containerRef.current.querySelectorAll(
-      "img:not(.no-water-effect)"
-    );
-    console.log('[PixiWaterImages] Found images:', imageElements.length);
+    // Get BOTH image AND text elements to render together in Pixi
+    // EXCLUDE images and text with .no-water-effect class
+    const imageElements = containerRef.current.querySelectorAll("img:not(.no-water-effect)");
+    // Get text elements - Include .text-stable elements (they NEED water effect for stability!)
+    // Only exclude elements in .no-cursor-distort sections
+    const textElements = Array.from(containerRef.current.querySelectorAll(
+      "h1, h2, h3, p"
+    )).filter(el => {
+      // Include .text-stable elements even if they have .no-water-effect class
+      // (the class name is misleading - they DO need water effect for text stability!)
+      if (el.closest('.text-stable')) return true;
+      
+      // Exclude only navigation/UI elements
+      return !el.closest('.no-cursor-distort');
+    });
+    
+    const excludedImages = containerRef.current.querySelectorAll("img.no-water-effect");
+    
+    console.log('[PixiWaterImages] Found images FOR water effect:', imageElements.length);
+    console.log('[PixiWaterImages] Excluded images (no-water-effect):', excludedImages.length);
+    console.log('[PixiWaterImages] Found text elements:', textElements.length);
     console.log('[PixiWaterImages] Container ID:', containerRef.current.id);
+    console.log('[PixiWaterImages] ✓ Rendering text + images together in same canvas');
+    console.log('[PixiWaterImages] ✓ Same water effect applied to both = NO relative movement on scroll');
     
     // Log first few image sources for debugging
     if (imageElements.length > 0) {
@@ -44,8 +61,8 @@ export default function PixiWaterImages({ containerRef }) {
       );
     }
     
-    if (imageElements.length === 0) {
-      console.warn('[PixiWaterImages] No images found to apply water effect');
+    if (imageElements.length === 0 && textElements.length === 0) {
+      console.warn('[PixiWaterImages] No images or text found to apply water effect');
       console.warn('[PixiWaterImages] Container HTML:', containerRef.current.innerHTML.substring(0, 500));
       return;
     }
@@ -61,7 +78,7 @@ export default function PixiWaterImages({ containerRef }) {
         autoDensity: true,
         powerPreference: isMobile ? 'low-power' : 'high-performance',
       });
-      app.ticker.maxFPS = isMobile ? 30 : 60;
+      app.ticker.maxFPS = isMobile ? 40 : 60;
       pixiContainerRef.current.appendChild(app.view);
       app.view.style.position = "absolute";
       app.view.style.top = "0";
@@ -100,31 +117,33 @@ export default function PixiWaterImages({ containerRef }) {
       return;
     }
     
-    // Create displacement filter for water effect
+    // Create displacement filter for water effect - Applied uniformly to text AND images
     try {
       displacementFilter = new PIXI.filters.DisplacementFilter(displacementSprite);
-      const sx = isMobile ? 4 : 6; // Balanced desktop water effect
-      const sy = isMobile ? 4 : 6;
+      const baseScale = isMobile ? 5 : 6; // Increased mobile for more visible effect
+      const sx = baseScale * intensity; // Apply intensity multiplier
+      const sy = baseScale * intensity;
       displacementFilter.scale.set(sx, sy);
-      displacementFilter.padding = 30;
-      console.log('[PixiWaterImages] Displacement filter created with scale:', sx, sy);
+      displacementFilter.padding = 30; // Standard padding
+      console.log('[PixiWaterImages] Displacement filter created with scale:', sx, sy, 'intensity:', intensity);
+      console.log('[PixiWaterImages] Effect applied uniformly to BOTH text and images - no relative movement!');
     } catch (error) {
       console.error('[PixiWaterImages] Failed to create displacement filter:', error);
       app.destroy(true, { children: true, texture: true, baseTexture: true });
       return;
     }
     
-    console.log('[PixiWaterImages] Found', imageElements.length, 'images to apply water effect');
+    console.log('[PixiWaterImages] Found', imageElements.length, 'images and', textElements.length, 'text elements');
     console.log('[PixiWaterImages] Canvas size:', app.view.width, 'x', app.view.height);
 
-    // Create PIXI sprites for each DOM image element
-    const imageSprites = [];
+    // Create PIXI sprites for images AND text elements
+    const allSprites = [];
     
-    // Wait for images to be laid out and visible
+    // Wait for elements to be laid out and visible
     const initSprites = () => {
       if (destroyed) return;
       
-      // Check if at least one image has valid dimensions
+      // Check if at least one element has valid dimensions
       let hasValidDimensions = false;
       imageElements.forEach((el) => {
         const rect = el.getBoundingClientRect();
@@ -133,53 +152,115 @@ export default function PixiWaterImages({ containerRef }) {
         }
       });
       
-      if (!hasValidDimensions) {
-        console.log('[PixiWaterImages] Images not yet laid out, retrying...');
+      if (!hasValidDimensions && imageElements.length > 0) {
+        console.log('[PixiWaterImages] Elements not yet laid out, retrying...');
         requestAnimationFrame(initSprites);
         return;
       }
       
-      console.log('[PixiWaterImages] Images ready, creating sprites...');
+      console.log('[PixiWaterImages] Elements ready, creating Pixi objects...');
       
+      // Create sprites for images
       imageElements.forEach((el) => {
         const src = el.src;
         if (!src) return;
         
         const rect = el.getBoundingClientRect();
-        console.log(`[PixiWaterImages] Image rect:`, rect.width, 'x', rect.height, 'at', rect.left, rect.top);
         
-        // Skip if still no dimensions
         if (rect.width === 0 || rect.height === 0) {
           console.warn('[PixiWaterImages] Skipping image with 0 dimensions');
           return;
         }
         
         const sprite = PIXI.Sprite.from(src);
-        
-        // Use actual rect dimensions
         sprite.width = rect.width;
         sprite.height = rect.height;
         sprite.x = rect.left + rect.width / 2;
         sprite.y = rect.top + rect.height / 2;
-        
-        sprite.filters = [displacementFilter]; // Always apply water effect
+        sprite.filters = [displacementFilter];
         sprite.anchor.set(0.5);
         sprite.visible = true;
         
         app.stage.addChild(sprite);
-        imageSprites.push({ sprite, element: el });
+        allSprites.push({ sprite, element: el, type: 'image' });
         
-        console.log(`[PixiWaterImages] Created sprite at (${sprite.x.toFixed(0)}, ${sprite.y.toFixed(0)}) size ${sprite.width.toFixed(0)}x${sprite.height.toFixed(0)}`);
-        
-        // Hide original image so PIXI sprite shows
+        // Hide original image
         el.style.opacity = "0";
       });
       
-      console.log('[PixiWaterImages] Total sprites created:', imageSprites.length);
+      // Render text in Pixi on BOTH mobile and desktop for uniform water effect
+      console.log('[PixiWaterImages] Rendering text in Pixi for uniform water effect');
+      textElements.forEach((el) => {
+        try {
+          const rect = el.getBoundingClientRect();
+          if (rect.width === 0 || rect.height === 0) return;
+          
+          const computedStyle = window.getComputedStyle(el);
+          const fontSize = parseFloat(computedStyle.fontSize);
+          const fontWeight = computedStyle.fontWeight;
+          const fontFamily = computedStyle.fontFamily || 'Arial';
+          const color = computedStyle.color;
+          
+          // Convert RGB to hex for Pixi
+          const rgb = color.match(/\d+/g);
+          const hexColor = rgb ? parseInt(rgb[0]) * 65536 + parseInt(rgb[1]) * 256 + parseInt(rgb[2]) : 0xffffff;
+          
+          const textAlign = computedStyle.textAlign || 'center';
+          
+          const pixiText = new PIXI.Text(el.textContent, {
+            fontFamily: fontFamily,
+            fontSize: fontSize,
+            fontWeight: fontWeight,
+            fill: hexColor,
+            align: textAlign,
+            letterSpacing: parseFloat(computedStyle.letterSpacing) || 0,
+            wordWrap: true,
+            wordWrapWidth: rect.width + 40, // Add extra width to prevent cutting
+            breakWords: false,
+            padding: 10, // Add padding to prevent text clipping
+          });
+          
+          // Position text based on alignment
+          if (textAlign === 'center') {
+            pixiText.anchor.set(0.5, 0);
+            pixiText.x = rect.left + rect.width / 2;
+            pixiText.y = rect.top;
+          } else if (textAlign === 'right') {
+            pixiText.anchor.set(1, 0);
+            pixiText.x = rect.right;
+            pixiText.y = rect.top;
+          } else {
+            pixiText.anchor.set(0, 0);
+            pixiText.x = rect.left;
+            pixiText.y = rect.top;
+          }
+          pixiText.filters = [displacementFilter]; // Same water effect as images!
+          pixiText.visible = true;
+          
+          app.stage.addChild(pixiText);
+          allSprites.push({ sprite: pixiText, element: el, type: 'text' });
+          
+          // Hide original text
+          el.style.opacity = "0";
+          
+          console.log('[PixiWaterImages] Created text sprite:', el.textContent.substring(0, 30));
+        } catch (error) {
+          console.warn('[PixiWaterImages] Failed to create text sprite:', error);
+          // Don't hide the original text if Pixi text fails
+        }
+      });
       
-      // Setup scroll/resize listeners and IntersectionObserver after sprites are created
-      if (imageSprites.length > 0) {
+      const imageCount = allSprites.filter(s => s.type === 'image').length;
+      const textCount = allSprites.filter(s => s.type === 'text').length;
+      
+      console.log('[PixiWaterImages] Total created:', allSprites.length, '(', imageCount, 'images +', textCount, 'text )');
+      
+      // Ensure we setup listeners even if only images rendered (no text)
+      if (allSprites.length > 0 || imageElements.length > 0) {
         setupListeners();
+        console.log('[PixiWaterImages] Water effect active!');
+      } else {
+        console.warn('[PixiWaterImages] No sprites created - water effect disabled');
       }
     };
     
@@ -188,21 +269,38 @@ export default function PixiWaterImages({ containerRef }) {
       requestAnimationFrame(initSprites);
     });
     
-    // Define updateNow function
+    // Define updateNow function for both images and text
     const updateNow = () => {
-      if (destroyed || imageSprites.length === 0) return;
-      imageSprites.forEach(({ sprite, element }) => {
+      if (destroyed || allSprites.length === 0) return;
+      allSprites.forEach(({ sprite, element, type }) => {
         try {
-          if (!sprite || sprite.destroyed || !sprite.transform || !sprite.scale) return;
+          if (!sprite || sprite.destroyed) return;
           if (!element || !document.body.contains(element)) return;
           const rect = element.getBoundingClientRect();
           if (rect.width && rect.height) {
-            sprite.width = rect.width;
-            sprite.height = rect.height;
-            sprite.x = rect.left + rect.width / 2;
-            sprite.y = rect.top + rect.height / 2;
+            if (type === 'image') {
+              sprite.width = rect.width;
+              sprite.height = rect.height;
+              sprite.x = rect.left + rect.width / 2;
+              sprite.y = rect.top + rect.height / 2;
+            } else {
+              // For text, update position based on anchor (alignment)
+              if (sprite.anchor && sprite.anchor.x === 0.5) {
+                // Center aligned
+                sprite.x = rect.left + rect.width / 2;
+                sprite.y = rect.top;
+              } else if (sprite.anchor && sprite.anchor.x === 1) {
+                // Right aligned
+                sprite.x = rect.right;
+                sprite.y = rect.top;
+              } else {
+                // Left aligned
+                sprite.x = rect.left;
+                sprite.y = rect.top;
+              }
+            }
           }
-          // visibility managed by IO, keep conservative fallback
+          // visibility managed by IO
           if (!('isIntersecting' in element)) {
             sprite.visible = rect.top < window.innerHeight && rect.bottom > 0;
           }
@@ -224,10 +322,10 @@ export default function PixiWaterImages({ containerRef }) {
     };
     
     const setupListeners = () => {
-      // Visibility control using IntersectionObserver
+      // Visibility control using IntersectionObserver for both images and text
       const io = new IntersectionObserver((entries) => {
         entries.forEach(({ target, isIntersecting }) => {
-          const pair = imageSprites.find((p) => p.element === target);
+          const pair = allSprites.find((p) => p.element === target);
           if (pair) pair.sprite.visible = isIntersecting;
         });
       }, { root: null, threshold: 0.1 });
@@ -246,12 +344,12 @@ export default function PixiWaterImages({ containerRef }) {
       window.addEventListener("resize", updatePositions);
       window.addEventListener("scroll", updatePositions, { passive: true });
       
-      // Observe elements for on-screen toggling
-      imageSprites.forEach(({ element }) => io.observe(element));
+      // Observe all elements (images + text) for on-screen toggling
+      allSprites.forEach(({ element }) => io.observe(element));
       
       // Store cleanup functions
       cleanupFunctions.push(() => {
-        imageSprites.forEach(({ element }) => io.unobserve(element));
+        allSprites.forEach(({ element }) => io.unobserve(element));
         io.disconnect();
         window.removeEventListener("resize", updatePositions);
         window.removeEventListener("scroll", updatePositions);
@@ -261,15 +359,22 @@ export default function PixiWaterImages({ containerRef }) {
     const cleanupFunctions = [];
 
     const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    const speed = prefersReduced ? 0.03 : (isMobile ? 0.3 : 0.65); // Balanced animation speed
+    const speed = prefersReduced ? 0.03 : (isMobile ? 0.5 : 0.65);
 
+    // Optimize: Only update displacement sprite, not all sprites
     const tick = () => {
-      displacementSprite.x += speed;
-      displacementSprite.y += speed;
+      if (displacementSprite && !displacementSprite.destroyed) {
+        displacementSprite.x += speed;
+        displacementSprite.y += speed;
+      }
     };
     app.ticker.add(tick);
     
-    console.log('[PixiWaterImages] Water animation speed:', speed);
+    // Limit FPS for smooth performance without lag
+    app.ticker.maxFPS = isMobile ? 40 : 60;
+    
+    console.log('[PixiWaterImages] Water animation speed:', speed, 'FPS:', app.ticker.maxFPS);
+    console.log('[PixiWaterImages] Performance mode:', isMobile ? 'Mobile (40 FPS)' : 'Desktop (60 FPS)');
 
     // Pause when tab is hidden to save resources
     const onVisibility = () => {
@@ -289,12 +394,13 @@ export default function PixiWaterImages({ containerRef }) {
       app.destroy(true, { children: true, texture: true, baseTexture: true });
       if (pixiContainerRef.current) pixiContainerRef.current.innerHTML = "";
     };
-  }, [containerRef]);
+  }, [containerRef, intensity]);
 
   return (
     <div
       ref={pixiContainerRef}
-      className="fixed top-0 left-0 w-full h-full pointer-events-none z-[1]"
+      className="fixed top-0 left-0 w-full h-full pointer-events-none"
+      style={{ zIndex: 1, mixBlendMode: 'normal' }}
     />
   );
 }

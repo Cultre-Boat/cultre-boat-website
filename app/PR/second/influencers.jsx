@@ -87,11 +87,11 @@ export default function Influencers() {
 
   return (
     <>
-      <div className="text-white py-5 text-center font-bellota-light">
-        <h1 className="text-2xl md:text-3xl no-water-effect">INFLUENCERS</h1>
+      <div className="text-white py-2 md:py-3 text-center font-bellota-light text-stable no-water-effect mt-4 md:mt-6">
+        <h1 className="text-2xl md:text-3xl font-light tracking-[2px] uppercase text-white no-water-effect px-4">INFLUENCERS</h1>
       </div>
 
-      <div className="relative w-full py-2 bg-white">
+      <div className="relative w-full py-6 bg-white">
         <div className="relative overflow-hidden">
           <div
             ref={scrollRef}
@@ -100,13 +100,16 @@ export default function Influencers() {
           >
             {repeatedImages.map((img, index) => (
               <div key={index} className="mx-3 flex-shrink-0">
-                <div className="relative w-[250px] h-[350px]">
+                <div className="relative w-[250px] h-[300px]">
                   <Image
                     src={img.src}
                     alt={img.alt}
-                    fill
+                    width={250}
+                    height={300}
                     className="object-contain no-water-effect"
-                    sizes="(max-width: 768px) 100vw, 50vw"
+                    sizes="250px"
+                    priority={index < 6}
+                    quality={95}
                   />
                 </div>
               </div>
@@ -115,7 +118,7 @@ export default function Influencers() {
         </div>
       </div>
 
-      <div className="flex justify-center gap-2 mt-6">
+      <div className="flex justify-center gap-2 mt-6 mb-6">
         {productImages.map((_, index) => (
           <button
             key={index}

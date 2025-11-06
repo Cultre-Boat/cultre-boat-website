@@ -86,18 +86,18 @@ export default function Third() {
   const repeatedItems = [...portfolioItems, ...portfolioItems, ...portfolioItems];
 
   return (
-    <div className="w-full font nus font-bellota-light">
+    <div className="w-full font-bellota-light mt-6 md:mt-10">
       {/* Header Section */}
-      <div className="text-white py-0 md:py-0 text-center no-water-effect">
-        <h1 className="text-2xl md:text-3xl">Creative Consultancy</h1>
-        <p className="text-lg md:text-xl italic font-light mt-1">
+      <div className="text-white py-0 md:py-0 text-center text-stable no-water-effect px-4 mb-3 md:mb-4">
+        <h1 className="text-2xl md:text-3xl font-light tracking-[2px] uppercase text-white no-water-effect">Creative Consultancy</h1>
+        <p className="text-lg md:text-2xl italic mt-1 text-white no-water-effect font-light" style={{ fontWeight: 300 }}>
           Impactful PR Approach
         </p>
       </div>
 
-      {/* Portfolio Section */}
-      <div className="relative w-full py-2 bg-white mt-3">
-        <div className="relative overflow-hidden h-[380px]">
+      {/* Portfolio Section with balanced padding */}
+      <div className="relative w-full py-6 bg-white">
+        <div className="relative overflow-hidden">
           <div
             ref={scrollRef}
             className="flex"
@@ -108,20 +108,21 @@ export default function Third() {
                 key={`${item.id}-${index}`}
                 className="flex-shrink-0 mx-2 md:mx-1.5"
               >
-                <div className="relative h-[350px]">
+                <div className="relative h-[300px]">
                   <Image
                     src={item.image || "/placeholder.svg"}
                     alt={`Portfolio item ${item.id}`}
-                    width={0}
-                    height={350}
-                    sizes="100vw"
+                    width={250}
+                    height={300}
+                    sizes="250px"
                     style={{
                       width: "auto",
                       height: "100%",
                       objectFit: "contain",
-                      marginTop: "13px",
                     }}
                     className="no-water-effect"
+                    priority={index < 6}
+                    quality={95}
                   />
                 </div>
               </div>
@@ -131,7 +132,7 @@ export default function Third() {
       </div>
 
       {/* Dot Navigation */}
-      <div className="flex justify-center gap-2 mt-6">
+      <div className="flex justify-center gap-2 mt-6 mb-6">
         {portfolioItems.map((_, index) => (
           <button
             key={index}

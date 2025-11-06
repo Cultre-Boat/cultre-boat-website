@@ -28,24 +28,21 @@ export default function Hero() {
   };
 
   return (
-    <section className="w-full bg-transparent text-white mt-10 md:mt-20 mb-5 md:mb-5 font-bellota-light">
+    <section className="w-full bg-transparent text-white mt-10 md:mt-16 mb-3 md:mb-5 font-bellota-light">
       {/* ================= HERO TOP SECTION ================= */}
       <div className="flex flex-col md:flex-row items-center">
         {/* Left text section */}
-        <div className="w-full md:w-1/2 p-6 md:p-16 lg:p-15 flex flex-col justify-center text-center md:text-left">
-          <div className="space-y-4 md:space-y-12">
-            <p className="text-lg tracking-[2px] uppercase text-gray-500 my-5">
+        <div className="w-full md:w-1/2 p-6 md:p-12 lg:p-15 flex flex-col justify-center text-center">
+          <div className="space-y-2 md:space-y-3 text-stable no-water-effect px-4">
+            <p className="text-lg md:text-xl tracking-[2px] uppercase text-white my-2 no-water-effect">
               DECODING IMPACT
             </p>
-            <h1 className="text-4xl md:text-7xl lg:text-8xl mb-0">PR</h1>
-            <div className="pt-4 md:pt-5 md:ml-[65px] max-w-2xl mx-auto md:mx-0">
-              <p className="text-lg md:text-2xl lg:text-3xl text-gray italic leading-relaxed font-light">
+            <h1 className="text-6xl md:text-8xl lg:text-9xl mb-0 font-thin text-white no-water-effect" style={{ fontWeight: 200 }}>PR</h1>
+            <div className="pt-2 md:pt-2 max-w-2xl mx-auto">
+              <p className="text-xl md:text-2xl lg:text-2xl text-white italic leading-relaxed no-water-effect font-light" style={{ fontWeight: 300 }}>
                 Editorial Calendar
               </p>
-              {/* <p className="text-lg md:text-2xl lg:text-3xl text-gray italic leading-relaxed font-light">
-                Potential
-              </p> */}
-              <p className="text-lg md:text-2xl lg:text-3xl text-gray italic leading-relaxed font-light">
+              <p className="text-xl md:text-2xl lg:text-2xl text-white italic leading-relaxed no-water-effect font-light" style={{ fontWeight: 300 }}>
                 Collaborations
               </p>
             </div>
@@ -63,12 +60,14 @@ export default function Hero() {
             aria-label="Play video"
           > */}
             <Image
-              src="/PR-images/N4.webp"
+              src="/PR-images/PR_top.webp"
               alt="Cultural celebration with people in traditional attire"
               width={600}
               height={337.5} // Maintain 16:9 aspect ratio (600 / 16 * 9)
               className="object-cover hover:opacity-90 transition-opacity duration-300"
               priority
+              quality={100}
+              unoptimized={false}
             />
             {/* <div className="absolute inset-0 flex items-center justify-center">
               <div className="w-16 h-16 md:w-20 md:h-20 bg-white/30 flex items-center justify-center backdrop-blur-md">
@@ -143,27 +142,31 @@ export default function Hero() {
       )} */}
 
       {/* ================= BOTTOM SECTION ================= */}
-      <div className="w-full flex flex-col md:flex-row justify-between px-6 md:px-20 mt-10 md:mt-12 gap-6 md:gap-12 md:h-[70vh]">
+      <div className="w-full flex flex-col md:flex-row justify-between px-6 md:px-20 mt-6 md:mt-10 gap-4 md:gap-12 md:h-[70vh]">
         {/* Left Image (News Screenshot) */}
         <div className="w-full md:w-1/2 h-full flex justify-center md:justify-start">
-          <div className="w-full h-[450px] relative max-w-[400px]">
+          <div className="w-full h-[380px] md:h-[450px] relative max-w-[400px]">
             <Image
               src="/PR-images/PR-first.webp"
               alt="BuzzFeed news article screenshot"
               fill
               className="object-contain"
+              priority
+              quality={100}
             />
           </div>
         </div>
 
         {/* Right Image */}
         <div className="w-full md:w-1/2 h-full flex justify-center md:justify-end">
-          <div className="w-full h-[450px] relative max-w-[800px]">
+          <div className="w-full h-[380px] md:h-[450px] relative max-w-[800px]">
             <Image
-              src="/PR-images/N5.webp"
+              src="/PR-images/PR_2.webp"
               alt="Secondary news image"
               fill
               className="object-contain"
+              priority
+              quality={100}
             />
           </div>
         </div>

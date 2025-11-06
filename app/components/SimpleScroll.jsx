@@ -34,20 +34,32 @@ const SimpleScroll = ({
     console.log('Device Pixel Ratio:', window.devicePixelRatio);
     console.log('Screen Size:', window.innerWidth, 'x', window.innerHeight);
 
-    // Initialize PIXI application with maximum quality settings
+    // Initialize PIXI application with MAXIMUM quality settings
     const dpr = window.devicePixelRatio || 1;
+    const isMobile = window.innerWidth < 768;
+    
+    // Use FULL device resolution for pixel-perfect rendering (3.5 DPR)
+    const resolution = dpr; // No capping - use actual device resolution!
+    
+    console.log('✓ Using full resolution:', resolution, 'x DPR');
+    
     const app = new PIXI.Application({
       view: canvasRef.current,
       width: window.innerWidth,
       height: window.innerHeight,
       backgroundColor: 0x2a4862,
       backgroundAlpha: 1,
-      resolution: Math.min(dpr, 2), // Cap at 2x for performance, but maintain quality
+      resolution: resolution, // FULL device resolution for maximum quality
       autoDensity: true,
       antialias: true,
-      powerPreference: 'high-performance',
+      powerPreference: isMobile ? 'default' : 'high-performance',
       preserveDrawingBuffer: false,
     });
+    
+    // Disable texture quality degradation
+    PIXI.settings.MIPMAP_TEXTURES = PIXI.MIPMAP_MODES.OFF; // Disable mipmaps (they blur images!)
+    PIXI.settings.SCALE_MODE = PIXI.SCALE_MODES.LINEAR;
+    PIXI.settings.ROUND_PIXELS = false; // Allow subpixel rendering
 
     // Create containers
     const imagesContainer = new PIXI.Container();
@@ -92,15 +104,7 @@ const SimpleScroll = ({
       resourceMap.set(uniqueName, src);
     });
 
-    const smokeTextureUrl = "/water14.png";
-    const fallbackSmokeTexture = "https://i.imgur.com/5jXz7Yv.png";
-    loader.add("smokeTexture", smokeTextureUrl);
-    loader.add("fallbackSmokeTexture", fallbackSmokeTexture);
-
-    const displacementMapUrl = "/water7.png";
-    const fallbackDisplacementMap = "https://i.imgur.com/3PTiU4U.jpg";
-    loader.add("displacementMap", displacementMapUrl);
-    loader.add("fallbackDisplacementMap", fallbackDisplacementMap);
+    // NO external textures loaded for water effect - using procedural generation only!
 
     loader.onError.add((error, loader, resource) => {
       console.error(`PIXI Loader Error on resource: ${resource.url}`, error);
@@ -129,6 +133,11 @@ const SimpleScroll = ({
         }
         const sprite = PIXI.Sprite.from(texture);
         
+        // Apply maximum quality texture settings
+        texture.baseTexture.mipmap = PIXI.MIPMAP_MODES.OFF; // No mipmaps!
+        texture.baseTexture.scaleMode = PIXI.SCALE_MODES.LINEAR; // Smooth scaling
+        texture.baseTexture.wrapMode = PIXI.WRAP_MODES.CLAMP; // No edge artifacts
+        
         // Keep original texture size, let PIXI scale naturally
         const originalWidth = texture.baseTexture.width;
         const originalHeight = texture.baseTexture.height;
@@ -136,10 +145,6 @@ const SimpleScroll = ({
         
         sprite.width = imageWidthRef.current;
         sprite.height = imageWidthRef.current * aspectRatio;
-        
-        // Use NEAREST for no interpolation (sharper on mobile)
-        sprite.texture.baseTexture.scaleMode = PIXI.SCALE_MODES.NEAREST;
-        sprite.roundPixels = true;
         sprite.anchor.set(0);
         leftContainer.addChild(sprite);
         console.log(`Left ${i}: ${originalWidth}x${originalHeight} -> ${sprite.width}x${sprite.height}`);
@@ -154,6 +159,11 @@ const SimpleScroll = ({
         }
         const sprite = PIXI.Sprite.from(texture);
         
+        // Apply maximum quality texture settings
+        texture.baseTexture.mipmap = PIXI.MIPMAP_MODES.OFF; // No mipmaps!
+        texture.baseTexture.scaleMode = PIXI.SCALE_MODES.LINEAR; // Smooth scaling
+        texture.baseTexture.wrapMode = PIXI.WRAP_MODES.CLAMP; // No edge artifacts
+        
         // Keep original texture size, let PIXI scale naturally
         const originalWidth = texture.baseTexture.width;
         const originalHeight = texture.baseTexture.height;
@@ -161,10 +171,6 @@ const SimpleScroll = ({
         
         sprite.width = imageWidthRef.current;
         sprite.height = imageWidthRef.current * aspectRatio;
-        
-        // Use NEAREST for no interpolation (sharper on mobile)
-        sprite.texture.baseTexture.scaleMode = PIXI.SCALE_MODES.NEAREST;
-        sprite.roundPixels = true;
         sprite.anchor.set(0);
         rightContainer.addChild(sprite);
         console.log(`Right ${i}: ${originalWidth}x${originalHeight} -> ${sprite.width}x${sprite.height}`);
@@ -248,8 +254,93 @@ const SimpleScroll = ({
         });
       }, containerRef);
 
-      // Water effect disabled on mobile for crisp images
-      console.log('Water effect disabled on mobile - clean image rendering');
+      // ========== LIGHTWEIGHT PROCEDURAL WATER EFFECT ==========
+      // NO external images loaded - pure procedural generation!
+      const isMobile = window.innerWidth < 768;
+      let displacementSprite = null;
+      let displacementFilter = null;
+
+      try {
+        // Create procedural displacement texture (works on all devices)
+        const canvas = document.createElement('canvas');
+        const size = isMobile ? 256 : 512; // Larger for desktop quality
+        canvas.width = size;
+        canvas.height = size;
+        const ctx = canvas.getContext('2d');
+        
+        // Generate organic water-like noise pattern using Perlin-style noise
+        const imageData = ctx.createImageData(size, size);
+        
+        for (let y = 0; y < size; y++) {
+          for (let x = 0; x < size; x++) {
+            const i = (y * size + x) * 4;
+            
+            // Multi-octave noise for natural water look
+            const freq1 = 0.05;
+            const freq2 = 0.1;
+            const noise1 = Math.sin(x * freq1 + y * freq1) * 127 + 128;
+            const noise2 = Math.cos(x * freq2 - y * freq2) * 64 + 128;
+            const combined = (noise1 + noise2) / 2;
+            
+            imageData.data[i] = combined;     // R
+            imageData.data[i + 1] = combined; // G  
+            imageData.data[i + 2] = combined; // B
+            imageData.data[i + 3] = 255;      // A
+          }
+        }
+        
+        ctx.putImageData(imageData, 0, 0);
+        
+        // Blur for smoother water effect
+        ctx.filter = 'blur(4px)';
+        ctx.drawImage(canvas, 0, 0);
+        
+        const dispTexture = PIXI.Texture.from(canvas);
+        console.log(`✓ Generated procedural displacement (${size}x${size}) - zero image loading!`);
+        
+        if (dispTexture) {
+          displacementSprite = new PIXI.Sprite(dispTexture);
+          displacementSprite.texture.baseTexture.wrapMode = PIXI.WRAP_MODES.REPEAT;
+          displacementSprite.scale.set(0.5);
+          displacementSprite.alpha = 0; // Invisible, just for displacement
+          app.stage.addChild(displacementSprite);
+
+          // Create displacement filter with device-appropriate settings
+          displacementFilter = new PIXI.filters.DisplacementFilter(displacementSprite);
+          
+          if (isMobile) {
+            // Very subtle effect on mobile to preserve image quality
+            displacementFilter.scale.set(2, 2);
+          } else {
+            // Stronger on desktop
+            displacementFilter.scale.set(6, 6);
+          }
+          
+          displacementFilter.padding = 20; // More padding to avoid edge artifacts
+
+          // Apply water effect to image containers
+          leftContainer.filters = [displacementFilter];
+          rightContainer.filters = [displacementFilter];
+
+          console.log('✓ Water effect active:', isMobile ? 'mobile (3x3)' : 'desktop (6x6)');
+        }
+      } catch (error) {
+        console.warn('Water effect initialization failed:', error);
+      }
+
+      // Animate displacement for water movement
+      if (displacementSprite) {
+        const waterSpeed = isMobile ? 0.15 : 0.3; // Slower on mobile
+        app.ticker.add(() => {
+          if (displacementSprite && !displacementSprite.destroyed) {
+            displacementSprite.x += waterSpeed;
+            displacementSprite.y += waterSpeed * 0.8;
+          }
+        });
+      }
+
+      // Limit FPS on mobile for battery life
+      app.ticker.maxFPS = isMobile ? 30 : 60;
 
       const handleResize = () => {
   if (typeof window === 'undefined') return;
@@ -265,17 +356,15 @@ const SimpleScroll = ({
     s.width  = imageWidthRef.current;
     s.height = imageHeightRef.current;
   });
-  // Water effect removed for mobile
 
   positionContainers();
   updatePositions(currentOffsetRef.current);
 
-  /* ---- resize with capped DPR for quality/performance balance ---- */
-  const dpr  = Math.min(window.devicePixelRatio || 1, 2); // Cap at 2x
+  /* ---- resize with optimized DPR ---- */
   const cssW = window.innerWidth;
   const cssH = window.innerHeight;
 
-  app.renderer.resize(cssW, cssH);   // Use CSS dimensions, resolution is already set in app config
+  app.renderer.resize(cssW, cssH);   // Resolution is handled by autoDensity
   app.renderer.view.style.width  = cssW + 'px';
   app.renderer.view.style.height = cssH + 'px';
 };
