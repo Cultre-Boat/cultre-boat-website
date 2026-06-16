@@ -9,7 +9,7 @@ import { FaFacebookF, FaInstagram, FaLinkedinIn } from "react-icons/fa";
 // Initialize Supabase
 // const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
 // const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
- 
+
 // const supabase = createClient(supabaseUrl, supabaseAnonKey);
 // const payload = {
 //   email: formData.email,
@@ -22,7 +22,7 @@ import { FaFacebookF, FaInstagram, FaLinkedinIn } from "react-icons/fa";
 // };
 
 // const { data, error } = await supabase.from("contacts").insert([payload]);
-
+// this is nodemailer
 export default function ContactForm() {
   const [formData, setFormData] = useState({
     email: "",
