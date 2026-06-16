@@ -1,0 +1,137 @@
+"use client";
+
+import { useState, useEffect, useRef } from "react";
+import Image from "next/image";
+
+export default function Influencers() {
+  const productImages = [
+    { src: "/Influencers/webp/img1.webp", alt: "Product 1" },
+    { src: "/Influencers/webp/img2.webp", alt: "Product 2" },
+    { src: "/Influencers/webp/img3.webp", alt: "Product 3" },
+    { src: "/Influencers/webp/imgn11.webp", alt: "Product 11" },
+    { src: "/Influencers/webp/img4.webp", alt: "Product 4" },
+    { src: "/Influencers/webp/img5.webp", alt: "Product 5" },
+    { src: "/Influencers/webp/img6.webp", alt: "Product 6" },
+    { src: "/Influencers/webp/img7.webp", alt: "Product 7" },
+    { src: "/Influencers/webp/img8.webp", alt: "Product 8" },
+    { src: "/Influencers/webp/img9.webp", alt: "Product 9" },
+    { src: "/Influencers/webp/imgn10.webp", alt: "Product 10" },
+  ];
+
+  const [scrollPosition, _setScrollPosition] = useState(0);
+  const [activeIndex, setActiveIndex] = useState(0);
+  const [speed, setSpeed] = useState(1.5);
+  const scrollRef = useRef(null);
+  const animationRef = useRef(null);
+  const posRef = useRef(0);
+  const logoWidth = 256;
+  const totalWidth = productImages.length * logoWidth;
+
+  const animate = () => {
+    const current = posRef.current + speed;
+    posRef.current = current >= totalWidth ? current - totalWidth : current;
+    if (scrollRef.current) {
+      scrollRef.current.style.transform = `translateX(-${posRef.current}px)`;
+    }
+    animationRef.current = requestAnimationFrame(animate);
+  };
+
+  useEffect(() => {
+    // Adjust speed dynamically for devices
+    const handleResize = () => {
+      if (window.innerWidth <= 768) {
+        setSpeed(0.8);
+      } else {
+        setSpeed(0.4);
+      }
+    };
+
+    handleResize(); // set initial speed
+    window.addEventListener("resize", handleResize);
+
+    const onVisibility = () => {
+      if (document.hidden) {
+        if (animationRef.current) cancelAnimationFrame(animationRef.current);
+        animationRef.current = null;
+      } else if (!animationRef.current) {
+        animationRef.current = requestAnimationFrame(animate);
+      }
+    };
+    document.addEventListener('visibilitychange', onVisibility);
+    animationRef.current = requestAnimationFrame(animate);
+
+    return () => {
+      window.removeEventListener("resize", handleResize);
+      document.removeEventListener('visibilitychange', onVisibility);
+      if (animationRef.current) cancelAnimationFrame(animationRef.current);
+    };
+  }, [speed]);
+
+  useEffect(() => {
+    const id = setInterval(() => {
+      const index = Math.floor((posRef.current % totalWidth) / logoWidth) % productImages.length;
+      setActiveIndex(index);
+    }, 250);
+    return () => clearInterval(id);
+  }, []);
+
+  const scrollToIndex = (index) => {
+    const targetPosition = index * logoWidth;
+    posRef.current = targetPosition;
+    if (scrollRef.current) {
+      scrollRef.current.style.transform = `translateX(-${posRef.current}px)`;
+    }
+  };
+
+  const repeatedImages = [...productImages, ...productImages, ...productImages];
+
+  return (
+    <>
+      <div className="text-white py-2 md:py-3 text-center font-bellota-light text-stable no-water-effect mt-4 md:mt-6">
+        <h1 className="text-2xl md:text-3xl font-light tracking-[2px] uppercase text-white no-water-effect px-4">INFLUENCERS</h1>
+      </div>
+
+      <div className="relative w-full py-6 bg-white">
+        <div className="relative overflow-hidden">
+          <div
+            ref={scrollRef}
+            className="flex"
+            style={{ willChange: "transform" }}
+          >
+            {repeatedImages.map((img, index) => (
+              <div key={index} className="mx-3 flex-shrink-0">
+                <div className="relative w-[250px] h-[300px]">
+                  <Image
+                    src={img.src}
+                    alt={img.alt}
+                    width={250}
+                    height={300}
+                    className="object-contain no-water-effect"
+                    sizes="250px"
+                    priority={index < 6}
+                    quality={95}
+                  />
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      <div className="flex justify-center gap-2 mt-6 mb-6">
+        {productImages.map((_, index) => (
+          <button
+            key={index}
+            onClick={() => scrollToIndex(index)}
+            className={`transition-all duration-300 rounded-full no-water-effect ${
+              activeIndex === index
+                ? "bg-blue-600 w-8 h-3"
+                : "bg-gray-300 hover:bg-gray-400 w-3 h-3"
+            }`}
+            aria-label={`Go to image ${index + 1}`}
+          />
+        ))}
+      </div>
+    </>
+  );
+}
