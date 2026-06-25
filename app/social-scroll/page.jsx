@@ -28,6 +28,8 @@ export default function BrandShowcase() {
       instagram:
         "https://www.instagram.com/amayrajewellery?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==",
     },
+    { name: "52 North Realty", slug: "/Brands/52-north-realty" },
+    { name: "aashima behl", slug: "/Brands/aashima-behl" },
     { name: "Amiraah", slug: "/Brands/amiraah" },
     { name: "Blister Hand", slug: "/Brands/blister-hand" },
     { name: "BUTA", slug: "/Brands/buta" },
@@ -35,8 +37,10 @@ export default function BrandShowcase() {
     { name: "Devans coffee", slug: "/Brands/devans-coffee" },
     { name: "dhartii", slug: "/Brands/dhartii" },
     { name: "DIVIYA KAPOOR", slug: "/Brands/diviya-kapoor" },
+    { name: "dmodot", slug: "/Brands/dmodot" },
     { name: "EBISU", slug: "/Brands/ebisu" },
     { name: "EVEREST BASE CAMP", slug: "/Brands/everest-base-camp" },
+    { name: "Fashionably Pernia", slug: "/Brands/fashionably-pernia" },
     { name: "gaon restaurants", slug: "/Brands/gaon-restaurants" },
     { name: "GAZAL GUPTA", slug: "/Brands/gazal-gupta" },
     { name: "GUR ORGANICS", slug: "/Brands/gur-organics" },
@@ -51,31 +55,31 @@ export default function BrandShowcase() {
     },
     { name: "MASALA SYNERGY", slug: "/Brands/masala-synergy" },
     { name: "nidhika shekhar", slug: "/Brands/nidhika-shekhar" },
+    { name: "Nupur Gulati", slug: "/Brands/nupur-gulati" },
     { name: "ODDCAT", slug: "/Brands/oddcat" },
     { name: "Pernia's Pop-Up Shop", slug: "/Brands/pernias-pop-up-shop" },
     { name: "PICTURE TIME", slug: "/Brands/picture-time" },
+    { name: "Poppy Paro", slug: "/Brands/poppy-paro" },
     { name: "Rasaiem Luxuury", slug: "/Brands/rasaiem-luxuury" },
+    { name: "Sahibba K Anand", slug: "/Brands/sahibba-k-anand" },
     { name: "SEWTABLE CLOTHING", slug: "/Brands/sewtable-clothing" },
     { name: "SHAADI KA LADOO", slug: "/Brands/shaadi-ka-ladoo" },
     { name: "Shakuntlam Xclusif", slug: "/Brands/shakuntlam-xclusif" },
     { name: "SUPRIA MUNJAL", slug: "/Brands/supria-munjal" },
     { name: "TANIA ISRANI", slug: "/Brands/tania-israni" },
     { name: "TARINI VIJ", slug: "/Brands/tarini-vij" },
+    { name: "taruna seth", slug: "/Brands/taruna-seth" },
+    { name: "The Belgian Fries Co", slug: "/Brands/the-belgian-fries-co" },
     { name: "the box boutique", slug: "/Brands/the-box-boutique" },
     { name: "the monk", slug: "/Brands/the-monk" },
     { name: "VASANSI JAIPUR", slug: "/Brands/vasansi-jaipur" },
     { name: "WABY SABY", slug: "/Brands/waby-saby" },
     { name: "Zevar by geeta", slug: "/Brands/zevar-by-geeta" },
-    { name: "Poppy Paro", slug: "/Brands/poppy-paro" },
-    { name: "aashima behl", slug: "/Brands/aashima-behl" },
-    { name: "taruna seth", slug: "/Brands/taruna-seth" },
-    { name: "Nupur Gulati", slug: "/Brands/nupur-gulati" },
-    { name: "The Belgian Fries Co", slug: "/Brands/the-belgian-fries-co" },
-    { name: "52 North Realty", slug: "/Brands/52-north-realty" },
-    { name: "dmodot", slug: "/Brands/dmodot" },
-    { name: "Sahibba K Anand", slug: "/Brands/sahibba-k-anand" },
-    { name: "Fashionably Pernia", slug: "/Brands/fashionably-pernia" },
   ];
+
+  const sortedBrands = [...brands].sort((a, b) =>
+    a.name.localeCompare(b.name, "en", { sensitivity: "base" }),
+  );
 
   const listRef = useRef(null);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
@@ -88,29 +92,23 @@ export default function BrandShowcase() {
     setIsMounted(true);
     if (isMobile) setIsClientMobile(true);
 
-    const list = listRef.current;
-    if (!list) return;
-
-    const lastItem = list.lastElementChild;
-    if (lastItem) {
-      const containerHeight = list.offsetHeight;
-      const lastItemHeight = lastItem.offsetHeight;
-      list.style.paddingBottom = `${containerHeight / 3 - lastItemHeight / 3}px`;
-    }
-
-    list.scrollTop = 0;
-
-    const handleScroll = () => setScrollY(list.scrollTop);
-    list.addEventListener("scroll", handleScroll);
+    const handleWindowScroll = () => setScrollY(window.scrollY);
+    window.addEventListener("scroll", handleWindowScroll);
 
     if (!isMobile) {
       const handleMouseMove = (e) =>
         setMousePosition({ x: e.clientX, y: e.clientY });
       window.addEventListener("mousemove", handleMouseMove);
-      return () => window.removeEventListener("mousemove", handleMouseMove);
+
+      return () => {
+        window.removeEventListener("scroll", handleWindowScroll);
+        window.removeEventListener("mousemove", handleMouseMove);
+      };
     }
 
-    return () => list.removeEventListener("scroll", handleScroll);
+    return () => {
+      window.removeEventListener("scroll", handleWindowScroll);
+    };
   }, []);
 
   const getItemStyle = (index) => {
@@ -133,7 +131,7 @@ export default function BrandShowcase() {
       letterSpacing: isHovered ? "0.08em" : "0.02em",
       lineHeight: "1.2",
       transform: `
-        translateZ(0) 
+        translateZ(0)
         scale(${isHovered ? 1.05 : Math.max(0.95, 1 - distanceFromHovered * 0.02)})
         translateX(${isHovered ? "5px" : "0px"})
         rotateX(${Math.sin((scrollY + index * 100) * 0.01) * 2}deg)
@@ -142,7 +140,7 @@ export default function BrandShowcase() {
         ? "0 0 30px rgba(255, 255, 255, 0.5), 0 0 60px rgba(255, 255, 255, 0.3)"
         : "0 2px 20px rgba(0, 0, 0, 0.8)",
       filter: `
-        brightness(${isHovered ? 1.4 : 0.8}) 
+        brightness(${isHovered ? 1.4 : 0.8})
         blur(${distanceFromHovered > 0 && distanceFromHovered < 3 ? distanceFromHovered * 0.3 : 0}px)
       `,
     };
@@ -151,18 +149,17 @@ export default function BrandShowcase() {
   return (
     <>
       <div
-        className="relative w-full h-screen overflow-x-hidden overflow-y-hidden"
+        className="relative w-full overflow-x-hidden"
         style={{ backgroundColor: "#2a4862" }}
       >
-        {/* Radial gradient only after mount */}
         <div
-          className="absolute inset-0 z-[5] pointer-events-none opacity-20 gradient-overlay"
+          className="fixed inset-0 z-[5] pointer-events-none opacity-20 gradient-overlay"
           style={
             isMounted && !isClientMobile
               ? {
                   background: `radial-gradient(300px circle at ${mousePosition.x}px ${mousePosition.y}px,
-                    rgba(255, 255, 255, 0.1) 0%, 
-                    rgba(255, 255, 255, 0.05) 25%, 
+                    rgba(255, 255, 255, 0.1) 0%,
+                    rgba(255, 255, 255, 0.05) 25%,
                     transparent 50%)`,
                 }
               : {}
@@ -171,13 +168,12 @@ export default function BrandShowcase() {
 
         <div
           ref={listRef}
-          className="font-bellota-light relative z-10 flex flex-col items-center justify-start gap-8 py-8 sm:py-32 h-full overflow-y-auto overflow-x-hidden no-scrollbar list-container"
+          className="font-bellota-light relative z-10 flex flex-col items-center justify-start gap-8 py-20 sm:py-32 overflow-x-hidden no-scrollbar list-container"
           style={{
-            scrollBehavior: "smooth",
             perspective: "1000px",
           }}
         >
-          {brands.map((brand, index) => {
+          {sortedBrands.map((brand, index) => {
             const brandSlug = brand.slug.replace("/Brands/", "");
 
             return (
@@ -193,10 +189,10 @@ export default function BrandShowcase() {
                   isClientMobile ? null : () => setHoveredIndex(null)
                 }
               >
-                {/* Fixed line: explicitly forced javascript uppercase text evaluation */}
                 <span className="relative z-10 block">
                   {brand.name.toUpperCase()}
                 </span>
+
                 <div
                   className="absolute inset-0 -z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
                   style={{
@@ -205,6 +201,7 @@ export default function BrandShowcase() {
                     transform: "skewX(-15deg)",
                   }}
                 />
+
                 <div
                   className="absolute bottom-0 left-0 h-[1px] bg-gradient-to-r from-transparent via-white to-transparent w-0 group-hover:w-full transition-all duration-700 ease-out"
                   style={{ transformOrigin: "left" }}
@@ -214,8 +211,7 @@ export default function BrandShowcase() {
           })}
         </div>
 
-        {/* Scroll indicator */}
-        <div className="absolute right-8 top-1/2 transform -translate-y-1/2 z-20">
+        <div className="fixed right-8 top-1/2 transform -translate-y-1/2 z-20">
           <div className="w-[1px] h-32 bg-gradient-to-b from-transparent via-white/30 to-transparent relative">
             <div
               className="absolute w-2 h-2 bg-white rounded-full left-1/2 transform -translate-x-1/2 transition-all duration-300"
@@ -234,27 +230,30 @@ export default function BrandShowcase() {
             width: 100%;
             max-width: 100vw;
           }
+
           .no-scrollbar::-webkit-scrollbar {
             display: none;
           }
+
           .no-scrollbar {
             -ms-overflow-style: none;
             scrollbar-width: none;
           }
+
           @media (max-width: 640px) {
             .gradient-overlay {
               display: none;
             }
+
             .list-container {
               gap: 4px;
               padding-top: 100px;
-              padding-bottom: -16px;
+              padding-bottom: 40px;
             }
           }
         `}</style>
       </div>
 
-      {/* Brand Modal */}
       {selectedBrand && IndustriesData[selectedBrand] && (
         <BrandModal
           isOpen={isModalOpen}
