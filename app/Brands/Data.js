@@ -950,6 +950,34 @@ export const IndustriesData = {
             celebrities: "Creative consultancy"
         }
     },
+    // "poppy-paro": {
+    //     name: "Poppy Paro",
+    //     instagram: "https://www.instagram.com/poppyparo?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==",
+    //     description: "",
+    //     year: "",
+    //     points: [],
+    //     overview: {
+    //         title: "OVERVIEW",
+    //         points: [],
+    //     },
+    //     images: [
+    //         "/Grids/Poppy-paro/Poppy-paro-insta1.jpeg",
+    //         "/Grids/Poppy-paro/Poppy-paro-insta2.jpeg",
+    //         "/Grids/Poppy-paro/Poppy-paro-insta3.jpeg",
+    //         // "/Grids/Poppy-paro/Poppy-paro-insta4.jpeg",
+    //         // "/Grids/Poppy-paro/Poppy-paro-insta5.jpeg",
+
+    //     ],
+    //     // additionalImages: [
+    //     //     "/Grids/intiki/bottom.png",
+    //     // ],
+    //     metrics: {
+    //         content: "Content creation & Management",
+    //         influencers: "Influencer Collaboration",
+    //         growth: "Growth in Brand Retention",
+    //         celebrities: "Creative consultancy"
+    //     }
+    // },
     "poppy-paro": {
         name: "Poppy Paro",
         instagram: "https://www.instagram.com/poppyparo?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==",
@@ -961,16 +989,10 @@ export const IndustriesData = {
             points: [],
         },
         images: [
-            "/Grids/Poppy-paro/Poppy-paro-insta1.jpeg",
-            "/Grids/Poppy-paro/Poppy-paro-insta2.jpeg",
-            "/Grids/Poppy-paro/Poppy-paro-insta3.jpeg",
-            // "/Grids/Poppy-paro/Poppy-paro-insta4.jpeg",
-            // "/Grids/Poppy-paro/Poppy-paro-insta5.jpeg",
-
+            "/Grids/poppy-paro/poppy-paro-insta1.jpeg",
+            "/Grids/poppy-paro/poppy-paro-insta2.jpeg",
+            "/Grids/poppy-paro/poppy-paro-insta3.jpeg",
         ],
-        // additionalImages: [
-        //     "/Grids/intiki/bottom.png",
-        // ],
         metrics: {
             content: "Content creation & Management",
             influencers: "Influencer Collaboration",
