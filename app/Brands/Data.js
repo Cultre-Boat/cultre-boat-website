@@ -989,9 +989,9 @@ export const IndustriesData = {
             points: [],
         },
         images: [
-            "/Grids/poppy-paro/poppy-paro-insta1.jpeg",
-            "/Grids/poppy-paro/poppy-paro-insta2.jpeg",
-            "/Grids/poppy-paro/poppy-paro-insta3.jpeg",
+            "/Grids/poppy-paro/poppy-paro-insta1.png",
+            "/Grids/poppy-paro/poppy-paro-insta2.png",
+            "/Grids/poppy-paro/poppy-paro-insta3.png",
         ],
         metrics: {
             content: "Content creation & Management",
