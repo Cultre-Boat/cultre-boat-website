@@ -188,7 +188,7 @@ export const IndustriesData = {
         }
     },
 
-    
+
     "gaon-restaurants": {
         name: "gaon restaurants",
         instagram: "https://www.instagram.com/gaonrestaurants?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==",
@@ -964,8 +964,8 @@ export const IndustriesData = {
             "/Grids/Poppy-paro/Poppy-paro-insta1.jpeg",
             "/Grids/Poppy-paro/Poppy-paro-insta2.jpeg",
             "/Grids/Poppy-paro/Poppy-paro-insta3.jpeg",
-            "/Grids/Poppy-paro/Poppy-paro-insta4.jpeg",
-            "/Grids/Poppy-paro/Poppy-paro-insta5.jpeg",
+            // "/Grids/Poppy-paro/Poppy-paro-insta4.jpeg",
+            // "/Grids/Poppy-paro/Poppy-paro-insta5.jpeg",
 
         ],
         // additionalImages: [
@@ -992,8 +992,8 @@ export const IndustriesData = {
             "/Grids/aashima-behl/Aashimabehl_insta1.jpeg",
             "/Grids/aashima-behl/Aashimabehl_insta2.jpeg",
             "/Grids/aashima-behl/Aashimabehl_insta3.jpeg",
-            "/Grids/aashima-behl/Aashimabehl_insta4.jpeg",
-            "/Grids/aashima-behl/Aashimabehl_insta5.jpeg",
+            // "/Grids/aashima-behl/Aashimabehl_insta4.jpeg",
+            // "/Grids/aashima-behl/Aashimabehl_insta5.jpeg",
 
         ],
         // additionalImages: [
@@ -1020,8 +1020,8 @@ export const IndustriesData = {
             "/Grids/Taruna-seth/TarunaSethinsta1.png",
             "/Grids/Taruna-seth/TarunaSethinsta2.png",
             "/Grids/Taruna-seth/TarunaSethinsta3.png",
-            "/Grids/Taruna-seth/TarunaSethinsta4.png",
-            "/Grids/Taruna-seth/TarunaSethinsta5.png",
+            // "/Grids/Taruna-seth/TarunaSethinsta4.png",
+            // "/Grids/Taruna-seth/TarunaSethinsta5.png",
         ],
         // additionalImages: [
         //     "/Grids/intiki/bottom.png",
@@ -1048,8 +1048,8 @@ export const IndustriesData = {
             "/Grids/nupur-gulati/nupur-gulati-insta1.png",
             "/Grids/nupur-gulati/nupur-gulati-insta2.png",
             "/Grids/nupur-gulati/nupur-gulati-insta3.png",
-            "/Grids/nupur-gulati/nupur-gulati-insta4.png",
-            "/Grids/nupur-gulati/nupur-gulati-insta5.png",
+            // "/Grids/nupur-gulati/nupur-gulati-insta4.png",
+            // "/Grids/nupur-gulati/nupur-gulati-insta5.png",
         ],
         // additionalImages: [
         //     "/Grids/intiki/bottom.png",
@@ -1076,8 +1076,8 @@ export const IndustriesData = {
             "/Grids/the-belgian-fries-co/the-belgian-fries-co-insta1.png",
             "/Grids/the-belgian-fries-co/the-belgian-fries-co-insta2.png",
             "/Grids/the-belgian-fries-co/the-belgian-fries-co-insta3.png",
-            "/Grids/the-belgian-fries-co/the-belgian-fries-co-insta4.png",
-            "/Grids/the-belgian-fries-co/the-belgian-fries-co-insta5.png",
+            // "/Grids/the-belgian-fries-co/the-belgian-fries-co-insta4.png",
+            // "/Grids/the-belgian-fries-co/the-belgian-fries-co-insta5.png",
         ],
         // additionalImages: [
         //     "/Grids/intiki/bottom.png",
@@ -1131,8 +1131,8 @@ export const IndustriesData = {
             "/Grids/Dmodot/Dmodot.insta1.png",
             "/Grids/Dmodot/Dmodot.insta2.png",
             "/Grids/Dmodot/Dmodot.insta3.png",
-            "/Grids/Dmodot/Dmodot.insta4.png",
-            "/Grids/Dmodot/Dmodot.insta5.png",
+            // "/Grids/Dmodot/Dmodot.insta4.png",
+            // "/Grids/Dmodot/Dmodot.insta5.png",
 
         ],
         // additionalImages: [
@@ -1159,8 +1159,8 @@ export const IndustriesData = {
             "/Grids/sahibbakanand/sahibbakanand-insta1.png",
             "/Grids/sahibbakanand/sahibbakanand-insta2.png",
             "/Grids/sahibbakanand/sahibbakanand-insta3.png",
-            "/Grids/sahibbakanand/sahibbakanand-insta4.png",
-            "/Grids/sahibbakanand/sahibbakanand-insta5.png",
+            // "/Grids/sahibbakanand/sahibbakanand-insta4.png",
+            // "/Grids/sahibbakanand/sahibbakanand-insta5.png",
 
         ],
         // additionalImages: [
@@ -1187,8 +1187,8 @@ export const IndustriesData = {
             "/Grids/FASHIONABLYPERNIA/FASHIONABLYPERNIA-insta1.png",
             "/Grids/FASHIONABLYPERNIA/FASHIONABLYPERNIA-insta2.png",
             "/Grids/FASHIONABLYPERNIA/FASHIONABLYPERNIA-insta3.png",
-            "/Grids/FASHIONABLYPERNIA/FASHIONABLYPERNIA-insta4.png",
-            "/Grids/FASHIONABLYPERNIA/FASHIONABLYPERNIA-insta5.png",
+            // "/Grids/FASHIONABLYPERNIA/FASHIONABLYPERNIA-insta4.png",
+            // "/Grids/FASHIONABLYPERNIA/FASHIONABLYPERNIA-insta5.png",
 
         ],
         // additionalImages: [
