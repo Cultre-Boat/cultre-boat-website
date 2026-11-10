@@ -3,7 +3,6 @@
 import { useState } from 'react';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
-import { WaterEffect } from '@react-three/postprocessing';
 
 const ImageGrid = ({ images }) => {
     // Animation variants for staggered animation of images

@@ -1,124 +1,91 @@
 "use client";
 
-import { useState, useEffect } from "react"; // Import useEffect
-import { gsap } from "gsap"; // Import GSAP
-// import { createClient } from "@supabase/supabase-js";
-import MovingFog from "../components/MovingFog";
-import { FaFacebookF, FaInstagram, FaLinkedinIn } from "react-icons/fa";
+import { useState } from "react";
+import SocialIconLinks from "../components/SocialIconLinks";
+import WaterFilterDefs from "../components/WaterFilterDefs";
+import useWaterTextAnimation from "../hooks/useWaterTextAnimation";
+import OfficeAddress from "../components/OfficeAddress";
+import { validateContactForm, FIELD_LIMITS } from "../lib/contactValidation";
 
-// Initialize Supabase
-// const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-// const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-
-// const supabase = createClient(supabaseUrl, supabaseAnonKey);
-// const payload = {
-//   email: formData.email,
-//   name: formData.name,
-//   companyname: formData.companyName,
-//   contactnumber: formData.contactNumber,
-//   designation: formData.designation,
-//   budget: formData.budget,
-//   projectdescription: formData.projectDescription,
-// };
-
-// const { data, error } = await supabase.from("contacts").insert([payload]);
-// this is nodemailer
 export default function ContactForm() {
   const [formData, setFormData] = useState({
-    email: "",
     name: "",
-    companyName: "",
+    email: "",
     contactNumber: "",
-    designation: "",
-    budget: "",
     projectDescription: "",
   });
+  const [errors, setErrors] = useState({});
+  const [submitting, setSubmitting] = useState(false);
+  const [website, setWebsite] = useState(""); // honeypot
 
-  // ✅ useEffect hook to apply the SVG filter animation to text
-  useEffect(() => {
-    const textTurbulence = document.querySelector(
-      "#textWaterFilter feTurbulence",
-    );
-    const textDisplacementMap = document.querySelector(
-      "#textWaterFilter feDisplacementMap",
-    );
-
-    if (textTurbulence && textDisplacementMap) {
-      document.querySelectorAll("h1, h2, h3, p, a").forEach((el) => {
-        el.style.filter = "url(#textWaterFilter)";
-      });
-
-      gsap.set(textDisplacementMap, { attr: { scale: 10 } });
-
-      gsap.to(textTurbulence, {
-        attr: { baseFrequency: "0.02 0.10" },
-        duration: 15,
-        ease: "sine.inOut",
-        repeat: -1,
-        yoyo: true,
-      });
-    }
-  }, []);
+  useWaterTextAnimation();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    let cleaned = value;
+    // Block characters that can never be valid in these fields as they are typed.
+    if (name === "name") {
+      cleaned = value.replace(/[^A-Za-z .'-]/g, "");
+    } else if (name === "contactNumber") {
+      // Only digits, spaces, (), - and a single "+" at the start.
+      const stripped = value.replace(/[^0-9+\s()-]/g, "");
+      cleaned =
+        (stripped.startsWith("+") ? "+" : "") + stripped.replace(/\+/g, "");
+      cleaned = cleaned.slice(0, 20);
+    } else if (name === "email") {
+      cleaned = value.replace(/\s/g, "");
+    }
+    setFormData((prev) => ({ ...prev, [name]: cleaned }));
+    if (errors[name]) {
+      setErrors((prev) => ({ ...prev, [name]: undefined }));
+    }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    const validationErrors = validateContactForm(formData);
+    setErrors(validationErrors);
+    if (Object.keys(validationErrors).length > 0) return;
+    if (submitting) return;
+
+    setSubmitting(true);
     try {
       const res = await fetch("/api/contact", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({ ...formData, website }),
       });
 
       const result = await res.json();
 
       if (!res.ok) {
+        if (result.errors) setErrors(result.errors);
         alert(result.error || "Failed to send message");
         return;
       }
 
       alert("Message sent successfully!");
       setFormData({
-        email: "",
         name: "",
-        companyName: "",
+        email: "",
         contactNumber: "",
-        designation: "",
-        budget: "",
         projectDescription: "",
       });
+      setErrors({});
     } catch (err) {
       console.error(err);
-      alert("Error submitting form.");
+      alert("Error submitting form. Please check your connection and try again.");
+    } finally {
+      setSubmitting(false);
     }
   };
 
   return (
-    <div className="relative mt-30 z-30 md:mt-40 text-white w-full px-4 md:px-8 lg:px-16 tracking-widest mb-20 md:mb-40 overflow-hidden">
-      <svg className="absolute w-0 h-0 pointer-events-none">
-        <filter id="textWaterFilter">
-          <feTurbulence
-            type="fractalNoise"
-            baseFrequency="0.01 0.01"
-            numOctaves="1"
-            result="noiseForText"
-          />
-          <feDisplacementMap
-            in="SourceGraphic"
-            in2="noiseForText"
-            scale="0"
-            xChannelSelector="R"
-            yChannelSelector="G"
-          />
-        </filter>
-      </svg>
+    <div className="relative mt-30 z-30 md:mt-40 text-white w-full px-4 md:px-8 lg:px-16 tracking-widest pb-8 md:pb-10 overflow-hidden">
+      <WaterFilterDefs />
 
       {/* Mobile: Title at top */}
       <div className="lg:hidden max-w-7xl mx-auto mb-8">
@@ -138,55 +105,20 @@ export default function ContactForm() {
           </h2>
 
           <div className="mb-8 md:mb-12">
-            <div className="mb-4">
-              <h3 className="text-lg md:text-xl mb-3">Our Office</h3>
-              <p className="text-sm md:text-base leading-relaxed">
-                X-45, Green Park Main,
-                <br />
-                Green Park, New Delhi, Delhi 110016
-              </p>
-            </div>
+            <OfficeAddress />
           </div>
 
-          <div className="flex gap-4">
-            <a
-              href="https://www.facebook.com/CultreBoat/"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center justify-center w-12 h-12 rounded-full bg-white shadow-lg cursor-pointer"
-            >
-              <FaFacebookF className="text-black text-xl hover:scale-150" />
-            </a>
-            <a
-              href="https://www.instagram.com/cultreboat/"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center justify-center w-12 h-12 rounded-full bg-white shadow-lg cursor-pointer"
-            >
-              <FaInstagram className="text-black text-xl hover:scale-150" />
-            </a>
-            <a
-              href="https://www.linkedin.com/company/cultre-boat"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center justify-center w-12 h-12 rounded-full bg-white shadow-lg cursor-pointer"
-            >
-              <FaLinkedinIn className="text-black text-xl hover:scale-150" />
-            </a>
-          </div>
+          <SocialIconLinks />
         </div>
 
         {/* Right Side - Contact Form */}
         <div className="lg:pl-8">
-          <form onSubmit={handleSubmit} className="space-y-4 md:space-y-6">
-            <InputField
-              label="EMAIL ID:"
-              id="email"
-              name="email"
-              type="email"
-              value={formData.email}
-              onChange={handleChange}
-            />
+          <form onSubmit={handleSubmit} className="space-y-4 md:space-y-6" noValidate>
+            {/* Honeypot field, hidden from people; bots tend to fill it in */}
+            <div aria-hidden="true" style={{ position: "absolute", left: "-10000px", width: 1, height: 1, overflow: "hidden" }}>
+              <label htmlFor="website">Website</label>
+              <input id="website" name="website" type="text" tabIndex={-1} autoComplete="off" value={website} onChange={(e) => setWebsite(e.target.value)} />
+            </div>
             <InputField
               label="NAME"
               id="name"
@@ -194,38 +126,37 @@ export default function ContactForm() {
               type="text"
               value={formData.name}
               onChange={handleChange}
+              error={errors.name}
+              maxLength={60}
+              placeholder="Your full name"
+              autoComplete="name"
+              required
             />
             <InputField
-              label="COMPANY NAME"
-              id="companyName"
-              name="companyName"
-              type="text"
-              value={formData.companyName}
+              label="EMAIL ID"
+              id="email"
+              name="email"
+              type="email"
+              value={formData.email}
               onChange={handleChange}
+              error={errors.email}
+              maxLength={254}
+              placeholder="you@example.com"
+              autoComplete="email"
+              required
             />
             <InputField
               label="CONTACT NUMBER"
               id="contactNumber"
               name="contactNumber"
               type="tel"
+              inputMode="tel"
               value={formData.contactNumber}
               onChange={handleChange}
-            />
-            <InputField
-              label="PROFESSIONAL DESIGNATION"
-              id="designation"
-              name="designation"
-              type="text"
-              value={formData.designation}
-              onChange={handleChange}
-            />
-            <InputField
-              label="BUDGET YOU INTEND TO COMMIT TO THE PROJECT"
-              id="budget"
-              name="budget"
-              type="text"
-              value={formData.budget}
-              onChange={handleChange}
+              error={errors.contactNumber}
+              placeholder="+91 98765 43210"
+              autoComplete="tel"
+              required
             />
             <div>
               <label
@@ -239,16 +170,26 @@ export default function ContactForm() {
                 name="projectDescription"
                 value={formData.projectDescription}
                 onChange={handleChange}
-                rows="4"
-                className="mt-1 block w-full px-3 py-2 md:px-4 md:py-2 text-sm md:text-base text-black bg-white border border-gray-600 focus:outline-none focus:border-blue-500"
+                rows="6"
+                maxLength={FIELD_LIMITS.projectDescription}
+                placeholder="Tell us about your brand, what you need."
+                required
+                aria-invalid={!!errors.projectDescription}
+                className={`mt-1 block w-full px-3 py-2 md:px-4 md:py-2 text-sm md:text-base text-black bg-white placeholder:text-gray-400 border focus:outline-none focus:border-blue-500 resize-none ${
+                  errors.projectDescription ? "border-red-500" : "border-gray-600"
+                }`}
               />
+              {errors.projectDescription && (
+                <p className="mt-1 text-xs md:text-sm text-red-400">{errors.projectDescription}</p>
+              )}
             </div>
             <div className="flex justify-end">
               <button
                 type="submit"
-                className="px-6 py-3 md:px-8 md:py-3 text-sm md:text-base bg-blue-600 text-white hover:bg-blue-700 transition-colors rounded "
+                disabled={submitting}
+                className="disabled:opacity-60 disabled:cursor-wait px-6 py-3 md:px-8 md:py-3 text-sm md:text-base bg-blue-600 text-white hover:bg-blue-700 transition-colors rounded "
               >
-                Submit
+                {submitting ? "Sending..." : "Submit"}
               </button>
             </div>
           </form>
@@ -258,49 +199,20 @@ export default function ContactForm() {
       {/* Mobile: Address and Social Links below form */}
       <div className="lg:hidden max-w-7xl mx-auto mt-8">
         <div className="mb-8">
-          <div className="mb-4">
-            <h3 className="text-lg mb-3">Our Office</h3>
-            <p className="text-sm leading-relaxed">
-              X-45, Green Park Main,
-              <br />
-              Green Park, New Delhi, Delhi 110016
-            </p>
-          </div>
+          <OfficeAddress
+            titleClassName="text-lg mb-3"
+            textClassName="text-sm leading-relaxed"
+          />
         </div>
 
-        <div className="flex gap-4">
-          <a
-            href="https://www.facebook.com/CultreBoat/"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center justify-center w-12 h-12 rounded-full bg-white shadow-lg cursor-pointer"
-          >
-            <FaFacebookF className="text-black text-xl hover:scale-150" />
-          </a>
-          <a
-            href="https://www.instagram.com/cultreboat/"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center justify-center w-12 h-12 rounded-full bg-white shadow-lg cursor-pointer"
-          >
-            <FaInstagram className="text-black text-xl hover:scale-150" />
-          </a>
-          <a
-            href="https://www.linkedin.com/company/cultre-boat"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center justify-center w-12 h-12 rounded-full bg-white shadow-lg cursor-pointer"
-          >
-            <FaLinkedinIn className="text-black text-xl hover:scale-150" />
-          </a>
-        </div>
+        <SocialIconLinks />
       </div>
     </div>
   );
 }
 
 // Reusable Input Field Component
-function InputField({ label, id, name, type, value, onChange }) {
+function InputField({ label, id, error, ...inputProps }) {
   return (
     <div>
       <label htmlFor={id} className="block text-xs md:text-sm  text-white">
@@ -308,12 +220,13 @@ function InputField({ label, id, name, type, value, onChange }) {
       </label>
       <input
         id={id}
-        name={name}
-        type={type}
-        value={value}
-        onChange={onChange}
-        className="mt-1 block w-full px-3 py-2 md:px-4 md:py-2 text-sm md:text-base text-black bg-white border border-gray-600 focus:outline-none focus:border-blue-500"
+        aria-invalid={!!error}
+        className={`mt-1 block w-full px-3 py-2 md:px-4 md:py-2 text-sm md:text-base text-black bg-white placeholder:text-gray-400 border focus:outline-none focus:border-blue-500 ${
+          error ? "border-red-500" : "border-gray-600"
+        }`}
+        {...inputProps}
       />
+      {error && <p className="mt-1 text-xs md:text-sm text-red-400">{error}</p>}
     </div>
   );
 }

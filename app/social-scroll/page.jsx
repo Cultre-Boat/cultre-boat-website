@@ -5,9 +5,77 @@ import { isMobile } from "react-device-detect";
 import BrandModal from "../components/BrandModal";
 import { IndustriesData } from "../Brands/Data";
 
+// Order here is the order the filter buttons appear in (after "ALL").
+const CATEGORIES = {
+  FASHION: "FASHION",
+  ACCESSORIES: "ACCESSORIES",
+  LIFESTYLE: "LIFESTYLE",
+  BEAUTY: "BEAUTY",
+  FOOD: "FOOD",
+  DECOR_HOME: "DECOR/HOME",
+  CREATORS: "CREATORS",
+};
+
+const BRAND_CATEGORIES = {
+  "amayra-by-bagrecha-gems": CATEGORIES.ACCESSORIES,
+  "52-north-realty": CATEGORIES.LIFESTYLE,
+  "aashima-behl": CATEGORIES.FASHION,
+  "amiraah": CATEGORIES.FASHION,
+  "blister-hand": CATEGORIES.DECOR_HOME,
+  "buta": CATEGORIES.FASHION,
+  "dayal-opticals": CATEGORIES.ACCESSORIES,
+  "devans-coffee": CATEGORIES.FOOD,
+  "dhartii": CATEGORIES.BEAUTY,
+  "diviya-kapoor": CATEGORIES.FASHION,
+  "dmodot": CATEGORIES.FASHION,
+  "ebisu": CATEGORIES.FOOD,
+  "everest-base-camp": CATEGORIES.LIFESTYLE,
+  "fashionably-pernia": CATEGORIES.FASHION,
+  "gaon-restaurants": CATEGORIES.FOOD,
+  "gazal-gupta": CATEGORIES.FASHION,
+  "gur-organics": CATEGORIES.BEAUTY,
+  "healix": CATEGORIES.BEAUTY,
+  "intiki": CATEGORIES.ACCESSORIES,
+  "kalista-studio": CATEGORIES.CREATORS,
+  "kelby-huston": CATEGORIES.CREATORS,
+  "koe-beauty": CATEGORIES.BEAUTY,
+  "kritika-dawar": CATEGORIES.FASHION,
+  "liz-paul": CATEGORIES.FASHION,
+  "love-to-bag": CATEGORIES.ACCESSORIES,
+  "luxury-ampersand-frolics-group": CATEGORIES.LIFESTYLE,
+  "masala-synergy": CATEGORIES.FOOD,
+  "miri-kiri": CATEGORIES.FASHION,
+  "nidhika-shekhar": CATEGORIES.FASHION,
+  "nupur-gulati": CATEGORIES.FASHION,
+  "oddcat": CATEGORIES.LIFESTYLE,
+  "okami": CATEGORIES.BEAUTY,
+  "pankhuri-jain": CATEGORIES.FASHION,
+  "pernias-pop-up-shop": CATEGORIES.FASHION,
+  "picture-time": CATEGORIES.CREATORS,
+  "poppy-paro": CATEGORIES.CREATORS,
+  "rasaiem-luxuury": CATEGORIES.FASHION,
+  "sahibba-k-anand": CATEGORIES.FASHION,
+  "samatvam-by-anjali-bhaskar": CATEGORIES.LIFESTYLE,
+  "sewtable-clothing": CATEGORIES.FASHION,
+  "shaadi-ka-ladoo": CATEGORIES.FOOD,
+  "shakuntlam-xclusif": CATEGORIES.FASHION,
+  "supria-munjal": CATEGORIES.FASHION,
+  "tania-israni": CATEGORIES.FASHION,
+  "tarini-vij": CATEGORIES.FASHION,
+  "taruna-seth": CATEGORIES.BEAUTY,
+  "the-belgian-fries-co": CATEGORIES.FOOD,
+  "the-box-boutique": CATEGORIES.ACCESSORIES,
+  "the-monk": CATEGORIES.LIFESTYLE,
+  "vasansi-jaipur": CATEGORIES.FASHION,
+  "waby-saby": CATEGORIES.LIFESTYLE,
+  "zevar-by-geeta": CATEGORIES.ACCESSORIES,
+};
+
 export default function BrandShowcase() {
   const [selectedBrand, setSelectedBrand] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [activeCategory, setActiveCategory] = useState(null);
+  const [hoveredCategory, setHoveredCategory] = useState(null);
 
   const openBrandModal = (slug) => {
     setSelectedBrand(slug);
@@ -44,24 +112,31 @@ export default function BrandShowcase() {
     { name: "gaon restaurants", slug: "/Brands/gaon-restaurants" },
     { name: "GAZAL GUPTA", slug: "/Brands/gazal-gupta" },
     { name: "GUR ORGANICS", slug: "/Brands/gur-organics" },
+    { name: "HEALIX", slug: "/Brands/healix" },
     { name: "INTIKI", slug: "/Brands/intiki" },
     { name: "Kalista Studio", slug: "/Brands/kalista-studio" },
     { name: "Kelby Huston", slug: "/Brands/kelby-huston" },
+    { name: "KOE BEAUTY", slug: "/Brands/koe-beauty" },
     { name: "kritika Dawar", slug: "/Brands/kritika-dawar" },
     { name: "LIZ PAUL", slug: "/Brands/liz-paul" },
+    { name: "LOVE TO BAG", slug: "/Brands/love-to-bag" },
     {
       name: "Luxury Ampersand Frolics Group",
       slug: "/Brands/luxury-ampersand-frolics-group",
     },
     { name: "MASALA SYNERGY", slug: "/Brands/masala-synergy" },
+    { name: "MIRI KIRI", slug: "/Brands/miri-kiri" },
     { name: "nidhika shekhar", slug: "/Brands/nidhika-shekhar" },
     { name: "Nupur Gulati", slug: "/Brands/nupur-gulati" },
     { name: "ODDCAT", slug: "/Brands/oddcat" },
+    { name: "OKAMI", slug: "/Brands/okami" },
+    { name: "PANKHURI JAIN", slug: "/Brands/pankhuri-jain" },
     { name: "Pernia's Pop-Up Shop", slug: "/Brands/pernias-pop-up-shop" },
     { name: "PICTURE TIME", slug: "/Brands/picture-time" },
     { name: "Poppy Paro", slug: "/Brands/poppy-paro" },
     { name: "Rasaiem Luxuury", slug: "/Brands/rasaiem-luxuury" },
     { name: "Sahibba K Anand", slug: "/Brands/sahibba-k-anand" },
+    { name: "Samatvam By Anjali Bhaskar", slug: "/Brands/samatvam-by-anjali-bhaskar" },
     { name: "SEWTABLE CLOTHING", slug: "/Brands/sewtable-clothing" },
     { name: "SHAADI KA LADOO", slug: "/Brands/shaadi-ka-ladoo" },
     { name: "Shakuntlam Xclusif", slug: "/Brands/shakuntlam-xclusif" },
@@ -80,6 +155,13 @@ export default function BrandShowcase() {
   const sortedBrands = [...brands].sort((a, b) =>
     a.name.localeCompare(b.name, "en", { sensitivity: "base" }),
   );
+
+  const filteredBrands = activeCategory
+    ? sortedBrands.filter((brand) => {
+        const slug = brand.slug.replace("/Brands/", "");
+        return BRAND_CATEGORIES[slug] === activeCategory;
+      })
+    : sortedBrands;
 
   const listRef = useRef(null);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
@@ -153,7 +235,7 @@ export default function BrandShowcase() {
         style={{ backgroundColor: "#2a4862" }}
       >
         <div
-          className="fixed inset-0 z-[5] pointer-events-none opacity-20 gradient-overlay"
+          className="fixed inset-0 z-0 pointer-events-none opacity-20 gradient-overlay"
           style={
             isMounted && !isClientMobile
               ? {
@@ -166,14 +248,65 @@ export default function BrandShowcase() {
           }
         />
 
+        {/* Category Filter Buttons */}
+        <div className="fixed top-24 left-0 right-0 z-30 bg-transparent py-4 px-4 backdrop-blur-sm">
+          <div className="flex flex-wrap justify-center gap-3 pointer-events-auto">
+            <button
+              onClick={() => setActiveCategory(null)}
+              onMouseEnter={() => setHoveredCategory("all")}
+              onMouseLeave={() => setHoveredCategory(null)}
+              className={`px-4 py-2 rounded-full font-bellota-light text-sm uppercase tracking-wider transition-all duration-300 cursor-pointer relative group ${
+                activeCategory === null
+                  ? "bg-white/20 border border-white text-white"
+                  : "bg-transparent border border-white/30 text-white hover:border-white/60"
+              }`}
+              style={{
+                transform: hoveredCategory === "all" ? "scale(1.05) translateX(5px)" : "scale(1)",
+                textShadow: hoveredCategory === "all" ? "0 0 30px rgba(255, 255, 255, 0.5), 0 0 60px rgba(255, 255, 255, 0.3)" : "none",
+                filter: hoveredCategory === "all" ? "brightness(1.4)" : "brightness(1)",
+              }}
+            >
+              All
+              <div
+                className="absolute bottom-0 left-0 h-[1px] bg-gradient-to-r from-transparent via-white to-transparent w-0 group-hover:w-full transition-all duration-700"
+                style={{ transformOrigin: "left" }}
+              />
+            </button>
+            {Object.entries(CATEGORIES).map(([key, value]) => (
+              <button
+                key={key}
+                onClick={() => setActiveCategory(value)}
+                onMouseEnter={() => setHoveredCategory(key)}
+                onMouseLeave={() => setHoveredCategory(null)}
+                className={`px-4 py-2 rounded-full font-bellota-light text-sm uppercase tracking-wider transition-all duration-300 cursor-pointer relative group ${
+                  activeCategory === value
+                    ? "bg-white/20 border border-white text-white"
+                    : "bg-transparent border border-white/30 text-white hover:border-white/60"
+                }`}
+                style={{
+                  transform: hoveredCategory === key ? "scale(1.05) translateX(5px)" : "scale(1)",
+                  textShadow: hoveredCategory === key ? "0 0 30px rgba(255, 255, 255, 0.5), 0 0 60px rgba(255, 255, 255, 0.3)" : "none",
+                  filter: hoveredCategory === key ? "brightness(1.4)" : "brightness(1)",
+                }}
+              >
+                {value}
+                <div
+                  className="absolute bottom-0 left-0 h-[1px] bg-gradient-to-r from-transparent via-white to-transparent w-0 group-hover:w-full transition-all duration-700"
+                  style={{ transformOrigin: "left" }}
+                />
+              </button>
+            ))}
+          </div>
+        </div>
+
         <div
           ref={listRef}
-          className="font-bellota-light relative z-10 flex flex-col items-center justify-start gap-8 py-20 sm:py-32 overflow-x-hidden no-scrollbar list-container"
+          className="font-bellota-light relative z-10 flex flex-col items-center justify-start gap-8 mt-40 pb-6 overflow-x-hidden no-scrollbar list-container"
           style={{
             perspective: "1000px",
           }}
         >
-          {sortedBrands.map((brand, index) => {
+          {filteredBrands.map((brand, index) => {
             const brandSlug = brand.slug.replace("/Brands/", "");
 
             return (
@@ -248,7 +381,7 @@ export default function BrandShowcase() {
             .list-container {
               gap: 4px;
               padding-top: 100px;
-              padding-bottom: 40px;
+              padding-bottom: 8px;
             }
           }
         `}</style>
@@ -261,6 +394,7 @@ export default function BrandShowcase() {
           brandName={IndustriesData[selectedBrand].name}
           brandSlug={selectedBrand}
           instagramUrl={IndustriesData[selectedBrand].instagram}
+          reels={IndustriesData[selectedBrand].reels || []}
           images={[
             ...IndustriesData[selectedBrand].images,
             ...(IndustriesData[selectedBrand].additionalImages || []),

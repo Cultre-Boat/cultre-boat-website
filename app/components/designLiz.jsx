@@ -26,7 +26,7 @@ export default function ProductShowcase() {
         },
         {
             title: "Visual Vocabulary Exhibition Guidelines",
-            imageSrc: "/shakuntalam/1.jpg",
+            imageSrc: "/Shakuntalam/1.jpg",
             alt: "Visual Vocabulary Exhibition Guidelines",
         },
         {

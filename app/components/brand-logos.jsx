@@ -3,20 +3,20 @@
 import { useState, useEffect, useRef } from "react";
 
 const images = [
-  { src: "/brands/png/1.png", link: "https://example.com/1" },
-  { src: "/brands/png/2.png", link: "https://example.com/2" },
-  { src: "/brands/png/3.png", link: "https://example.com/3" },
-  { src: "/brands/png/4.png", link: "https://example.com/4" },
-  { src: "/brands/png/5.png", link: "https://example.com/5" },
-  { src: "/brands/png/6.png", link: "https://example.com/6" },
-  { src: "/brands/png/7.png", link: "https://example.com/7" },
-  { src: "/brands/png/8.png", link: "https://example.com/8" },
-  { src: "/brands/png/9.png", link: "https://example.com/9" },
-  { src: "/brands/png/10.png", link: "https://example.com/10" },
-  { src: "/brands/png/11.png", link: "https://example.com/11" },
-  { src: "/brands/png/12.png", link: "https://example.com/12" },
-  { src: "/brands/png/13.png", link: "https://example.com/13" },
-  { src: "/brands/png/14.png", link: "https://example.com/14" },
+  { src: "/brands/png/1.png" },
+  { src: "/brands/png/2.png" },
+  { src: "/brands/png/3.png" },
+  { src: "/brands/png/4.png" },
+  { src: "/brands/png/5.png" },
+  { src: "/brands/png/6.png" },
+  { src: "/brands/png/7.png" },
+  { src: "/brands/png/8.png" },
+  { src: "/brands/png/9.png" },
+  { src: "/brands/png/10.png" },
+  { src: "/brands/png/11.png" },
+  { src: "/brands/png/12.png" },
+  { src: "/brands/png/13.png" },
+  { src: "/brands/png/14.png" },
 ];
 
 export default function ScrollingLogos() {
@@ -69,11 +69,8 @@ export default function ScrollingLogos() {
           }}
         >
           {repeatedImages.map((img, index) => (
-            <a
+            <div
               key={index}
-              href={img.link}
-              target="_blank"
-              rel="noopener noreferrer"
               className="flex-shrink-0 no-water-effect"
             >
               <div className="flex items-center justify-center px-0 no-water-effect">
@@ -85,7 +82,7 @@ export default function ScrollingLogos() {
                   />
                 </div>
               </div>
-            </a>
+            </div>
           ))}
         </div>
       </div>

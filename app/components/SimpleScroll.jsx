@@ -14,7 +14,7 @@ const SimpleScroll = ({
   scrollHeight,
   
 }) => {
-  const canvasRef = useRef(null);
+  const hostRef = useRef(null);
   const leftContainerRef = useRef(null);
   const rightContainerRef = useRef(null);
   const currentOffsetRef = useRef(0);
@@ -28,7 +28,7 @@ const SimpleScroll = ({
   const texturesLoaded = useRef(false);
 
   useEffect(() => {
-    if (!canvasRef.current || !containerRef.current || initialized.current || typeof window === 'undefined') return;
+    if (!hostRef.current || !containerRef.current || initialized.current || typeof window === 'undefined') return;
     initialized.current = true;
 
     console.log('Device Pixel Ratio:', window.devicePixelRatio);
@@ -43,8 +43,11 @@ const SimpleScroll = ({
     
     console.log('✓ Using full resolution:', resolution, 'x DPR');
     
-    const app = new PIXI.Application({
-      view: canvasRef.current,
+    // Pixi creates its own canvas each mount (re-using one breaks after a remount, because
+    // destroying the app loses that canvas's WebGL context).
+    let app;
+    try {
+      app = new PIXI.Application({
       width: window.innerWidth,
       height: window.innerHeight,
       backgroundColor: 0x2a4862,
@@ -54,7 +57,16 @@ const SimpleScroll = ({
       antialias: true,
       powerPreference: isMobile ? 'default' : 'high-performance',
       preserveDrawingBuffer: false,
-    });
+      });
+    } catch (error) {
+      console.error("Homepage WebGL effect could not start:", error);
+      initialized.current = false;
+      return;
+    }
+    app.view.style.display = "block";
+    hostRef.current.appendChild(app.view);
+    let disposed = false;
+    let teardown = null;
     
     // Disable texture quality degradation
     PIXI.settings.MIPMAP_TEXTURES = PIXI.MIPMAP_MODES.OFF; // Disable mipmaps (they blur images!)
@@ -75,11 +87,10 @@ const SimpleScroll = ({
     const calculateDimensions = () => {
       const screenWidth = window.innerWidth;
       const screenHeight = window.innerHeight;
-      // Use 46% of screen width for images with better gap
-      const maxImageWidth = Math.min(screenWidth * 0.46, (screenWidth - 20) / 2);
-      imageWidthRef.current = Math.max(140, maxImageWidth);
-      imageHeightRef.current = imageWidthRef.current * (4 / 3); // Maintain 4:3 aspect ratio
-      gapRef.current = Math.max(15, screenWidth * 0.025); // Better gap spacing
+      // Small, even gap: same space between images, between the columns and at the screen edges
+      gapRef.current = Math.max(10, Math.round(screenWidth * 0.025));
+      imageWidthRef.current = Math.max(140, (screenWidth - gapRef.current * 3) / 2);
+      imageHeightRef.current = imageWidthRef.current * 1.5; // placeholder until images load
       singleLeftHeightRef.current = leftImages.length * (imageHeightRef.current + gapRef.current);
       singleRightHeightRef.current = rightImages.length * (imageHeightRef.current + gapRef.current);
       initialRightRef.current = -(singleRightHeightRef.current - screenHeight);
@@ -111,6 +122,7 @@ const SimpleScroll = ({
     });
 
     loader.load((loader, resources) => {
+      if (disposed) return;
       texturesLoaded.current = true;
 
       // Log loaded resources
@@ -209,11 +221,17 @@ const SimpleScroll = ({
       // Position containers AFTER heights are calculated
       positionContainers();
 
+      // Images can have different heights, so each one starts where the previous one ends
+      const measureColumn = (container) =>
+        container.children.reduce((sum, s) => sum + s.height + gapRef.current, 0);
+
       const updatePositions = (offset) => {
         const leftLoopHeight = singleLeftHeightRef.current;
-        leftContainer.children.forEach((sprite, i) => {
+        let leftY = 0;
+        leftContainer.children.forEach((sprite) => {
           const spriteHeight = sprite.height;
-          const baseY = i * (spriteHeight + gapRef.current);
+          const baseY = leftY;
+          leftY += spriteHeight + gapRef.current;
           let y = baseY - (offset % leftLoopHeight);
           if (y < -spriteHeight) y += leftLoopHeight;
           if (y > leftLoopHeight) y -= leftLoopHeight;
@@ -222,9 +240,11 @@ const SimpleScroll = ({
 
         const rightLoopHeight = singleRightHeightRef.current;
         const initialRight = initialRightRef.current;
-        rightContainer.children.forEach((sprite, i) => {
+        let rightY = 0;
+        rightContainer.children.forEach((sprite) => {
           const spriteHeight = sprite.height;
-          const baseY = i * (spriteHeight + gapRef.current);
+          const baseY = rightY;
+          rightY += spriteHeight + gapRef.current;
           let y = baseY + (offset % rightLoopHeight) + initialRight;
           if (y < -spriteHeight) y += rightLoopHeight;
           if (y > rightLoopHeight) y -= rightLoopHeight;
@@ -317,6 +337,7 @@ const SimpleScroll = ({
           }
           
           displacementFilter.padding = 20; // More padding to avoid edge artifacts
+          // Filter resolution left at Pixi's default (same as the live site's water effect)
 
           // Apply water effect to image containers
           leftContainer.filters = [displacementFilter];
@@ -348,14 +369,14 @@ const SimpleScroll = ({
   calculateDimensions();
 
   /* update your sprites */
-  leftContainer.children.forEach(s => {
+  // Keep each image's own aspect ratio so nothing is stretched or cropped
+  [...leftContainer.children, ...rightContainer.children].forEach(s => {
     s.width  = imageWidthRef.current;
-    s.height = imageHeightRef.current;
+    s.height = imageWidthRef.current * (s.texture.height / s.texture.width);
   });
-  rightContainer.children.forEach(s => {
-    s.width  = imageWidthRef.current;
-    s.height = imageHeightRef.current;
-  });
+  singleLeftHeightRef.current = measureColumn(leftContainer);
+  singleRightHeightRef.current = measureColumn(rightContainer);
+  initialRightRef.current = -(singleRightHeightRef.current - window.innerHeight);
 
   positionContainers();
   updatePositions(currentOffsetRef.current);
@@ -371,21 +392,28 @@ const SimpleScroll = ({
 
       window.addEventListener("resize", handleResize);
 
-      return () => {
+      teardown = () => {
         window.removeEventListener("resize", handleResize);
         ctx.revert();
-        app.destroy(true, { children: true, texture: true, baseTexture: true });
-        initialized.current = false;
-        texturesLoaded.current = false;
       };
     });
+
+    // Returned from the effect itself (it used to be returned from the loader callback,
+    // where React never saw it, so nothing was cleaned up on unmount).
+    return () => {
+      disposed = true;
+      loader.reset();
+      if (teardown) teardown();
+      app.destroy(true, { children: true, texture: true, baseTexture: true });
+      initialized.current = false;
+      texturesLoaded.current = false;
+    };
   }, [containerRef, leftImages, rightImages, scrollHeight]);
 
   return (
-    <canvas
-      ref={canvasRef}
+    <div
+      ref={hostRef}
       className="fixed top-0 left-0 w-full h-full z-[0]"
-      style={{ display: 'block' }}
     />
   );
 };

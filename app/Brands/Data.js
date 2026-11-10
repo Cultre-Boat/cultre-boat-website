@@ -147,7 +147,7 @@ export const IndustriesData = {
             "/Grids/devans/main.png",
             "/Grids/devans/mobile.png",
             "/Grids/devans/grid1.png",
-            "/Grids/devans/grid2.png",
+            "/Grids/devans/grid2.webp",
         ],
         additionalImages: [
             "/Grids/devans/bottom.png",
@@ -174,7 +174,7 @@ export const IndustriesData = {
             "/Grids/Dhartii/main.png",
             "/Grids/Dhartii/mobile.png",
             "/Grids/Dhartii/grid1.png",
-            "/Grids/Dhartii/grid2.png",
+            "/Grids/Dhartii/grid2.webp",
         ],
         additionalImages: [
             "/Grids/Dhartii/bottom.png",
@@ -202,8 +202,8 @@ export const IndustriesData = {
         images: [
             "/Grids/Gaon/main.png",
             "/Grids/Gaon/mobile.png",
-            "/Grids/Gaon/grid1.png",
-            "/Grids/Gaon/grid2.png",
+            "/Grids/Gaon/grid1.webp",
+            "/Grids/Gaon/grid2.webp",
         ],
         additionalImages: [
             "/Grids/Gaon/bottom.png",
@@ -260,7 +260,7 @@ export const IndustriesData = {
             "/Grids/Kelby/grid2.png",
         ],
         additionalImages: [
-            "/Grids/kelby/bottom.png"
+            "/Grids/Kelby/bottom.png"
         ],
         metrics: {
             content: "Content creation & Management",
@@ -286,7 +286,7 @@ export const IndustriesData = {
             "/Grids/Kritika Dawar/grid2.png",
         ],
         additionalImages: [
-            "/Grids/kritika Dawar/bottom.png"
+            "/Grids/Kritika Dawar/bottom.png"
         ],
         metrics: {
             content: "Content creation & Management",
@@ -391,7 +391,7 @@ export const IndustriesData = {
             "/Grids/pernia/grid2.avif",
         ],
         additionalImages: [
-            "/Grids/Pernia/bottom.avif",
+            "/Grids/pernia/bottom.avif",
         ]
         ,
         metrics: {
@@ -519,13 +519,13 @@ export const IndustriesData = {
             points: ["The Vasansi family is seven generations strong into Jaipur textiles and handicrafts."],
         },
         images: [
-            "/Grids/vasansi/main.png",
-            "/Grids/vasansi/mobile.png",
-            "/Grids/vasansi/grid1.png",
-            "/Grids/vasansi/grid2.png",
+            "/Grids/Vasansi/main.png",
+            "/Grids/Vasansi/mobile.png",
+            "/Grids/Vasansi/grid1.png",
+            "/Grids/Vasansi/grid2.png",
         ],
         additionalImages: [
-            "/Grids/vasansi/bottom.png"
+            "/Grids/Vasansi/bottom.png"
         ],
         metrics: {
             content: "Content creation & Management",
@@ -547,8 +547,8 @@ export const IndustriesData = {
         images: [
             "/Grids/zevar/main.png",
             "/Grids/zevar/mobile.png",
-            "/Grids/zevar/grid1.png",
-            "/Grids/zevar/grid2.png",
+            "/Grids/zevar/grid1.webp",
+            "/Grids/zevar/grid2.webp",
         ],
         additionalImages: [
             "/Grids/zevar/bottom.png"
@@ -575,9 +575,6 @@ export const IndustriesData = {
             "/Grids/supria/grid3.png",
             "/Grids/supria/grid1.png",
             "/Grids/supria/grid2.png",
-        ],
-        additionalImages: [
-            "/Grids/supria/bottom.png",
         ],
         metrics: {
             content: "Content creation & Management",
@@ -911,8 +908,7 @@ export const IndustriesData = {
         images: [
             "/Grids/masala-synergy/main.jpg",
             "/Grids/masala-synergy/grid1.png",
-            "/Grids/masala-synergy/grid1.png",
-            "/Grids/masala-synergy/mobile.png",
+            "/Grids/masala-synergy/grid2.png",
         ],
         additionalImages: [
             "/Grids/masala-synergy/bottom.png",
@@ -1198,6 +1194,10 @@ export const IndustriesData = {
     "fashionably-pernia": {
         name: "Fashionably Pernia",
         instagram: "https://www.instagram.com/fashionablypernia?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==",
+        reels: [
+            "/instareel/snapgram.io_426te9fd7nij.mp4",
+            "/instareel/snapgram.io_9r97vfingss8.mp4",
+        ],
         description: "",
         year: "",
         points: [],
@@ -1216,6 +1216,164 @@ export const IndustriesData = {
         // additionalImages: [
         //     "/Grids/intiki/bottom.png",
         // ],
+        metrics: {
+            content: "Content creation & Management",
+            influencers: "Influencer Collaboration",
+            growth: "Growth in Brand Retention",
+            celebrities: "Creative consultancy"
+        }
+    },
+    "love-to-bag": {
+        name: "LOVE TO BAG",
+        instagram: "https://www.instagram.com/lovetobag/",
+        description: "Luxury Handbag Collections",
+        year: "",
+        points: ["Designer Bags", "Premium Quality", "Exclusive Designs"],
+        overview: {
+            title: "OVERVIEW",
+            points: ["Curated collection of luxury handbags"],
+        },
+        images: [
+            "/Grids/lovetobag/lovetobag1.png",
+            "/Grids/lovetobag/lovetobag2.png",
+            "/Grids/lovetobag/lovetobag3.png",
+            "/Grids/lovetobag/lovetobag4.png",
+        ],
+        metrics: {
+            content: "Content creation & Management",
+            influencers: "Influencer Collaboration",
+            growth: "Growth in Brand Retention",
+            celebrities: "Creative consultancy"
+        }
+    },
+    "pankhuri-jain": {
+        name: "PANKHURI JAIN",
+        instagram: "http://instagram.com/pankhurijain.label/",
+        description: "Fashion Designer",
+        year: "",
+        points: ["Custom Designs", "Ethnic Wear", "Contemporary Fashion"],
+        overview: {
+            title: "OVERVIEW",
+            points: ["Bespoke fashion collections"],
+        },
+        images: [
+            "/Grids/pankhurijain/pankhurijain1.png",
+            "/Grids/pankhurijain/pankhurijain2.png",
+            "/Grids/pankhurijain/pankhurijain3.png",
+            "/Grids/pankhurijain/pankhurijain4.png",
+        ],
+        metrics: {
+            content: "Content creation & Management",
+            influencers: "Influencer Collaboration",
+            growth: "Growth in Brand Retention",
+            celebrities: "Creative consultancy"
+        }
+    },
+    "miri-kiri": {
+        name: "MIRI KIRI",
+        instagram: "https://www.instagram.com/mirikiri.icecream/",
+        description: "Contemporary Fashion Brand",
+        year: "",
+        points: ["Trendy Apparel", "Modern Designs", "Quality Fabrics"],
+        overview: {
+            title: "OVERVIEW",
+            points: ["Modern fashion for contemporary lifestyle"],
+        },
+        images: [
+            "/Grids/MIRIKIRI/mirikiri1.png",
+            "/Grids/MIRIKIRI/mirikiri2.png",
+            "/Grids/MIRIKIRI/mirikiri3.png",
+        ],
+        metrics: {
+            content: "Content creation & Management",
+            influencers: "Influencer Collaboration",
+            growth: "Growth in Brand Retention",
+            celebrities: "Creative consultancy"
+        }
+    },
+    "samatvam-by-anjali-bhaskar": {
+        name: "Samatvam By Anjali Bhaskar",
+        instagram: "https://www.instagram.com/samatvambyanjalibhaskar/",
+        description: "Lifestyle & Wellness Brand",
+        year: "",
+        points: ["Wellness Products", "Holistic Living", "Premium Quality"],
+        overview: {
+            title: "OVERVIEW",
+            points: ["Promoting balanced and harmonious living"],
+        },
+        images: [
+            "/Grids/samtvam/samtvam1.png",
+            "/Grids/samtvam/samtvam2.png",
+            "/Grids/samtvam/samtvam3.png",
+        ],
+        metrics: {
+            content: "Content creation & Management",
+            influencers: "Influencer Collaboration",
+            growth: "Growth in Brand Retention",
+            celebrities: "Creative consultancy"
+        }
+    },
+    "koe-beauty": {
+        name: "KOE BEAUTY",
+        instagram: "https://www.instagram.com/thekoebeauty/",
+        description: "Beauty & Skincare Products",
+        year: "",
+        points: ["Natural Skincare", "Beauty Products", "Dermatologist Tested"],
+        overview: {
+            title: "OVERVIEW",
+            points: ["Premium beauty solutions for radiant skin"],
+        },
+        images: [
+            "/Grids/koe/koe1.png",
+            "/Grids/koe/koe2.png",
+            "/Grids/koe/koe3.png",
+            "/Grids/koe/koe4.png",
+        ],
+        metrics: {
+            content: "Content creation & Management",
+            influencers: "Influencer Collaboration",
+            growth: "Growth in Brand Retention",
+            celebrities: "Creative consultancy"
+        }
+    },
+    "healix": {
+        name: "HEALIX",
+        instagram: "https://www.instagram.com/gethealix/",
+        description: "Health & Wellness Supplements",
+        year: "",
+        points: ["Health Supplements", "Wellness Products", "Natural Ingredients"],
+        overview: {
+            title: "OVERVIEW",
+            points: ["Science-backed wellness and health solutions"],
+        },
+        images: [
+            "/Grids/HEALIX1/HEALIX1.png",
+            "/Grids/HEALIX1/HEALIX2.png",
+            "/Grids/HEALIX1/HEALIX3.png",
+        ],
+        metrics: {
+            content: "Content creation & Management",
+            influencers: "Influencer Collaboration",
+            growth: "Growth in Brand Retention",
+            celebrities: "Creative consultancy"
+        }
+    },
+    "okami": {
+        name: "OKAMI",
+        instagram: "https://www.instagram.com/okami.parfums/",
+        description: "Beauty & Personal Care",
+        year: "",
+        points: ["Skincare", "Personal Care", "Premium Products"],
+        overview: {
+            title: "OVERVIEW",
+            points: ["Luxurious beauty and personal care collection"],
+        },
+        images: [
+            "/Grids/okami/okami.png",
+            "/Grids/okami/okami2.png",
+            "/Grids/okami/okami3.png",
+            "/Grids/okami/okami4.png",
+        ],
         metrics: {
             content: "Content creation & Management",
             influencers: "Influencer Collaboration",

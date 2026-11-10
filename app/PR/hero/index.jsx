@@ -51,7 +51,7 @@ export default function Hero() {
 
         {/* Right image/video section */}
         <div className="w-full md:w-1/2 flex justify-center px-4 md:px-0">
-          <div className="w-full max-w-[500px] aspect-[16/9]">
+          <div className="w-full max-w-[500px]">
             {/* <button
             onClick={() =>
               openVideoModal("https://www.youtube.com/watch?v=dQw4w9WgXcQ")
@@ -62,11 +62,11 @@ export default function Hero() {
             <Image
               src="/PR-images/PR_top.webp"
               alt="Cultural celebration with people in traditional attire"
-              width={600}
-              height={337.5} // Maintain 16:9 aspect ratio (600 / 16 * 9)
-              className="object-cover hover:opacity-90 transition-opacity duration-300"
+              width={500}
+              height={327}
+              className="w-full h-auto block no-water-effect hover:opacity-90 transition-opacity duration-300"
               priority
-              quality={100}
+              quality={90}
               unoptimized={false}
             />
             {/* <div className="absolute inset-0 flex items-center justify-center">
@@ -142,31 +142,33 @@ export default function Hero() {
       )} */}
 
       {/* ================= BOTTOM SECTION ================= */}
-      <div className="w-full flex flex-col md:flex-row justify-between px-6 md:px-20 mt-6 md:mt-10 gap-4 md:gap-12 md:h-[70vh]">
+      <div className="w-full flex flex-col md:flex-row justify-between items-start px-6 md:px-20 mt-6 md:mt-10 gap-4 md:gap-12">
         {/* Left Image (News Screenshot) */}
-        <div className="w-full md:w-1/2 h-full flex justify-center md:justify-start">
-          <div className="w-full h-[380px] md:h-[450px] relative max-w-[400px]">
+        <div className="w-full md:w-1/2 flex justify-center md:justify-start">
+          <div className="w-full relative max-w-[400px]">
             <Image
               src="/PR-images/PR-first.webp"
               alt="BuzzFeed news article screenshot"
-              fill
-              className="object-contain"
+              width={790}
+              height={875}
+              className="w-full h-auto block no-water-effect"
               priority
-              quality={100}
+              quality={90}
             />
           </div>
         </div>
 
         {/* Right Image */}
-        <div className="w-full md:w-1/2 h-full flex justify-center md:justify-end">
-          <div className="w-full h-[380px] md:h-[450px] relative max-w-[800px]">
+        <div className="w-full md:w-1/2 flex justify-center md:justify-end">
+          <div className="w-full relative max-w-[800px]">
             <Image
               src="/PR-images/PR_2.webp"
               alt="Secondary news image"
-              fill
-              className="object-contain"
+              width={500}
+              height={327}
+              className="w-full h-auto block no-water-effect"
               priority
-              quality={100}
+              quality={90}
             />
           </div>
         </div>

@@ -19,7 +19,7 @@ export default function Stylist() {
   const scrollRef = useRef(null);
   const animationRef = useRef(null);
   const posRef = useRef(0);
-  const logoWidth = 256;
+  const logoWidth = 250; // must match the item width below
   const totalWidth = productImages.length * logoWidth;
 
   const animate = () => {
@@ -94,17 +94,17 @@ export default function Stylist() {
             style={{ willChange: "transform" }}
           >
             {repeatedImages.map((img, index) => (
-              <div key={index} className="mx-3 flex-shrink-0">
-                <div className="relative w-[250px] h-[300px]">
+              <div key={index} className="flex-shrink-0">
+                <div className="relative w-[250px]">
                   <Image
                     src={img.src}
                     alt={img.alt}
                     width={250}
                     height={300}
-                    className="object-contain no-water-effect"
+                    className="w-full h-auto block no-water-effect"
                     sizes="250px"
                     priority={index < 6}
-                    quality={95}
+                    quality={90}
                   />
                 </div>
               </div>
@@ -118,10 +118,8 @@ export default function Stylist() {
           <button
             key={index}
             onClick={() => scrollToIndex(index)}
-            className={`transition-all duration-300 rounded-full no-water-effect ${
-              activeIndex === index
-                ? "bg-blue-600 w-8 h-3"
-                : "bg-gray-300 hover:bg-gray-400 w-3 h-3"
+            className={`h-2 rounded-full transition-all no-water-effect ${
+              activeIndex === index ? "w-8 bg-white" : "w-2 bg-white/40"
             }`}
             aria-label={`Go to image ${index + 1}`}
           />

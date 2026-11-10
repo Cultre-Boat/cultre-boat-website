@@ -6,45 +6,9 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import ScrollingText from "./ScrollingText";
 import PixiImage from "./PixiImage";
 import SimpleScroll from "./SimpleScroll";
+import ImageColumnsFallback from "./ImageColumnsFallback";
 
 gsap.registerPlugin(ScrollTrigger);
-
-// --- 1. DEFINE MOBILE-SPECIFIC IMAGES ---
-const mobileLeftImages = [
-  "/Image/Desgin/img1.png",
-  "/Image/Desgin/img2.png",
-  "/Image/Desgin/img3.png",
-  "/Image/Desgin/img4.png",
-  "/Image/Desgin/img5.png",
-  "/Image/Desgin/img6.png",
-  "/Image/Desgin/img7.png",
-  "/Image/Desgin/img8.png",
-  "/Image/Desgin/img9.png",
-  "/Image/Desgin/img10.png",
-  "/Image/Desgin/img11.png",
-  "/Image/Desgin/img12.png",
-  "/Image/Desgin/img13.png",
-  "/Image/Desgin/img15.png",
-  "/Image/Desgin/img31.png",
-];
-
-const mobileRightImages = [
-  "/Image/Desgin/img30.jpg",
-  "/Image/Desgin/img29.png",
-  "/Image/Desgin/img1.png",
-  "/Image/Desgin/img27.png",
-  "/Image/Desgin/img26.png",
-  "/Image/Desgin/img25.png",
-  "/Image/Desgin/img24.png",
-  "/Image/Desgin/img23.png",
-  "/Image/Desgin/img22.png",
-  "/Image/Desgin/img21.png",
-  "/Image/Desgin/img20.png",
-  "/Image/Desgin/img19.png",
-  "/Image/Desgin/img18.png",
-  "/Image/Desgin/img17.png",
-  "/Image/Desgin/img16.png",
-];
 
 // --- 2. RENAME ORIGINAL DESKTOP IMAGES ---
 const desktopLeftImages = [
@@ -83,6 +47,84 @@ const desktopRightImages = [
   "/Image/webp/img16.webp",
 ];
 
+// --- 3. VAMIKA & JANVI: ONLY THE UNCOMMENTED ONES, PLACED AT RANDOM SPOTS ON EACH LOAD ---
+const vamikaJanviImages = [
+  "/Vamika-janvi/vamika2.jpeg",
+  "/Vamika-janvi/vamika3.jpeg",
+  "/Vamika-janvi/vamika4.jpeg",
+  // "/Vamika-janvi/vamika5.jpeg",
+  // "/Vamika-janvi/vamika6.jpeg",
+  // "/Vamika-janvi/vamika7.jpeg",
+  // "/Vamika-janvi/vamika8.jpeg",
+  // "/Vamika-janvi/janvikapoor1.jpeg",
+  "/Vamika-janvi/janvikapoor2.jpeg",
+  "/Vamika-janvi/janvikapoor3.jpeg",
+  // "/Vamika-janvi/janvikapoor4.jpeg",
+  // "/Vamika-janvi/janvikapoor5.jpeg",
+  // "/Vamika-janvi/janvikapoor6.jpeg",
+  // "/Vamika-janvi/janvikapoor7.jpeg",
+];
+
+// Fisher-Yates shuffle (returns a new array)
+function shuffle(list) {
+  const a = [...list];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+// Puts `extras` into `base` at evenly spaced spots (with a random start), so no two
+// extras ever end up next to each other, even where the column loops back to the top.
+function spreadInto(base, extras) {
+  if (!extras.length) return [...base];
+  const total = base.length + extras.length;
+  const step = total / extras.length;
+  const start = Math.random() * step;
+  const extraSlots = new Set(extras.map((_, k) => Math.floor(start + k * step)));
+  const result = [];
+  let b = 0;
+  let e = 0;
+  for (let pos = 0; pos < total; pos++) {
+    result.push(extraSlots.has(pos) ? extras[e++] : base[b++]);
+  }
+  return result;
+}
+
+// New random layout on every load: every image appears once, in random order.
+// The Vamika/Janvi photos all go in one column (picked at random) and are spread out
+// in it, so two of them never sit next to each other - not above/below, and not side by
+// side (the columns scroll in opposite directions, so photos in different columns would
+// pass each other at some point).
+function scatterInto(leftBase, rightBase, extras) {
+  const pool = shuffle([...new Set([...leftBase, ...rightBase])]);
+  // The column with the extras gets fewer base images so both columns stay similar in length
+  const extrasGoLeft = Math.random() < 0.5;
+  const withExtrasCount = Math.floor((pool.length - extras.length) / 2);
+  const withExtras = spreadInto(pool.slice(0, withExtrasCount), shuffle(extras));
+  const plain = pool.slice(withExtrasCount);
+  return extrasGoLeft
+    ? { left: withExtras, right: plain }
+    : { left: plain, right: withExtras };
+}
+
+// Mobile uses the same high-res images as desktop (the old /Image/Desgin files were
+// 190x285 thumbnails that got upscaled ~3x on phones and looked blurry/stretched).
+// Celebrity photos use 1000px-wide copies; the originals (up to 3328x4160) exceed
+// the 4096px max texture size on many phones.
+const vamikaJanviMobileImages = vamikaJanviImages.map((src) =>
+  src.replace("/Vamika-janvi/", "/Vamika-janvi/web/")
+);
+
+function createScatteredLayout() {
+  const extras = vamikaJanviImages;
+  return {
+    mobile: scatterInto(desktopLeftImages, desktopRightImages, vamikaJanviMobileImages),
+    desktop: scatterInto(desktopLeftImages, desktopRightImages, extras),
+  };
+}
+
 function isMobileDevice() {
   const userAgent =
     typeof window.navigator === "undefined" ? "" : navigator.userAgent;
@@ -91,17 +133,29 @@ function isMobileDevice() {
   );
 }
 
+function hasWebGL() {
+  try {
+    const canvas = document.createElement("canvas");
+    return !!(window.WebGLRenderingContext && (canvas.getContext("webgl") || canvas.getContext("experimental-webgl")));
+  } catch {
+    return false;
+  }
+}
+
 export default function EnhancedReverseStartLayout() {
   const containerRef = useRef(null);
   const textRef = useRef(null);
   const [isMobile, setIsMobile] = useState(false);
   const [componentHeight, setComponentHeight] = useState("auto");
   const [mountWaterEffect, setMountWaterEffect] = useState(false);
+  const [scatter] = useState(createScatteredLayout);
+  const [webgl, setWebgl] = useState(null); // null until checked on the client
 
   // Use a large height for continuous scrolling
   const largeScrollHeight = 100000; // Adjust for desired scroll distance
 
   useEffect(() => {
+    setWebgl(hasWebGL());
     setIsMobile(isMobileDevice());
     const handleResize = () => setIsMobile(isMobileDevice());
     window.addEventListener("resize", handleResize);
@@ -144,23 +198,25 @@ export default function EnhancedReverseStartLayout() {
     return () => ctx.revert();
   }, []);
 
-  const leftImages = isMobile ? mobileLeftImages : desktopLeftImages;
-  const rightImages = isMobile ? mobileRightImages : desktopRightImages;
-
   return (
     <main className="pixi-page relative">
-      {isMobile ? (
+      {webgl === false ? (
+        <ImageColumnsFallback
+          leftImages={isMobile ? scatter.mobile.left : scatter.desktop.left}
+          rightImages={isMobile ? scatter.mobile.right : scatter.desktop.right}
+        />
+      ) : webgl === null ? null : isMobile ? (
         <SimpleScroll
           containerRef={containerRef}
-          leftImages={mobileLeftImages}
-          rightImages={mobileRightImages}
+          leftImages={scatter.mobile.left}
+          rightImages={scatter.mobile.right}
           scrollHeight={largeScrollHeight}
         />
       ) : (
         <PixiImage
           containerRef={containerRef}
-          leftImages={desktopLeftImages}
-          rightImages={desktopRightImages}
+          leftImages={scatter.desktop.left}
+          rightImages={scatter.desktop.right}
           scrollHeight={largeScrollHeight}
         />
       )}

@@ -24,7 +24,7 @@ export default function Third() {
   const scrollRef = useRef(null);
   const animationRef = useRef(null);
   const posRef = useRef(0);
-  const logoWidth = 260;
+  const logoWidth = 250; // must match the item width below
   const totalWidth = portfolioItems.length * logoWidth;
 
   const animate = () => {
@@ -106,23 +106,18 @@ export default function Third() {
             {repeatedItems.map((item, index) => (
               <div
                 key={`${item.id}-${index}`}
-                className="flex-shrink-0 mx-2 md:mx-1.5"
+                className="flex-shrink-0"
               >
-                <div className="relative h-[300px]">
+                <div className="relative w-[250px]">
                   <Image
                     src={item.image || "/placeholder.svg"}
                     alt={`Portfolio item ${item.id}`}
                     width={250}
                     height={300}
                     sizes="250px"
-                    style={{
-                      width: "auto",
-                      height: "100%",
-                      objectFit: "contain",
-                    }}
-                    className="no-water-effect"
+                    className="w-full h-auto block no-water-effect"
                     priority={index < 6}
-                    quality={95}
+                    quality={90}
                   />
                 </div>
               </div>
@@ -137,10 +132,8 @@ export default function Third() {
           <button
             key={index}
             onClick={() => scrollToIndex(index)}
-            className={`transition-all duration-300 rounded-full no-water-effect ${
-              activeIndex === index
-                ? "bg-blue-600 w-8 h-3"
-                : "bg-gray-300 hover:bg-gray-400 w-3 h-3"
+            className={`h-2 rounded-full transition-all no-water-effect ${
+              activeIndex === index ? "w-8 bg-white" : "w-2 bg-white/40"
             }`}
             aria-label={`Go to image ${index + 1}`}
           />

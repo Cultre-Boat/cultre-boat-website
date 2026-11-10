@@ -1,15 +1,16 @@
 "use client";
-import React, { useEffect } from 'react'; // Import useEffect here
+import React, { useEffect } from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
-import MovingFog from '../components/MovingFog';
 import { gsap } from "gsap";
-import FullScreenWaterEffect from '../components/FullScreenWaterEffect';
-
-// Note: The 'WaterEffect' component was imported but not used, so I've removed it.
+import BtsImages from "../components/BtsImages";
+import SectionLabel from "../components/SectionLabel";
+import WaterFilterDefs from "../components/WaterFilterDefs";
+import useWaterTextAnimation from "../hooks/useWaterTextAnimation";
+import { socialLinks } from "../lib/socialLinks";
 
 const StudioAbout = () => {
-  // ✅ useEffect hook is now correctly placed inside the component
+  useWaterTextAnimation();
+
   useEffect(() => {
     const imageTurbulence = document.querySelector("#waterFilter feTurbulence");
     const imageDisplacementMap = document.querySelector(
@@ -28,123 +29,121 @@ const StudioAbout = () => {
         duration: 20,
         repeat: -1,
         yoyo: true,
-        scrollTrigger: {
-          trigger: "section",
-          start: "top bottom",
-          toggleActions: "play pause resume reset",
-        },
       });
     }
 
-    const textTurbulence = document.querySelector(
-      "#textWaterFilter feTurbulence"
-    );
-    const textDisplacementMap = document.querySelector(
-      "#textWaterFilter feDisplacementMap"
-    );
-
-    if (textTurbulence && textDisplacementMap) {
-      document.querySelectorAll("h1, h2, h3, p, a").forEach((el) => {
-        el.style.filter = "url(#textWaterFilter)";
-      });
-
-      gsap.set(textDisplacementMap, { attr: { scale: 10 } });
-
-      gsap.to(textTurbulence, {
-        attr: { baseFrequency: "0.02 0.10" },
-        duration: 15,
-        ease: "sine.inOut",
-        repeat: -1,
-        yoyo: true,
-      });
-    }
-  }, []); // Empty dependency array ensures this runs only once on mount
+  }, []);
 
   return (
     <>
-        <svg className="absolute w-0 h-0 pointer-events-none">
-        <filter id="waterFilter">
-          <feTurbulence
-            type="fractalNoise"
-            baseFrequency="0.005 0.008"
-            numOctaves="1"
-            result="noiseForImage"
-          />
-          <feDisplacementMap
-            in="SourceGraphic"
-            in2="noiseForImage"
-            scale="0"
-            xChannelSelector="R"
-            yChannelSelector="G"
-          />
-        </filter>
-        <filter id="textWaterFilter">
-          <feTurbulence
-            type="fractalNoise"
-            baseFrequency="0.01 0.01"
-            numOctaves="1"
-            result="noiseForText"
-          />
-          <feDisplacementMap
-            in="SourceGraphic"
-            in2="noiseForText"
-            scale="0"
-            xChannelSelector="R"
-            yChannelSelector="G"
-          />
-        </filter>
-      </svg>
-      <div className="w-full bg-transparent text-white min-h-screen p-6 md:p-16 overflow-x-hidden mt-20">
-     
-        
-        <h5 className="text-xs md:text-sm uppercase tracking-wider mb-6 md:mb-8 pl-0 md:pl-10 ">WHO ARE WE</h5>
+      <WaterFilterDefs withImageFilter />
 
-        <div className="flex flex-col md:flex-row mb-12 md:mb-16 relative pl-0 md:pl-20">
-          <div className="md:w-1/2">
-            <h1 className="text-3xl md:text-4xl lg:text-5xl font-light mb-6 md:mb-8 leading-tight md:leading-snug">
-              Everybody loves a <br className="hidden md:block"/>good story and we <br className="hidden md:block"/>love to build them.
+      <div className="w-full bg-transparent text-white min-h-screen overflow-x-hidden px-6 md:px-16 lg:px-24 pt-28 md:pt-36 pb-4 md:pb-4">
+
+        {/* Intro: headline */}
+        <section className="grid grid-cols-1 md:grid-cols-12 gap-10 md:gap-16 items-center">
+          <div className="md:col-span-12">
+            <SectionLabel className="mb-6 flex items-center gap-4">
+              <span className="w-10 h-[1px] bg-white/60"></span>
+              Who are we
+            </SectionLabel>
+            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-light leading-tight">
+              Everybody loves a good story and we love to build them.
             </h1>
-            <div className="relative left-0 md:left-30 p-4 space-y-2 text-base md:text-lg text-gray-400">
-              <Link href="https://www.facebook.com/CultreBoat/" className=" hover:text-white transition hidden md:block">Facebook</Link>
-              <Link href="https://www.instagram.com/cultreboat/" className=" hover:text-white transition hidden md:block">Instagram</Link>
-              <Link href="https://www.linkedin.com/company/cultre-boat" className=" hover:text-white transition hidden md:block">LinkedIn</Link>
-            </div>
           </div>
+        </section>
 
-          {/* Image container must be relative for the fill prop to work */}
-          <div className="md:w-1/2 md:absolute md:-right-1/10 h-48 md:h-64 lg:h-80 mt-8 md:mt-0 md:pl-20 relative">
-            {/* ✅ Updated Image component */}
-            <Image
-              src="/About-main.jpeg"
-              alt="Creative studio atmosphere"
-              fill // Use fill instead of layout="fill"
-              className="object-cover opacity-90" // Use className for object-fit
-            />
-            {/* Decorative corners remain the same */}
-            <div className="absolute top-1/2 -left-4 transform -translate-x-1/2 -translate-y-1/2 w-12 h-12 md:w-16 md:h-16 opacity-70">
-              <div className="absolute top-0 left-0 w-3 h-3 md:w-4 md:h-4 border-t-2 border-l-2 border-white"></div>
-              <div className="absolute top-0 right-0 w-3 h-3 md:w-4 md:h-4 border-t-2 border-r-2 border-white"></div>
-              <div className="absolute bottom-0 left-0 w-3 h-3 md:w-4 md:h-4 border-b-2 border-l-2 border-white"></div>
-              <div className="absolute bottom-0 right-0 w-3 h-3 md:w-4 md:h-4 border-b-2 border-r-2 border-white"></div>
-            </div>
+        {/* Statement */}
+        <section className="mt-10 md:mt-14 grid grid-cols-1 md:grid-cols-12 gap-3 md:gap-16">
+          <SectionLabel className="md:col-span-2">
+            Our studio
+          </SectionLabel>
+          <p className="md:col-span-10 text-2xl md:text-4xl lg:text-5xl text-gray-200 font-light leading-snug">
+            We're a creative studio that specializes in brand strategy and digital creation, who enjoy a close working relationship with each of our clients and engaging in meaningful digital experiences.
+          </p>
+        </section>
+
+        {/* BTS photos (public/BTSimages/web) */}
+        <section className="mt-10 md:mt-14">
+          <SectionLabel className="mb-6 md:mb-10">
+            Behind the scenes
+          </SectionLabel>
+          {/* Pull the photos out past the page padding so the side margin matches the gap between photos */}
+          <div className="-mx-4 md:-mx-[52px] lg:-mx-[84px]">
+            <BtsImages />
           </div>
-        </div>
+        </section>
 
-        <div className="mt-10 md:mt-10 mb-12 md:mb-10 max-w-full md:max-w-6xl pl-0 md:pl-44">
-          <p className="text-xl md:text-3xl text-gray-300 tracking-wider text-justify">
-            We're a creative studio that specializes in brand strategy and<br className="hidden md:block"/>
-            digital creation, who enjoy a close working relationship with<br className="hidden md:block"/>
-            each of our clients and engaging in meaningful digital<br className="hidden md:block"/>
-            experiences.
-          </p>
-        </div>
+        {/* Team */}
+        <section className="mt-10 md:mt-14 grid grid-cols-1 md:grid-cols-12 gap-3 md:gap-16">
+          <SectionLabel className="md:col-span-2">
+            Our people
+          </SectionLabel>
+          <div className="md:col-span-10">
+            <ul className="flex flex-wrap gap-3 mb-8">
+              {["Marketers", "Copywriters", "Thinkers", "Social media enthusiasts", "Visual designers"].map((role) => (
+                <li
+                  key={role}
+                  className="text-sm md:text-base uppercase tracking-widest border border-white/20 rounded-full px-4 py-2 text-white/80"
+                >
+                  {role}
+                </li>
+              ))}
+            </ul>
+            <p className="text-xl md:text-3xl text-gray-300 font-light leading-relaxed">
+              We're marketers, copywriters, thinkers, social media enthusiasts, visual designers and <span className="text-white">most importantly, communicators.</span>
+            </p>
+          </div>
+        </section>
 
-        <div className="flex justify-center">
-          <p className="text-xl md:text-3xl text-gray-300 mt-12 md:mt-16 max-w-full md:max-w-5xl text-center md:text-right tracking-wider ">
-            We're marketers, copywriters, thinkers, social media enthusiasts,
-            visual designers and <span>most importantly, communicators.</span>
-          </p>
-        </div>
+        {/* Stats */}
+        <section className="mt-6 md:mt-8 grid grid-cols-2 gap-6 md:gap-16">
+          <div>
+            <p className="text-4xl md:text-6xl font-light">10+</p>
+            <SectionLabel className="mt-2">Years</SectionLabel>
+          </div>
+          <div>
+            <p className="text-4xl md:text-6xl font-light">50+</p>
+            <SectionLabel className="mt-2">Brands served</SectionLabel>
+          </div>
+        </section>
+
+        {/* How we work */}
+        <section className="mt-8 md:mt-10">
+          <SectionLabel className="mb-5 md:mb-6">
+            How we work
+          </SectionLabel>
+          <ol className="grid grid-cols-1 md:grid-cols-4 gap-8 md:gap-10">
+            {[
+              { title: "Decode the brand", text: "Brand positioning & strategy that defines who the brand is and who it speaks to." },
+              { title: "Shape the identity", text: "Brand identity, visual vocabulary and tone of voice that carry the story consistently." },
+              { title: "Create across media", text: "Print & digital design, campaigns and collaterals built from one brand system." },
+              { title: "Amplify and grow", text: "Content creation & management, influencer collaboration and creative consultancy to build retention." },
+            ].map((step, i) => (
+              <li key={step.title}>
+                <span className="text-xs tracking-[0.3em] text-white/50">0{i + 1}</span>
+                <h3 className="mt-3 text-xl md:text-2xl font-light">{step.title}</h3>
+                <p className="mt-2 text-sm md:text-base text-gray-300 leading-relaxed">{step.text}</p>
+              </li>
+            ))}
+          </ol>
+        </section>
+
+        {/* Social */}
+        <section className="mt-10 md:mt-14 flex flex-wrap gap-x-10 gap-y-4">
+          {socialLinks.map((link) => (
+            <Link
+              key={link.label}
+              href={link.href}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group flex items-center gap-3 text-sm md:text-base uppercase tracking-[0.2em] text-gray-400 hover:text-white transition-all duration-300"
+            >
+              <span className="w-8 h-[1px] bg-gray-400 group-hover:bg-white group-hover:w-12 transition-all duration-300"></span>
+              {link.label}
+            </Link>
+          ))}
+        </section>
       </div>
     </>
   );

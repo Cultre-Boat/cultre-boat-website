@@ -7,6 +7,8 @@ import Mailers from "../components/mailers";
 import LIZ from "../components/designLiz";
 import MovingFog from "../components/MovingFog";
 import PixiWaterImages from "../components/PixiWaterImages";
+import { LayoutCarousel, layoutImages } from "../components/LayoutCarousel";
+import SectionHeading from "../components/SectionHeading";
 
 export default function DesignPortfolio() {
   const [videoUrl, setVideoUrl] = useState(null);
@@ -57,10 +59,10 @@ export default function DesignPortfolio() {
           ref={contentRef}
           className="text-white leading-relaxed font-bellota-light"
         >
-          <div className="max-w-6xl mx-auto px-4 lg:px-4 px-0">
+          <div className="w-full px-0">
           {/* Header Section */}
           <section className="relative mt-20 text-center z-[10]">
-            <div className="flex flex-col lg:flex-row items-center min-h-[400px] lg:min-h-[400px] gap-5 lg:gap-10 md:mt-0">
+            <div className="flex flex-col lg:flex-row items-center min-h-[400px] lg:min-h-[400px] gap-0 lg:gap-10 md:mt-0">
               <div className="flex-1 px-6 md:px-8 lg:px-5 text-stable no-water-effect text-center w-full">
                 <p className="text-lg md:text-xl tracking-[2px] uppercase my-2 text-white no-water-effect px-4">
                   DECODING BRANDING
@@ -77,11 +79,11 @@ export default function DesignPortfolio() {
               </div>
               <div className="flex-1 relative w-full max-w-full lg:max-w-2xl mx-auto lg:mx-0 z-[10]">
                 <img
-                  src="/Design//webp/Design-image1.webp"
+                  src="/Design/webp/Design-image1.webp"
                   alt="Traditional Fashion Design"
                   width={600}
                   height={400}
-                  className="w-full h-auto opacity-[1] object-cover"
+                  className="w-full h-auto opacity-[1] object-contain"
                   onError={(e) =>
                     console.error(`Failed to load image: ${e.target.src}`)
                   }
@@ -91,14 +93,14 @@ export default function DesignPortfolio() {
           </section>
 
           {/* Projects Grid */}
-          <section className="mt-10 md:mt-0 text-center z-[10]">
-            <div className="flex flex-col lg:flex-row gap-0 lg:gap-24 justify-center mb-2 mx-auto items-stretch">
+          <section className="mt-2 md:mt-3 text-center z-[10]">
+            <div className="flex flex-col lg:flex-row gap-2 md:gap-3">
               {/* Left Image */}
-              <div className="relative overflow-hidden w-full lg:w-[650px] md:mb-0 mx-auto lg:mx-0 z-[10] flex items-stretch">
+              <div className="relative overflow-hidden z-[10] lg:[flex:var(--ar)_1_0%]" style={{ "--ar": 892 / 578 }}>
                 <img
                   src="/Design/webp/Design-image2.webp"
                   alt="Gurorganic Campaign"
-                  className="w-full h-full object-cover"
+                  className="w-full h-auto block"
                   onError={(e) =>
                     console.error(`Failed to load image: ${e.target.src}`)
                   }
@@ -106,11 +108,11 @@ export default function DesignPortfolio() {
               </div>
 
               {/* Right Image */}
-              <div className="relative overflow-hidden w-full lg:w-[500px] lg:mx-0 z-[10] mt-10 md:mt-0 flex items-stretch">
+              <div className="relative overflow-hidden z-[10] lg:[flex:var(--ar)_1_0%]" style={{ "--ar": 737 / 554 }}>
                 <img
                   src="/Design/webp/Design-image3-1.webp"
                   alt="Fashion Photography"
-                  className="w-full h-full object-cover"
+                  className="w-full h-auto block"
                   onError={(e) =>
                     console.error(`Failed to load image: ${e.target.src}`)
                   }
@@ -120,9 +122,9 @@ export default function DesignPortfolio() {
           </section>
 
           {/* Creative Direction Section with Video */}
-          <section className="text-center z-[10] mt-10 md:mt-16 px-4 md:px-6">
-            <div className="text-stable no-water-effect">
-              <h2 className="text-2xl lg:text-3xl font-light tracking-[2px] uppercase text-white no-water-effect px-4 mb-0 leading-none">
+          <section className="text-center z-[10] mt-6 md:mt-8">
+            <div className="text-stable no-water-effect px-6 md:px-0">
+              <h2 className="text-2xl lg:text-3xl font-light tracking-[2px] uppercase text-white no-water-effect px-4 mb-2 leading-tight">
                 CREATIVE DIRECTION AND STRATEGY
               </h2>
               <p className="text-lg lg:text-2xl italic text-white no-water-effect px-4 font-light mb-3 md:mb-4 mt-0 leading-tight" style={{ fontWeight: 300 }}>
@@ -130,9 +132,9 @@ export default function DesignPortfolio() {
               </p>
             </div>
 
-            <div className="flex flex-col lg:flex-row gap-3 lg:gap-40 justify-center items-stretch">
+            <div className="flex flex-col lg:flex-row gap-2 md:gap-3">
               {/* Left video image */}
-              <div className="relative overflow-hidden w-full lg:max-w-[600px] mx-auto lg:mx-0 z-[10] flex items-stretch">
+              <div className="relative overflow-hidden z-[10] lg:[flex:var(--ar)_1_0%]" style={{ "--ar": 1040 / 674 }}>
                 <button
                   onClick={() =>
                     openVideoModal(
@@ -147,7 +149,7 @@ export default function DesignPortfolio() {
                     alt="Kalki Fashion"
                     width={600}
                     height={350}
-                    className="w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-300"
+                    className="w-full h-auto block grayscale hover:grayscale-0 transition-all duration-300"
                     onError={(e) =>
                       console.error(`Failed to load image: ${e.target.src}`)
                     }
@@ -179,13 +181,13 @@ export default function DesignPortfolio() {
               </div>
 
               {/* Right static image */}
-              <div className="relative overflow-hidden w-full lg:w-[50%] lg:max-w-[350px] mx-auto lg:mx-0 z-[10] flex items-stretch mt-5 md:mt-0">
+              <div className="relative overflow-hidden z-[10] lg:[flex:var(--ar)_1_0%]" style={{ "--ar": 800 / 1200 }}>
                 <img
                   src="/Design/webp/img28.webp"
                   alt="Product Photography"
                   width={600}
                   height={350}
-                  className="w-full h-full object-cover"
+                  className="w-full h-auto block"
                   onError={(e) =>
                     console.error(`Failed to load image: ${e.target.src}`)
                   }
@@ -239,35 +241,35 @@ export default function DesignPortfolio() {
           )}
 
           {/* Visual Vocabulary Section */}
-          <section className="text-center z-[10] mt-10 md:mt-16 px-4 md:px-6">
-            <div className="text-stable no-water-effect">
-              <h2 className="text-2xl lg:text-3xl font-light tracking-[2px] uppercase text-white no-water-effect px-4 mb-0 leading-none">
+          <section className="text-center z-[10] mt-6 md:mt-8">
+            <div className="text-stable no-water-effect px-6 md:px-0">
+              <h2 className="text-2xl lg:text-3xl font-light tracking-[2px] uppercase text-white no-water-effect px-4 mb-2 leading-tight">
                 VISUAL VOCABULARY
               </h2>
               <p className="text-lg lg:text-2xl italic text-white no-water-effect px-4 font-light mb-3 md:mb-4 mt-0 leading-tight" style={{ fontWeight: 300 }}>
                 Exhibition Guidelines
               </p>
             </div>
-            <div className="flex flex-col lg:flex-row gap-5 lg:gap-24 justify-center lg:mx-4 mb-0 md:mb-9">
-              <div className="relative overflow-hidden w-full lg:w-[70%] lg:max-w-[400px] mx-auto lg:mx-0 z-[10]">
+            <div className="flex flex-col lg:flex-row gap-2 md:gap-3">
+              <div className="relative overflow-hidden z-[10] lg:[flex:var(--ar)_1_0%]" style={{ "--ar": 600 / 899 }}>
                 <img
                   src="/Design/webp/D_img1.webp"
                   alt="Visual Vocabulary Design 1"
                   width={600}
                   height={450}
-                  className="w-full h-full object-cover"
+                  className="w-full h-auto block"
                   onError={(e) =>
                     console.error(`Failed to load image: ${e.target.src}`)
                   }
                 />
               </div>
-              <div className="relative overflow-hidden w-full lg:w-[70%] lg:max-w-[400px] mx-auto lg:mx-0 z-[10]">
+              <div className="relative overflow-hidden z-[10] lg:[flex:var(--ar)_1_0%]" style={{ "--ar": 600 / 899 }}>
                 <img
                   src="/Design/webp/D_img2.webp"
                   alt="Visual Vocabulary Design 2"
                   width={600}
                   height={450}
-                  className="w-full h-full object-cover"
+                  className="w-full h-auto block"
                   onError={(e) =>
                     console.error(`Failed to load image: ${e.target.src}`)
                   }
@@ -277,35 +279,35 @@ export default function DesignPortfolio() {
           </section>
 
           {/* Print Section */}
-          <section className="text-center z-[10] mt-10 md:mt-16 px-4 md:px-6">
-            <div className="text-stable no-water-effect">
-              <h2 className="text-2xl lg:text-3xl font-light tracking-[2px] uppercase text-white no-water-effect px-4 mb-0 leading-none">
+          <section className="text-center z-[10] mt-6 md:mt-8">
+            <div className="text-stable no-water-effect px-6 md:px-0">
+              <h2 className="text-2xl lg:text-3xl font-light tracking-[2px] uppercase text-white no-water-effect px-4 mb-2 leading-tight">
                 PRINT AND DIGITAL DESIGN
               </h2>
               <p className="text-lg lg:text-2xl italic text-white no-water-effect px-4 font-light mb-3 md:mb-4 mt-0 leading-tight" style={{ fontWeight: 300 }}>
                 Collaterals
               </p>
             </div>
-            <div className="flex flex-col lg:flex-row gap-5 lg:gap-24 justify-center lg:mx-4 mb-5 items-start">
-              <div className="relative w-full lg:w-auto lg:max-w-[500px] mx-auto lg:mx-0 z-[10]">
+            <div className="flex flex-col lg:flex-row gap-2 md:gap-3">
+              <div className="relative z-[10] lg:[flex:var(--ar)_1_0%]" style={{ "--ar": 500 / 700 }}>
                 <img
                   src="/Design/webp/print_1.webp"
                   alt="Print Design 1"
                   width={500}
                   height={700}
-                  className="w-full h-auto object-contain"
+                  className="w-full h-auto block"
                   onError={(e) =>
                     console.error(`Failed to load image: ${e.target.src}`)
                   }
                 />
               </div>
-              <div className="relative w-full lg:w-auto lg:max-w-[500px] mx-auto lg:mx-0 z-[10]">
+              <div className="relative z-[10] lg:[flex:var(--ar)_1_0%]" style={{ "--ar": 500 / 700 }}>
                 <img
                   src="/Design/webp/print_2.webp"
                   alt="Print Design 2"
                   width={500}
                   height={700}
-                  className="w-full h-auto object-contain"
+                  className="w-full h-auto block"
                   onError={(e) =>
                     console.error(`Failed to load image: ${e.target.src}`)
                   }
@@ -314,19 +316,34 @@ export default function DesignPortfolio() {
             </div>
           </section>
 
+          {/* Layouts gallery (same as About page) */}
+          <section className="mt-6 md:mt-8">
+            <SectionHeading
+              label="Gallery"
+              title="Layouts"
+              titleClassName="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-light"
+              align="center"
+            />
+            <LayoutCarousel
+              images={layoutImages}
+              desktopPerView={2}
+              linkHref="https://www.instagram.com/stories/highlights/17907148600374825/"
+            />
+          </section>
+
           {/* Portfolio Collage Section */}
           <section className="text-center z-[10]">
-            <div className="mb-6">
-              <hr className="w-3/5 h-px bg-gray-600 border-none mx-auto mb-10 mt-10" />
+            <div className="h-0.5 md:h-auto md:mb-6">
+              <hr className="hidden md:block w-3/5 h-px bg-gray-600 border-none mx-auto mb-10 mt-10" />
             </div>
-            <div className="flex flex-col lg:flex-row gap-4 lg:gap-5 items-start justify-center lg:px-4">
-              <div className="flex flex-col gap-4 w-full lg:max-w-lg lg:max-w-xl mx-auto lg:mx-0 z-[10]">
+            <div className="flex flex-col lg:flex-row gap-2 md:gap-3 items-start">
+              <div className="flex flex-col gap-2 md:gap-3 w-full lg:flex-1 lg:min-w-0 z-[10]">
                 <img
                   src="/Mailer/webp/1.webp"
                   alt="Portfolio Item 1"
                   width={570}
                   height={400}
-                  className="w-full h-auto object-contain z-[10]"
+                  className="w-full h-auto block z-[10]"
                   onError={(e) =>
                     console.error(`Failed to load image: ${e.target.src}`)
                   }
@@ -336,7 +353,7 @@ export default function DesignPortfolio() {
                   alt="Portfolio Item 4"
                   width={570}
                   height={400}
-                  className="w-full h-auto object-contain z-[10]"
+                  className="w-full h-auto block z-[10]"
                   onError={(e) =>
                     console.error(`Failed to load image: ${e.target.src}`)
                   }
@@ -346,19 +363,19 @@ export default function DesignPortfolio() {
                   alt="Portfolio Item 6"
                   width={570}
                   height={400}
-                  className="w-full h-auto object-contain z-[10]"
+                  className="w-full h-auto block z-[10]"
                   onError={(e) =>
                     console.error(`Failed to load image: ${e.target.src}`)
                   }
                 />
               </div>
-              <div className="flex flex-col gap-4 w-full lg:max-w-lg lg:max-w-xl mx-auto lg:mx-0 z-[10]">
+              <div className="flex flex-col gap-2 md:gap-3 w-full lg:flex-1 lg:min-w-0 z-[10]">
                 <img
                   src="/Mailer/webp/2.webp"
                   alt="Portfolio Item 2"
                   width={570}
                   height={400}
-                  className="w-full h-auto object-contain z-[10]"
+                  className="w-full h-auto block z-[10]"
                   onError={(e) =>
                     console.error(`Failed to load image: ${e.target.src}`)
                   }
@@ -368,7 +385,7 @@ export default function DesignPortfolio() {
                   alt="Portfolio Item 5"
                   width={570}
                   height={400}
-                  className="w-full h-auto object-contain z-[10]"
+                  className="w-full h-auto block z-[10]"
                   onError={(e) =>
                     console.error(`Failed to load image: ${e.target.src}`)
                   }
@@ -378,7 +395,7 @@ export default function DesignPortfolio() {
                   alt="Portfolio Item 7"
                   width={570}
                   height={400}
-                  className="w-full h-auto object-contain z-[10]"
+                  className="w-full h-auto block z-[10]"
                   onError={(e) =>
                     console.error(`Failed to load image: ${e.target.src}`)
                   }
@@ -388,7 +405,7 @@ export default function DesignPortfolio() {
                   alt="Portfolio Item 3"
                   width={570}
                   height={400}
-                  className="w-full h-auto object-contain z-[10]"
+                  className="w-full h-auto block z-[10]"
                   onError={(e) =>
                     console.error(`Failed to load image: ${e.target.src}`)
                   }

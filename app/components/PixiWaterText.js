@@ -8,13 +8,17 @@ export default function PixiWaterText({ text }) {
   useEffect(() => {
     if (!containerRef.current) return;
 
-    const app = new PIXI.Application({
-      width: 600,
-      height: 200,
-      transparent: true,
-      backgroundColor: 0x000000,
-      backgroundAlpha: 0, 
-    });
+    let app;
+    try {
+      app = new PIXI.Application({
+        width: 600,
+        height: 200,
+        backgroundColor: 0x000000,
+        backgroundAlpha: 0,
+      });
+    } catch {
+      return; // WebGL unavailable: skip the water effect on this text
+    }
     containerRef.current.appendChild(app.view);
 
     // Text

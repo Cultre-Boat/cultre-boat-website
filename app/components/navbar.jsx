@@ -133,25 +133,31 @@ export default function Navbar() {
             </li>
           </ul>
         </div>
-        <div className="absolute bottom-12 flex flex-col gap-2 text-center">
+        <div className="absolute bottom-10 md:bottom-12 left-0 w-full px-6 flex flex-row flex-wrap justify-center items-center gap-x-8 gap-y-3 text-center">
           <Link
             href="https://www.facebook.com/profile.php?id=100016109957685"
+            target="_blank"
+            rel="noopener noreferrer"
             onClick={closemenu}
-            className="text-gray-500 text-lg hover:text-white transition-all"
+            className="text-white/70 text-base md:text-xl tracking-widest uppercase hover:text-white transition-all"
           >
             Facebook
           </Link>
           <Link
             href="https://www.instagram.com/cultreboat/"
+            target="_blank"
+            rel="noopener noreferrer"
             onClick={closemenu}
-            className="text-gray-500 text-lg hover:text-white transition-all"
+            className="text-white/70 text-base md:text-xl tracking-widest uppercase hover:text-white transition-all"
           >
             Instagram
           </Link>
           <Link
             href="https://www.linkedin.com/company/cultre-boat/posts/?feedView=all"
+            target="_blank"
+            rel="noopener noreferrer"
             onClick={closemenu}
-            className="text-gray-500 text-lg hover:text-white transition-all"
+            className="text-white/70 text-base md:text-xl tracking-widest uppercase hover:text-white transition-all"
           >
             LinkedIn
           </Link>

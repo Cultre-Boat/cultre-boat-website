@@ -10,12 +10,19 @@ export default function BrandModal({
   brandName,
   brandSlug,
   images = [],
+  reels = [],
   instagramUrl,
 }) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [touchStart, setTouchStart] = useState(0);
   const [touchEnd, setTouchEnd] = useState(0);
   const modalRef = useRef(null);
+
+  // Photos and reels share one carousel: reels come first
+  const items = [
+    ...reels.map((src) => ({ type: "reel", src })),
+    ...images.map((src) => ({ type: "image", src })),
+  ];
 
   // Reset index when modal opens
   useEffect(() => {
@@ -39,11 +46,11 @@ export default function BrandModal({
   }, [isOpen, currentIndex]);
 
   const handleNext = () => {
-    setCurrentIndex((prev) => (prev + 1) % images.length);
+    setCurrentIndex((prev) => (prev + 1) % items.length);
   };
 
   const handlePrev = () => {
-    setCurrentIndex((prev) => (prev - 1 + images.length) % images.length);
+    setCurrentIndex((prev) => (prev - 1 + items.length) % items.length);
   };
 
   // Touch handlers for mobile swipe
@@ -85,7 +92,7 @@ export default function BrandModal({
     }
   };
 
-  if (!isOpen || images.length === 0) return null;
+  if (!isOpen || items.length === 0) return null;
 
   return (
     <AnimatePresence>
@@ -152,7 +159,7 @@ export default function BrandModal({
 
             {/* Main Image Display with navigation */}
             <div
-              className="relative flex-1 rounded-2xl overflow-hidden bg-gradient-to-br from-black/40 to-black/20 backdrop-blur-sm group cursor-pointer"
+              className="relative flex-1 min-h-0 rounded-2xl overflow-hidden bg-gradient-to-br from-black/40 to-black/20 backdrop-blur-sm group cursor-pointer"
               onClick={handleClickSide}
             >
               {/* Current Image */}
@@ -185,14 +192,18 @@ export default function BrandModal({
                       instagramUrl ? `Visit ${brandName} on Instagram` : ""
                     }
                   >
-                    <Image
-                      src={images[currentIndex]}
-                      alt={`${brandName} ${currentIndex + 1}`}
-                      fill
-                      className="object-contain drop-shadow-2xl"
-                      quality={100}
-                      priority
-                    />
+                    {items[currentIndex]?.type === "reel" ? (
+                      <ReelView src={items[currentIndex].src} />
+                    ) : (
+                      <Image
+                        src={items[currentIndex]?.src}
+                        alt={`${brandName} ${currentIndex + 1}`}
+                        fill
+                        className="object-contain drop-shadow-2xl"
+                        quality={90}
+                        priority
+                      />
+                    )}
                   </div>
                 </motion.div>
               </AnimatePresence>
@@ -248,7 +259,7 @@ export default function BrandModal({
 
               {/* Progress indicator */}
               <div className="absolute bottom-4 md:bottom-6 left-1/2 -translate-x-1/2 flex gap-2 z-20">
-                {images.map((_, index) => (
+                {items.map((_, index) => (
                   <button
                     key={index}
                     onClick={(e) => {
@@ -265,6 +276,7 @@ export default function BrandModal({
               </div>
             </div>
 
+
             {/* Image Counter - Centered */}
             <motion.div
               initial={{ opacity: 0 }}
@@ -277,7 +289,7 @@ export default function BrandModal({
                   {currentIndex + 1}
                 </span>
                 <span className="mx-2 text-white/50">/</span>
-                <span className="text-white/60">{images.length}</span>
+                <span className="text-white/60">{items.length}</span>
               </p>
             </motion.div>
 
@@ -289,7 +301,7 @@ export default function BrandModal({
               className="mt-2 md:mt-3 overflow-x-auto no-scrollbar"
             >
               <div className="flex gap-2 md:gap-3 pb-2 justify-center">
-                {images.map((img, index) => (
+                {items.map((item, index) => (
                   <motion.button
                     key={index}
                     onClick={(e) => {
@@ -304,20 +316,94 @@ export default function BrandModal({
                         : "opacity-60 hover:opacity-100 ring-1 ring-white/20"
                     }`}
                   >
+                    {item.type === "reel" ? (
+                      <div className="relative w-full h-full">
+                        <video
+                          src={encodeURI(item.src)}
+                          muted
+                          preload="metadata"
+                          className="object-cover w-full h-full pointer-events-none bg-black"
+                        />
+                        <span className="absolute bottom-1 right-1 flex items-center justify-center w-5 h-5 rounded-full bg-black/60 text-white">
+                          <SpeakerIcon muted className="w-3 h-3" />
+                        </span>
+                      </div>
+                    ) : (
                     <Image
-                      src={img}
+                      src={item.src}
                       alt={`Thumbnail ${index + 1}`}
                       width={80}
                       height={80}
                       className="object-cover w-full h-full pointer-events-none"
                     />
+                    )}
                   </motion.button>
                 ))}
               </div>
             </motion.div>
+
           </motion.div>
         </motion.div>
       )}
     </AnimatePresence>
+  );
+}
+
+// Speaker icon: waves when sound is on, a cross when muted.
+function SpeakerIcon({ muted, className = "w-4 h-4" }) {
+  return (
+    <svg className={className} fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24" aria-hidden="true">
+      <path strokeLinecap="round" strokeLinejoin="round" d="M11 5L6 9H2v6h4l5 4V5z" />
+      {muted ? (
+        <path strokeLinecap="round" strokeLinejoin="round" d="M23 9l-6 6M17 9l6 6" />
+      ) : (
+        <path strokeLinecap="round" strokeLinejoin="round" d="M15.54 8.46a5 5 0 010 7.07M19.07 4.93a10 10 0 010 14.14" />
+      )}
+    </svg>
+  );
+}
+
+// A reel in the main view: plays muted, speaker icon turns sound on, and a click opens Instagram (handled by the wrapper).
+function ReelView({ src }) {
+  const videoRef = useRef(null);
+  const [muted, setMuted] = useState(true);
+
+  useEffect(() => {
+    videoRef.current?.play().catch(() => {});
+    return () => videoRef.current?.pause();
+  }, [src]);
+
+  const toggleSound = (e) => {
+    e.stopPropagation(); // changing sound must not open Instagram
+    const v = videoRef.current;
+    if (!v) return;
+    v.muted = !v.muted;
+    setMuted(v.muted);
+    if (!v.muted) v.play().catch(() => {});
+  };
+
+  return (
+    <div className="absolute inset-0 flex items-center justify-center bg-black/40">
+      {/* Frame is sized to the video, so the sound button sits inside the video itself */}
+      <div className="relative h-full aspect-[9/16] max-w-full">
+        <video
+          ref={videoRef}
+          src={encodeURI(src)}
+          muted
+          loop
+          playsInline
+          preload="auto"
+          className="absolute inset-0 w-full h-full object-contain"
+        />
+        <button
+          type="button"
+          onClick={toggleSound}
+          aria-label={muted ? "Turn sound on" : "Turn sound off"}
+          className="absolute bottom-3 right-3 z-20 flex items-center justify-center w-10 h-10 rounded-full bg-black/50 hover:bg-black/70 text-white backdrop-blur-sm transition-colors"
+        >
+          <SpeakerIcon muted={muted} />
+        </button>
+      </div>
+    </div>
   );
 }

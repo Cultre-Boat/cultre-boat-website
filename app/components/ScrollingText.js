@@ -12,15 +12,20 @@ const ScrollingText = forwardRef(
   ({ designTextRef, prTextRef, socialTextRef }, ref) => {
     const containerRef = useRef(null);
     const rendererRef = useRef(null);
-    const sceneRef = useRef(new THREE.Scene());
     const cameraRef = useRef(null);
     const animationFrameId = useRef(null);
 
     useEffect(() => {
-      if (!containerRef.current) return;
+      // Captured now: React 19 Strict Mode detaches refs before running cleanup in dev,
+      // so reading containerRef.current there would give null and leave the old renderer behind.
+      const container = containerRef.current;
+      if (!container) return;
 
       const isMobile = window.innerWidth <= 768; // Define mobile breakpoint
-      const scene = sceneRef.current;
+      // A fresh scene per mount. Re-using one across mounts (React Strict Mode mounts twice
+      // in dev) left the first set of words in it, duplicated and broken.
+      const scene = new THREE.Scene();
+      const roots = [];
       const camera = new THREE.PerspectiveCamera(
         75,
         window.innerWidth / window.innerHeight,
@@ -33,7 +38,7 @@ const ScrollingText = forwardRef(
       const renderer = new CSS3DRenderer();
       renderer.setSize(window.innerWidth, window.innerHeight);
       renderer.domElement.style.zIndex = "20";
-      containerRef.current.appendChild(renderer.domElement);
+      container.appendChild(renderer.domElement);
       rendererRef.current = renderer;
 
       const elements = [
@@ -68,6 +73,7 @@ const radius = isMobile ? 300 : 600; // Reduced radius on mobile for closer word
 
         const root = createRoot(mountPoint);
         root.render(<PixiWaterText text={element.text} />);
+        roots.push(root);
 
         // Assign ref
         if (element.ref) {
@@ -87,9 +93,13 @@ const radius = isMobile ? 300 : 600; // Reduced radius on mobile for closer word
         objects.push(object);
       });
 
+      // Fallback height so the home page can scroll. Remember we set it so it can be
+      // removed on unmount; otherwise <body> keeps this height on every other page.
+      let setBodyHeight = false;
       const ensureScrollable = () => {
         if (document.body.scrollHeight <= window.innerHeight) {
-          document.body.style.height = `${window.innerHeight + 4000}px`; // Fallback height
+          document.body.style.height = `${window.innerHeight + 4000}px`;
+          setBodyHeight = true;
         }
       };
       ensureScrollable();
@@ -144,12 +154,19 @@ const radius = isMobile ? 300 : 600; // Reduced radius on mobile for closer word
 
       return () => {
         window.removeEventListener("resize", handleResize);
+        if (setBodyHeight) {
+          document.body.style.height = "";
+        }
         if (animationFrameId.current) {
           cancelAnimationFrame(animationFrameId.current);
         }
-        if (containerRef.current && renderer.domElement) {
-          containerRef.current.removeChild(renderer.domElement);
-        }
+        objects.forEach((object) => {
+          scene.remove(object);
+          object.element.remove();
+        });
+        // Unmount after the current render finishes (React warns on synchronous unmount here).
+        setTimeout(() => roots.forEach((root) => root.unmount()));
+        renderer.domElement.remove();
       };
     }, []);
 

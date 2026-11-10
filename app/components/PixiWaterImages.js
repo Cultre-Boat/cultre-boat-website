@@ -3,6 +3,50 @@
 import { useLayoutEffect, useRef } from "react";
 import * as PIXI from "pixi.js";
 
+// Fit the whole image inside the element's box: no crop, no stretch, no zoom.
+// Skipped until the texture loads, since an unloaded texture reports a 1px size.
+function fitSpriteInRect(sprite, rect) {
+  const { texture } = sprite;
+  if (!texture.baseTexture.valid) return;
+  sprite.scale.set(Math.min(rect.width / texture.width, rect.height / texture.height));
+}
+
+function applyTextTransform(text, transform) {
+  if (transform === 'uppercase') return text.toUpperCase();
+  if (transform === 'lowercase') return text.toLowerCase();
+  if (transform === 'capitalize') return text.replace(/\b\w/g, (c) => c.toUpperCase());
+  return text;
+}
+
+// Read the lines exactly as the browser wrapped them, by grouping each word
+// by the vertical position of its rendered box.
+function getRenderedLines(el, transform) {
+  const lines = [];
+  let lastTop = null;
+  const walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT);
+  const range = document.createRange();
+  let node;
+  while ((node = walker.nextNode())) {
+    const text = node.textContent;
+    const wordRe = /\S+/g;
+    let m;
+    while ((m = wordRe.exec(text))) {
+      range.setStart(node, m.index);
+      range.setEnd(node, m.index + m[0].length);
+      const r = range.getClientRects()[0];
+      if (!r) continue;
+      if (lastTop === null || Math.abs(r.top - lastTop) > r.height / 2) {
+        lines.push(m[0]);
+        lastTop = r.top;
+      } else {
+        lines[lines.length - 1] += ' ' + m[0];
+      }
+    }
+  }
+  if (!lines.length) return [applyTextTransform(el.textContent.trim(), transform)];
+  return lines.map((l) => applyTextTransform(l, transform));
+}
+
 export default function PixiWaterImages({ containerRef, intensity = 1 }) {
   const pixiContainerRef = useRef(null);
 
@@ -173,14 +217,18 @@ export default function PixiWaterImages({ containerRef, intensity = 1 }) {
         }
         
         const sprite = PIXI.Sprite.from(src);
-        sprite.width = rect.width;
-        sprite.height = rect.height;
+        fitSpriteInRect(sprite, rect);
         sprite.x = rect.left + rect.width / 2;
         sprite.y = rect.top + rect.height / 2;
         sprite.filters = [displacementFilter];
         sprite.anchor.set(0.5);
         sprite.visible = true;
         
+        // Size it once loaded
+        if (!sprite.texture.baseTexture.valid) {
+          sprite.texture.baseTexture.once("loaded", () => updateNow());
+        }
+
         app.stage.addChild(sprite);
         allSprites.push({ sprite, element: el, type: 'image' });
         
@@ -207,17 +255,24 @@ export default function PixiWaterImages({ containerRef, intensity = 1 }) {
           
           const textAlign = computedStyle.textAlign || 'center';
           
-          const pixiText = new PIXI.Text(el.textContent, {
+          // Use the browser's own line breaks so Pixi text never wraps differently
+          // from the DOM (which caused headings to spill onto the text below)
+          const lines = getRenderedLines(el, computedStyle.textTransform);
+          const parsedLineHeight = parseFloat(computedStyle.lineHeight);
+          const lineHeight = Number.isFinite(parsedLineHeight)
+            ? parsedLineHeight
+            : (lines.length ? rect.height / lines.length : fontSize * 1.2);
+
+          const pixiText = new PIXI.Text(lines.join('\n'), {
             fontFamily: fontFamily,
             fontSize: fontSize,
             fontWeight: fontWeight,
             fill: hexColor,
             align: textAlign,
             letterSpacing: parseFloat(computedStyle.letterSpacing) || 0,
-            wordWrap: true,
-            wordWrapWidth: rect.width + 40, // Add extra width to prevent cutting
-            breakWords: false,
-            padding: 10, // Add padding to prevent text clipping
+            lineHeight: lineHeight,
+            wordWrap: false,
+            padding: 0, // no offset: text lines up exactly with the page text
           });
           
           // Position text based on alignment
@@ -265,8 +320,13 @@ export default function PixiWaterImages({ containerRef, intensity = 1 }) {
     };
     
     // Start the initialization process
-    requestAnimationFrame(() => {
-      requestAnimationFrame(initSprites);
+    // Wait for web fonts first: text measured with a fallback font wraps wider than the real font and spills out of its box
+    const fontsReady = document.fonts?.ready ?? Promise.resolve();
+    fontsReady.then(() => {
+      if (destroyed) return;
+      requestAnimationFrame(() => {
+        requestAnimationFrame(initSprites);
+      });
     });
     
     // Define updateNow function for both images and text
@@ -279,8 +339,7 @@ export default function PixiWaterImages({ containerRef, intensity = 1 }) {
           const rect = element.getBoundingClientRect();
           if (rect.width && rect.height) {
             if (type === 'image') {
-              sprite.width = rect.width;
-              sprite.height = rect.height;
+              fitSpriteInRect(sprite, rect);
               sprite.x = rect.left + rect.width / 2;
               sprite.y = rect.top + rect.height / 2;
             } else {
@@ -343,12 +402,30 @@ export default function PixiWaterImages({ containerRef, intensity = 1 }) {
 
       window.addEventListener("resize", updatePositions);
       window.addEventListener("scroll", updatePositions, { passive: true });
-      
+
       // Observe all elements (images + text) for on-screen toggling
       allSprites.forEach(({ element }) => io.observe(element));
-      
+
+      // Carousels swap an <img> src in place: follow it, otherwise the canvas keeps showing the first image.
+      // Resize only after load, since sizing against an unloaded 1px texture blows the sprite up.
+      const srcObserver = new MutationObserver((mutations) => {
+        mutations.forEach(({ target }) => {
+          const pair = allSprites.find((p) => p.element === target);
+          if (!pair || pair.sprite.destroyed) return;
+          const texture = PIXI.Texture.from(target.src);
+          pair.sprite.texture = texture;
+          if (texture.baseTexture.valid) updatePositions();
+          else texture.baseTexture.once("loaded", updatePositions);
+          target.addEventListener("load", updatePositions, { once: true });
+        });
+      });
+      allSprites.forEach(({ element, type }) => {
+        if (type === "image") srcObserver.observe(element, { attributes: true, attributeFilter: ["src"] });
+      });
+
       // Store cleanup functions
       cleanupFunctions.push(() => {
+        srcObserver.disconnect();
         allSprites.forEach(({ element }) => io.unobserve(element));
         io.disconnect();
         window.removeEventListener("resize", updatePositions);
