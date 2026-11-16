@@ -65,7 +65,7 @@ const StudioAbout = () => {
           <SectionLabel className="mb-6 md:mb-10">
             Behind the scenes
           </SectionLabel>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-6">
+          <div className="columns-1 md:columns-2 gap-3 md:gap-6">
             {["DSC02056.JPG.jpeg", "dsc00729.jpg", "lizpaul-dsc06414.jpg"].map(
               (name) => (
                 // eslint-disable-next-line @next/next/no-img-element
@@ -74,7 +74,7 @@ const StudioAbout = () => {
                   src={`/BTSimages/web/${name}`}
                   alt="Behind the scenes at Culture Boat"
                   loading="lazy"
-                  className="w-full h-auto object-cover"
+                  className="block w-full h-auto mb-3 md:mb-6 break-inside-avoid"
                 />
               ),
             )}
