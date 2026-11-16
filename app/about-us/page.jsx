@@ -1,8 +1,7 @@
 "use client";
-import React, { useEffect } from 'react';
-import Link from 'next/link';
+import React, { useEffect } from "react";
+import Link from "next/link";
 import { gsap } from "gsap";
-import BtsImages from "../components/BtsImages";
 import SectionLabel from "../components/SectionLabel";
 import WaterFilterDefs from "../components/WaterFilterDefs";
 import useWaterTextAnimation from "../hooks/useWaterTextAnimation";
@@ -14,7 +13,7 @@ const StudioAbout = () => {
   useEffect(() => {
     const imageTurbulence = document.querySelector("#waterFilter feTurbulence");
     const imageDisplacementMap = document.querySelector(
-      "#waterFilter feDisplacementMap"
+      "#waterFilter feDisplacementMap",
     );
 
     if (imageTurbulence && imageDisplacementMap) {
@@ -31,7 +30,6 @@ const StudioAbout = () => {
         yoyo: true,
       });
     }
-
   }, []);
 
   return (
@@ -39,7 +37,6 @@ const StudioAbout = () => {
       <WaterFilterDefs withImageFilter />
 
       <div className="w-full bg-transparent text-white min-h-screen overflow-x-hidden px-6 md:px-16 lg:px-24 pt-28 md:pt-36 pb-4 md:pb-4">
-
         {/* Intro: headline */}
         <section className="grid grid-cols-1 md:grid-cols-12 gap-10 md:gap-16 items-center">
           <div className="md:col-span-12">
@@ -55,11 +52,11 @@ const StudioAbout = () => {
 
         {/* Statement */}
         <section className="mt-10 md:mt-14 grid grid-cols-1 md:grid-cols-12 gap-3 md:gap-16">
-          <SectionLabel className="md:col-span-2">
-            Our studio
-          </SectionLabel>
+          <SectionLabel className="md:col-span-2">Our studio</SectionLabel>
           <p className="md:col-span-10 text-2xl md:text-4xl lg:text-5xl text-gray-200 font-light leading-snug">
-            We're a creative studio that specializes in brand strategy and digital creation, who enjoy a close working relationship with each of our clients and engaging in meaningful digital experiences.
+            We're a creative studio that specializes in brand strategy and
+            digital creation, who enjoy a close working relationship with each
+            of our clients and engaging in meaningful digital experiences.
           </p>
         </section>
 
@@ -68,20 +65,34 @@ const StudioAbout = () => {
           <SectionLabel className="mb-6 md:mb-10">
             Behind the scenes
           </SectionLabel>
-          {/* Pull the photos out past the page padding so the side margin matches the gap between photos */}
-          <div className="-mx-4 md:-mx-[52px] lg:-mx-[84px]">
-            <BtsImages />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-6">
+            {["DSC02056.JPG.jpeg", "dsc00729.jpg", "lizpaul-dsc06414.jpg"].map(
+              (name) => (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  key={name}
+                  src={`/BTSimages/web/${name}`}
+                  alt="Behind the scenes at Culture Boat"
+                  loading="lazy"
+                  className="w-full h-auto object-cover"
+                />
+              ),
+            )}
           </div>
         </section>
 
         {/* Team */}
         <section className="mt-10 md:mt-14 grid grid-cols-1 md:grid-cols-12 gap-3 md:gap-16">
-          <SectionLabel className="md:col-span-2">
-            Our people
-          </SectionLabel>
+          <SectionLabel className="md:col-span-2">Our people</SectionLabel>
           <div className="md:col-span-10">
             <ul className="flex flex-wrap gap-3 mb-8">
-              {["Marketers", "Copywriters", "Thinkers", "Social media enthusiasts", "Visual designers"].map((role) => (
+              {[
+                "Marketers",
+                "Copywriters",
+                "Thinkers",
+                "Social media enthusiasts",
+                "Visual designers",
+              ].map((role) => (
                 <li
                   key={role}
                   className="text-sm md:text-base uppercase tracking-widest border border-white/20 rounded-full px-4 py-2 text-white/80"
@@ -91,7 +102,11 @@ const StudioAbout = () => {
               ))}
             </ul>
             <p className="text-xl md:text-3xl text-gray-300 font-light leading-relaxed">
-              We're marketers, copywriters, thinkers, social media enthusiasts, visual designers and <span className="text-white">most importantly, communicators.</span>
+              We're marketers, copywriters, thinkers, social media enthusiasts,
+              visual designers and{" "}
+              <span className="text-white">
+                most importantly, communicators.
+              </span>
             </p>
           </div>
         </section>
@@ -110,20 +125,36 @@ const StudioAbout = () => {
 
         {/* How we work */}
         <section className="mt-8 md:mt-10">
-          <SectionLabel className="mb-5 md:mb-6">
-            How we work
-          </SectionLabel>
+          <SectionLabel className="mb-5 md:mb-6">How we work</SectionLabel>
           <ol className="grid grid-cols-1 md:grid-cols-4 gap-8 md:gap-10">
             {[
-              { title: "Decode the brand", text: "Brand positioning & strategy that defines who the brand is and who it speaks to." },
-              { title: "Shape the identity", text: "Brand identity, visual vocabulary and tone of voice that carry the story consistently." },
-              { title: "Create across media", text: "Print & digital design, campaigns and collaterals built from one brand system." },
-              { title: "Amplify and grow", text: "Content creation & management, influencer collaboration and creative consultancy to build retention." },
+              {
+                title: "Decode the brand",
+                text: "Brand positioning & strategy that defines who the brand is and who it speaks to.",
+              },
+              {
+                title: "Shape the identity",
+                text: "Brand identity, visual vocabulary and tone of voice that carry the story consistently.",
+              },
+              {
+                title: "Create across media",
+                text: "Print & digital design, campaigns and collaterals built from one brand system.",
+              },
+              {
+                title: "Amplify and grow",
+                text: "Content creation & management, influencer collaboration and creative consultancy to build retention.",
+              },
             ].map((step, i) => (
               <li key={step.title}>
-                <span className="text-xs tracking-[0.3em] text-white/50">0{i + 1}</span>
-                <h3 className="mt-3 text-xl md:text-2xl font-light">{step.title}</h3>
-                <p className="mt-2 text-sm md:text-base text-gray-300 leading-relaxed">{step.text}</p>
+                <span className="text-xs tracking-[0.3em] text-white/50">
+                  0{i + 1}
+                </span>
+                <h3 className="mt-3 text-xl md:text-2xl font-light">
+                  {step.title}
+                </h3>
+                <p className="mt-2 text-sm md:text-base text-gray-300 leading-relaxed">
+                  {step.text}
+                </p>
               </li>
             ))}
           </ol>
